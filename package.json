@@ -1,0 +1,28 @@
+{
+  "name": "boids",
+  "description": "JS Canvas experiment with boids.",
+  "version": "0.0.0",
+  "main": "./src/index.js",
+  "author": "Razvan Negrea <howl@wolfpilot.co> (www.wolfpilot.co)",
+  "license": "MIT",
+  "scripts": {
+    "dev": "parcel ./src/index.html",
+    "start": "yarn dev",
+    "prebuild": "rm -rf dist",
+    "build": "tsc --noEmit && parcel build ./src/index.html --target node --no-source-maps --public-url='/boids'"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.5.5",
+    "@babel/plugin-proposal-class-properties": "^7.5.5",
+    "@babel/plugin-transform-runtime": "^7.5.5",
+    "@babel/preset-env": "^7.5.5",
+    "parcel-bundler": "^1.12.3",
+    "tslint": "^5.18.0",
+    "typescript": "^3.5.3"
+  },
+  "dependencies": {
+    "@babel/runtime": "^7.5.5",
+    "autoprefixer": "^9.6.1",
+    "postcss-modules": "^1.4.1"
+  }
+}

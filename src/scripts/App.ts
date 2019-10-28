@@ -1,4 +1,11 @@
 import Canvas, { ICanvas } from "./actors/Canvas/Canvas";
+import Boid, { IBoid } from "./actors/Boid/Boid";
+
+// Utils
+import { getRandomNumber } from "./utils/MathHelpers";
+
+// Config
+import { config } from "./config";
 
 interface IState {
   isRunning: boolean;
@@ -21,18 +28,45 @@ class App implements IApp {
     ...initialState,
   };
 
-  public canvasEl?: HTMLCanvasElement;
-  public ctx?: CanvasRenderingContext2D;
+  public canvasEl: HTMLCanvasElement;
+  public ctx: CanvasRenderingContext2D;
   private canvas: ICanvas | any;
+  private boids: IBoid[];
 
-  public init() {
+  constructor() {
     this.canvasEl = <HTMLCanvasElement>document.getElementById("canvas");
     this.ctx = this.canvasEl.getContext("2d")!;
+
+    this.boids = [];
+  }
+
+  public init() {
+    const wWidth = window.innerWidth;
+    const wHeight = window.innerHeight;
+
+    if (!this.ctx) {
+      throw new Error("Canvas context could not be initialised.");
+    }
 
     // Setup instances
     this.canvas = new Canvas(this.canvasEl, this.ctx);
 
     this.canvas.init();
+
+    this.boids = [...new Array(config.boids.count)].map(() => {
+      const options = {
+        ctx: this.ctx,
+        x: getRandomNumber(0, wWidth),
+        y: getRandomNumber(0, wHeight),
+        size: getRandomNumber(config.boids.minSize, config.boids.maxSize),
+        color:
+          config.boids.colors[
+            getRandomNumber(0, config.boids.colors.length - 1)
+          ],
+      };
+
+      return new Boid(options);
+    });
 
     requestAnimationFrame(this.tick);
   }
@@ -53,6 +87,10 @@ class App implements IApp {
 
     if (this.canvas && this.canvas.state.isEnabled) {
       this.canvas.draw();
+    }
+
+    if (this.boids && this.boids.length) {
+      this.boids.forEach((boid: IBoid) => boid.draw());
     }
 
     requestAnimationFrame(newTimestamp => this.tick(newTimestamp));

@@ -2,7 +2,13 @@ import Vector, { IVector } from "../../geometry/Vector";
 
 // Utils
 import * as PubSub from "../../utils/pubSub";
-import { add, subtract, multiply, normalize } from "../../utils/vectorHelpers";
+import {
+  add,
+  subtract,
+  multiply,
+  normalize,
+  limitXY,
+} from "../../utils/vectorHelpers";
 
 // Config
 import { config as appConfig } from "../../config";
@@ -14,6 +20,7 @@ export interface IBoid {
 
 interface IState {
   location: IVector;
+  velocity: IVector;
   showTargetVector: boolean;
   showNormalizedTargetVector: boolean;
   showAwarenessArea: boolean;
@@ -48,6 +55,7 @@ class Boid implements IBoid {
   private awarenessAreaSize: number;
   private color: string;
   private maxSpeed: number;
+  private accelerationFactor: number;
   public state: IState;
 
   constructor(options: IOptions) {
@@ -56,8 +64,11 @@ class Boid implements IBoid {
     this.awarenessAreaSize = options.awarenessAreaSize;
     this.color = options.color;
 
-    // Speed is inverse proportional to weight (size)
-    this.maxSpeed = Math.pow(appConfig.boids.maxSize / this.size, 2) * 2;
+    // Calculate additional properties
+    this.maxSpeed = this.size / 5;
+
+    // Acceleration is inverse proportional to weight (size)
+    this.accelerationFactor = appConfig.boids.maxSize / this.size / 5;
 
     // TODO: Get initial values from GUI
     this.state = {
@@ -65,6 +76,7 @@ class Boid implements IBoid {
       showNormalizedTargetVector: true,
       showAwarenessArea: true,
       location: new Vector(options.x, options.y),
+      velocity: new Vector(0, 0),
     };
   }
 
@@ -101,10 +113,14 @@ class Boid implements IBoid {
       return;
     }
 
-    const scaledNormTargetVector = multiply(normTargetVector, this.maxSpeed);
-    const velocity = scaledNormTargetVector;
+    // TODO: Add attract GUI option
+    const acceleration = multiply(normTargetVector, this.accelerationFactor);
 
-    this.state.location = add(this.state.location, velocity);
+    // Get the total velocity by adding acceleration
+    const velocity = add(this.state.velocity, acceleration);
+
+    this.state.velocity = limitXY(velocity, this.maxSpeed);
+    this.state.location = add(this.state.location, this.state.velocity);
   }
 
   private draw(normTargetVector: IVector) {
@@ -115,7 +131,7 @@ class Boid implements IBoid {
     }
 
     if (this.state.showNormalizedTargetVector) {
-      this.drawNormalizedTargetVector(normTargetVector);
+      this.drawDirectionVector(normTargetVector);
     }
 
     if (this.state.showAwarenessArea) {
@@ -152,15 +168,15 @@ class Boid implements IBoid {
   }
 
   // Draw normalized direction vector
-  private drawNormalizedTargetVector(normTargetVector: IVector) {
-    const scaledNormTargetVector = multiply(normTargetVector, this.size);
+  private drawDirectionVector(normTargetVector: IVector) {
+    const normalizedDirectionVector = multiply(normTargetVector, this.size);
 
     this.ctx.beginPath();
     this.ctx.moveTo(this.state.location.x, this.state.location.y);
     this.ctx.lineWidth = 2;
     this.ctx.lineTo(
-      this.state.location.x + scaledNormTargetVector.x,
-      this.state.location.y + scaledNormTargetVector.y
+      this.state.location.x + normalizedDirectionVector.x,
+      this.state.location.y + normalizedDirectionVector.y
     );
     this.ctx.strokeStyle = "red";
     this.ctx.stroke();

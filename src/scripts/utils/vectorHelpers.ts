@@ -1,5 +1,8 @@
 import Vector, { IVector } from "../geometry/Vector";
 
+// Utils
+import { limitNumber } from "./MathHelpers";
+
 // Returns a new vector that adds v2 to v1
 export const add = (v1: IVector, v2: IVector) => {
   return new Vector(v1.x + v2.x, v1.y + v2.y);
@@ -41,4 +44,12 @@ export const normalize = (v: IVector) => {
   } else {
     return divide(v, magnitude);
   }
+};
+
+// Return a new vector where the X and Y are limited by an absolute number
+export const limitXY = (vector: IVector, limit: number) => {
+  const x = limitNumber(vector.x, limit);
+  const y = limitNumber(vector.y, limit);
+
+  return new Vector(x, y);
 };

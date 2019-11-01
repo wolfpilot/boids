@@ -11,7 +11,7 @@
     "noUnusedParameters": true,
     "preserveConstEnums": true,
     "skipLibCheck": true,
-    "lib": ["es6", "dom"]
+    "lib": ["es2017", "es2015", "dom"]
   },
   "include": ["typings", "./src/**/*"],
   "exclude": [".cache", "public", "node_modules"]

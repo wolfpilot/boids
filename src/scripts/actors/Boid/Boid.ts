@@ -1,15 +1,19 @@
 import Vector, { IVector } from "../../geometry/Vector";
 
 // Utils
+import * as PubSub from "../../utils/pubSub";
 import { subtract, multiply, normalize } from "../../utils/vectorHelpers";
 
 export interface IBoid {
+  init: () => void;
   draw: () => void;
 }
 
 interface IState {
   x: number;
   y: number;
+  showTargetVector: boolean;
+  showNormalizedTargetVector: boolean;
 }
 
 interface IOptions {
@@ -47,6 +51,8 @@ class Boid implements IBoid {
     this.color = options.color;
 
     this.state = {
+      showTargetVector: true,
+      showNormalizedTargetVector: true,
       x: options.x,
       y: options.y,
     };
@@ -54,22 +60,54 @@ class Boid implements IBoid {
     this.vector = new Vector(this.state.x, this.state.y);
   }
 
+  public init() {
+    this.bindListeners();
+  }
+
+  public bindListeners() {
+    PubSub.subscribe(
+      "gui:showTargetVector",
+      (val: boolean) => (this.state.showTargetVector = val)
+    );
+    PubSub.subscribe(
+      "gui:showNormalizedTargetVector",
+      (val: boolean) => (this.state.showNormalizedTargetVector = val)
+    );
+  }
+
   public draw() {
-    // Draw the shape
+    this.drawShape();
+
+    if (this.state.showTargetVector) {
+      this.drawTargetVector();
+    }
+
+    if (this.state.showNormalizedTargetVector) {
+      this.drawNormalizedTargetVector();
+    }
+  }
+
+  // Draw the shape
+  private drawShape() {
+    this.ctx.beginPath();
     this.ctx.moveTo(this.state.x - this.size / 2, this.state.y - this.size / 2);
     this.ctx.arc(this.state.x, this.state.y, this.size, 0, 2 * Math.PI);
     this.ctx.fillStyle = this.color;
     this.ctx.fill();
+  }
 
-    // Draw vector to target
+  // Draw vector to target
+  private drawTargetVector() {
     this.ctx.beginPath();
     this.ctx.moveTo(this.state.x, this.state.y);
     this.ctx.lineWidth = 1;
     this.ctx.lineTo(mouseX, mouseY);
     this.ctx.strokeStyle = "black";
     this.ctx.stroke();
+  }
 
-    // Draw normalized direction vector
+  // Draw normalized direction vector
+  private drawNormalizedTargetVector() {
     const targetVector = subtract(new Vector(mouseX, mouseY), this.vector);
     const normTargetVector = normalize(targetVector);
     const scaledNormTargetVector = multiply(normTargetVector, this.size);

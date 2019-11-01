@@ -59,11 +59,14 @@ class App implements IApp {
     this.canvas.init();
 
     this.boids = [...new Array(config.boids.count)].map(() => {
+      const size = getRandomNumber(config.boids.minSize, config.boids.maxSize);
+
       const options = {
         ctx: this.ctx,
         x: getRandomNumber(0, wWidth),
         y: getRandomNumber(0, wHeight),
-        size: getRandomNumber(config.boids.minSize, config.boids.maxSize),
+        size,
+        awarenessAreaSize: size * config.boids.awarenessFactor,
         color:
           config.boids.colors[
             getRandomNumber(0, config.boids.colors.length - 1)

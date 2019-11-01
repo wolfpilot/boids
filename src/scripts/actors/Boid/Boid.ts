@@ -14,6 +14,7 @@ interface IState {
   y: number;
   showTargetVector: boolean;
   showNormalizedTargetVector: boolean;
+  showAwarenessArea: boolean;
 }
 
 interface IOptions {
@@ -21,6 +22,7 @@ interface IOptions {
   x: number;
   y: number;
   size: number;
+  awarenessAreaSize: number;
   color: string;
 }
 
@@ -41,6 +43,7 @@ document.addEventListener("mouseenter", onMouseUpdate, false);
 class Boid implements IBoid {
   private ctx: CanvasRenderingContext2D;
   private size: number;
+  private awarenessAreaSize: number;
   private color: string;
   private vector: IVector;
   public state: IState;
@@ -48,11 +51,14 @@ class Boid implements IBoid {
   constructor(options: IOptions) {
     this.ctx = options.ctx;
     this.size = options.size;
+    this.awarenessAreaSize = options.awarenessAreaSize;
     this.color = options.color;
 
+    // TODO: Get initial values from GUI
     this.state = {
       showTargetVector: true,
       showNormalizedTargetVector: true,
+      showAwarenessArea: true,
       x: options.x,
       y: options.y,
     };
@@ -73,6 +79,10 @@ class Boid implements IBoid {
       "gui:showNormalizedTargetVector",
       (val: boolean) => (this.state.showNormalizedTargetVector = val)
     );
+    PubSub.subscribe(
+      "gui:showAwarenessArea",
+      (val: boolean) => (this.state.showAwarenessArea = val)
+    );
   }
 
   public draw() {
@@ -84,6 +94,10 @@ class Boid implements IBoid {
 
     if (this.state.showNormalizedTargetVector) {
       this.drawNormalizedTargetVector();
+    }
+
+    if (this.state.showAwarenessArea) {
+      this.drawAwarenessArea();
     }
   }
 
@@ -120,6 +134,20 @@ class Boid implements IBoid {
       this.state.y + scaledNormTargetVector.y
     );
     this.ctx.strokeStyle = "red";
+    this.ctx.stroke();
+  }
+
+  private drawAwarenessArea() {
+    this.ctx.beginPath();
+    this.ctx.arc(
+      this.state.x,
+      this.state.y,
+      this.awarenessAreaSize,
+      0,
+      2 * Math.PI
+    );
+    this.ctx.lineWidth = 1;
+    this.ctx.strokeStyle = this.color;
     this.ctx.stroke();
   }
 }

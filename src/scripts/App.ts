@@ -96,11 +96,11 @@ class App implements IApp {
     console.log(elapsed);
 
     if (this.canvas && this.canvas.state.isEnabled) {
-      this.canvas.draw();
+      this.canvas.render();
     }
 
     if (this.boids && this.boids.length) {
-      this.boids.forEach((boid: IBoid) => boid.draw());
+      this.boids.forEach((boid: IBoid) => boid.render());
     }
 
     requestAnimationFrame(newTimestamp => this.tick(newTimestamp));

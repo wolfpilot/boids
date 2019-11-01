@@ -16,7 +16,7 @@ const COLORS = [
 
 export const config = {
   boids: {
-    count: 50,
+    count: 20,
     minSize: 30,
     maxSize: 60,
     colors: COLORS,

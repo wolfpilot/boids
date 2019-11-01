@@ -4,6 +4,9 @@ import Boid, { IBoid } from "./actors/Boid/Boid";
 // Utils
 import { getRandomNumber } from "./utils/MathHelpers";
 
+// Interface
+import GUI from "./interface/GUI";
+
 // Config
 import { config } from "./config";
 
@@ -49,8 +52,10 @@ class App implements IApp {
     }
 
     // Setup instances
+    const gui = new GUI();
     this.canvas = new Canvas(this.canvasEl, this.ctx);
 
+    gui.init();
     this.canvas.init();
 
     this.boids = [...new Array(config.boids.count)].map(() => {
@@ -67,6 +72,8 @@ class App implements IApp {
 
       return new Boid(options);
     });
+
+    this.boids.forEach((boid: IBoid) => boid.init());
 
     requestAnimationFrame(this.tick);
   }

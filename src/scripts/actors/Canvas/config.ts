@@ -1,4 +1,4 @@
 export const config = {
-  isEnabled: false,
-  fill: "#000",
+  isEnabled: true,
+  fill: "#fff",
 };

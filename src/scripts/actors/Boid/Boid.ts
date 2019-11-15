@@ -7,6 +7,7 @@ import {
   applyForces,
   subtract,
   multiply,
+  mag,
   normalize,
   limitXY,
 } from "../../utils/vectorHelpers";
@@ -123,6 +124,14 @@ class Boid implements IBoid {
     /** Set up forces */
     // Assume that the actor will desire to head towards its target at max speed
     const desired = multiply(this.state.normTargetVector, this.maxSpeed);
+
+    // Calculate a stopping distance from the target
+    // This prevents the boid spazzing out by always reaching and then overshooting its target
+    const dxTarget = mag(this.state.targetVector);
+
+    if (dxTarget < config.stopThreshold) {
+      return;
+    }
 
     // Assign a force that allows only a certain amount of maneuverability
     const steerVector = subtract(desired, this.state.velocity);

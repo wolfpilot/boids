@@ -21,6 +21,7 @@ export interface IBoid {
 
 interface IState {
   location: IVector;
+  acceleration: IVector;
   velocity: IVector;
   friction: IVector;
   targetVector: IVector;
@@ -57,7 +58,6 @@ class Boid implements IBoid {
   private awarenessAreaSize: number;
   private color: string;
   private maxSpeed: number;
-  private accelerationFactor: number;
   private frictionFactor: number;
   public state: IState;
 
@@ -67,11 +67,8 @@ class Boid implements IBoid {
     this.awarenessAreaSize = options.awarenessAreaSize;
     this.color = options.color;
 
-    // Calculate additional properties
+    // Set a max speed directly proportional to the weight (size)
     this.maxSpeed = this.size / 5;
-
-    // Acceleration is inverse proportional to weight (size)
-    this.accelerationFactor = appConfig.boids.maxSize / this.size / 5;
 
     // Friction is directly proportional to weight (size)
     this.frictionFactor = this.size / appConfig.boids.maxSize / 15;
@@ -82,6 +79,7 @@ class Boid implements IBoid {
       showNormalizedTargetVector: true,
       showAwarenessArea: true,
       location: new Vector(options.x, options.y),
+      acceleration: new Vector(0, 0),
       velocity: new Vector(0, 0),
       friction: new Vector(0, 0),
       targetVector: new Vector(0, 0),
@@ -111,6 +109,9 @@ class Boid implements IBoid {
   public render() {
     this.update();
     this.draw();
+
+    // Reset acceleration
+    this.state.acceleration = multiply(this.state.acceleration, 0);
   }
 
   private update() {
@@ -118,21 +119,32 @@ class Boid implements IBoid {
     this.state.normTargetVector = normalize(this.state.targetVector);
 
     // TODO: Add attract GUI option
-    // Set up forces
-    const acceleration = multiply(
-      this.state.normTargetVector,
-      this.accelerationFactor
+    /** Set up forces */
+    // Assume that the actor will desire to head towards its target at max speed
+    const desired = multiply(this.state.normTargetVector, this.maxSpeed);
+
+    // Assign a force that allows only a certain amount of maneuverability
+    const steerVector = subtract(desired, this.state.velocity);
+    const steer = limitXY(steerVector, 0.1, 0.1);
+
+    // Assign a friction-like force that pushes back against the current direction
+    const normVelocity = normalize(this.state.velocity);
+    const normFriction = multiply(normVelocity, -1);
+    const friction = multiply(normFriction, this.frictionFactor);
+
+    const forces = [steer, friction];
+
+    // Compound all external forces with the original vector. This will result
+    // in a new vector pointing in the mean direction with a length
+    // of the combined magnitude of all vectors.
+    this.state.acceleration = applyForces(this.state.acceleration, forces);
+
+    this.state.velocity = add(this.state.velocity, this.state.acceleration);
+    this.state.velocity = limitXY(
+      this.state.velocity,
+      this.maxSpeed,
+      this.maxSpeed
     );
-
-    const frictionDirection = multiply(this.state.normTargetVector, -1);
-    const friction = multiply(frictionDirection, this.frictionFactor);
-
-    const forces = [acceleration, friction];
-
-    // Compound all external forces with the original vector
-    const velocity = applyForces(this.state.velocity, forces);
-
-    this.state.velocity = limitXY(velocity, this.maxSpeed, this.maxSpeed);
     this.state.location = add(this.state.location, this.state.velocity);
   }
 

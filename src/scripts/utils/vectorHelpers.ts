@@ -32,12 +32,12 @@ export const divide = (vector: IVector, factor: number) => {
 };
 
 // Calculate the magnitude (length) of a vector
-export const mag = (x: number, y: number) => {
-  return Math.sqrt(x * x + y * y);
+export const mag = (v: IVector) => {
+  return Math.sqrt(v.x * v.x + v.y * v.y);
 };
 
 export const normalize = (v: IVector) => {
-  const magnitude = mag(v.x, v.y);
+  const magnitude = mag(v);
 
   if (magnitude === 0) {
     return new Vector(1, 0);

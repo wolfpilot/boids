@@ -1,4 +1,10 @@
 /**
+ * Return a sum of all numbers provided
+ */
+export const sum = (numbers: number[]) =>
+  numbers.reduce((acc, val) => acc + val);
+
+/**
  * Return a random number within defined range
  *
  * For more info, see:

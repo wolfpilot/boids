@@ -1,7 +1,7 @@
 import Vector, { IVector } from "../geometry/Vector";
 
 // Utils
-import { limitNumber } from "./MathHelpers";
+import { sum, limitNumber } from "./MathHelpers";
 
 // Returns a new vector that adds v2 to v1
 export const add = (v1: IVector, v2: IVector) => {
@@ -52,4 +52,12 @@ export const limitXY = (vector: IVector, limit: number) => {
   const y = limitNumber(vector.y, limit);
 
   return new Vector(x, y);
+};
+
+// Return the combination of all forces applied to an initial force vector
+export const applyForces = (v: IVector, vectors: IVector[]) => {
+  const xCoords = vectors.map((v: IVector) => v.x);
+  const yCoords = vectors.map((v: IVector) => v.y);
+
+  return new Vector(v.x + sum(xCoords), v.y + sum(yCoords));
 };

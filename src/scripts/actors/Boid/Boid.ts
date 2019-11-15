@@ -4,6 +4,7 @@ import Vector, { IVector } from "../../geometry/Vector";
 import * as PubSub from "../../utils/pubSub";
 import {
   add,
+  applyForces,
   subtract,
   multiply,
   normalize,
@@ -21,6 +22,9 @@ export interface IBoid {
 interface IState {
   location: IVector;
   velocity: IVector;
+  friction: IVector;
+  targetVector: IVector;
+  normTargetVector: IVector;
   showTargetVector: boolean;
   showNormalizedTargetVector: boolean;
   showAwarenessArea: boolean;
@@ -37,16 +41,14 @@ interface IOptions {
 
 // Setup
 // *: Temporarily using the mouse as the common boid target
-let mouseX: number;
-let mouseY: number;
+const mouseVector = new Vector(window.innerWidth / 2, window.innerHeight / 2);
 
 const onMouseUpdate = (e: MouseEvent) => {
-  mouseX = e.pageX;
-  mouseY = e.pageY;
+  mouseVector.x = e.pageX;
+  mouseVector.y = e.pageY;
 };
 
-document.addEventListener("mousemove", onMouseUpdate, false);
-document.addEventListener("mouseenter", onMouseUpdate, false);
+document.addEventListener("mousemove", onMouseUpdate);
 
 // Setup
 class Boid implements IBoid {
@@ -56,6 +58,7 @@ class Boid implements IBoid {
   private color: string;
   private maxSpeed: number;
   private accelerationFactor: number;
+  private frictionFactor: number;
   public state: IState;
 
   constructor(options: IOptions) {
@@ -70,6 +73,9 @@ class Boid implements IBoid {
     // Acceleration is inverse proportional to weight (size)
     this.accelerationFactor = appConfig.boids.maxSize / this.size / 5;
 
+    // Friction is directly proportional to weight (size)
+    this.frictionFactor = this.size / appConfig.boids.maxSize / 15;
+
     // TODO: Get initial values from GUI
     this.state = {
       showTargetVector: true,
@@ -77,6 +83,9 @@ class Boid implements IBoid {
       showAwarenessArea: true,
       location: new Vector(options.x, options.y),
       velocity: new Vector(0, 0),
+      friction: new Vector(0, 0),
+      targetVector: new Vector(0, 0),
+      normTargetVector: new Vector(0, 0),
     };
   }
 
@@ -100,30 +109,34 @@ class Boid implements IBoid {
   }
 
   public render() {
-    const mouseVector = new Vector(mouseX, mouseY);
-    const targetVector = subtract(mouseVector, this.state.location);
-    const normTargetVector = normalize(targetVector);
-
-    this.update(normTargetVector);
-    this.draw(normTargetVector);
+    this.update();
+    this.draw();
   }
 
-  private update(normTargetVector: IVector) {
-    if (!mouseX || !mouseY) {
-      return;
-    }
+  private update() {
+    this.state.targetVector = subtract(mouseVector, this.state.location);
+    this.state.normTargetVector = normalize(this.state.targetVector);
 
     // TODO: Add attract GUI option
-    const acceleration = multiply(normTargetVector, this.accelerationFactor);
+    // Set up forces
+    const acceleration = multiply(
+      this.state.normTargetVector,
+      this.accelerationFactor
+    );
 
-    // Get the total velocity by adding acceleration
-    const velocity = add(this.state.velocity, acceleration);
+    const frictionDirection = multiply(this.state.normTargetVector, -1);
+    const friction = multiply(frictionDirection, this.frictionFactor);
+
+    const forces = [acceleration, friction];
+
+    // Compound all external forces with the original vector
+    const velocity = applyForces(this.state.velocity, forces);
 
     this.state.velocity = limitXY(velocity, this.maxSpeed);
     this.state.location = add(this.state.location, this.state.velocity);
   }
 
-  private draw(normTargetVector: IVector) {
+  private draw() {
     this.drawShape();
 
     if (this.state.showTargetVector) {
@@ -131,7 +144,7 @@ class Boid implements IBoid {
     }
 
     if (this.state.showNormalizedTargetVector) {
-      this.drawDirectionVector(normTargetVector);
+      this.drawDirectionVector();
     }
 
     if (this.state.showAwarenessArea) {
@@ -162,14 +175,17 @@ class Boid implements IBoid {
     this.ctx.beginPath();
     this.ctx.moveTo(this.state.location.x, this.state.location.y);
     this.ctx.lineWidth = 1;
-    this.ctx.lineTo(mouseX, mouseY);
+    this.ctx.lineTo(mouseVector.x, mouseVector.y);
     this.ctx.strokeStyle = "black";
     this.ctx.stroke();
   }
 
   // Draw normalized direction vector
-  private drawDirectionVector(normTargetVector: IVector) {
-    const normalizedDirectionVector = multiply(normTargetVector, this.size);
+  private drawDirectionVector() {
+    const normalizedDirectionVector = multiply(
+      this.state.normTargetVector,
+      this.size
+    );
 
     this.ctx.beginPath();
     this.ctx.moveTo(this.state.location.x, this.state.location.y);

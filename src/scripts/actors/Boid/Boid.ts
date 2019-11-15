@@ -12,6 +12,7 @@ import {
 } from "../../utils/vectorHelpers";
 
 // Config
+import { config } from "./config";
 import { config as appConfig } from "../../config";
 
 export interface IBoid {
@@ -125,7 +126,11 @@ class Boid implements IBoid {
 
     // Assign a force that allows only a certain amount of maneuverability
     const steerVector = subtract(desired, this.state.velocity);
-    const steer = limitXY(steerVector, 0.1, 0.1);
+    const steer = limitXY(
+      steerVector,
+      config.maxSteeringForce,
+      config.maxSteeringForce
+    );
 
     // Assign a friction-like force that pushes back against the current direction
     const normVelocity = normalize(this.state.velocity);
@@ -188,7 +193,7 @@ class Boid implements IBoid {
     this.ctx.moveTo(this.state.location.x, this.state.location.y);
     this.ctx.lineWidth = 1;
     this.ctx.lineTo(mouseVector.x, mouseVector.y);
-    this.ctx.strokeStyle = "black";
+    this.ctx.strokeStyle = config.targetVector.color;
     this.ctx.stroke();
   }
 
@@ -206,7 +211,7 @@ class Boid implements IBoid {
       this.state.location.x + normalizedDirectionVector.x,
       this.state.location.y + normalizedDirectionVector.y
     );
-    this.ctx.strokeStyle = "red";
+    this.ctx.strokeStyle = config.directionVector.color;
     this.ctx.stroke();
   }
 

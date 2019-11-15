@@ -132,7 +132,7 @@ class Boid implements IBoid {
     // Compound all external forces with the original vector
     const velocity = applyForces(this.state.velocity, forces);
 
-    this.state.velocity = limitXY(velocity, this.maxSpeed);
+    this.state.velocity = limitXY(velocity, this.maxSpeed, this.maxSpeed);
     this.state.location = add(this.state.location, this.state.velocity);
   }
 

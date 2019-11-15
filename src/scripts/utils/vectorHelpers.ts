@@ -47,9 +47,9 @@ export const normalize = (v: IVector) => {
 };
 
 // Return a new vector where the X and Y are limited by an absolute number
-export const limitXY = (vector: IVector, limit: number) => {
-  const x = limitNumber(vector.x, limit);
-  const y = limitNumber(vector.y, limit);
+export const limitXY = (vector: IVector, xLimit: number, yLimit: number) => {
+  const x = limitNumber(vector.x, xLimit);
+  const y = limitNumber(vector.y, yLimit);
 
   return new Vector(x, y);
 };

@@ -8,7 +8,7 @@ interface IState {
 
 export interface ICanvas {
   init: () => void;
-  draw: () => void;
+  render: () => void;
   handleResize: () => void;
   update: (args: IState) => void;
 }
@@ -39,7 +39,11 @@ class Canvas implements ICanvas {
     this.state = { ...this.state, ...args };
   }
 
-  public draw() {
+  public render() {
+    this.draw();
+  }
+
+  private draw() {
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     this.ctx.fillStyle = this.state.fill;
     this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);

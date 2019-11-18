@@ -6,6 +6,7 @@ import * as PubSub from "../utils/pubSub";
 const defaults = {
   showTargetVector: true,
   showNormalizedTargetVector: true,
+  showAwarenessArea: true,
 };
 
 class GUI {
@@ -22,6 +23,7 @@ class GUI {
       defaults,
       "showNormalizedTargetVector"
     );
+    const awarenessAreaController = gui.add(defaults, "showAwarenessArea");
 
     targetVectorController.onChange((value: boolean) => {
       PubSub.publish("gui:showTargetVector", value);
@@ -29,6 +31,10 @@ class GUI {
 
     normalizedVectorController.onChange((value: boolean) => {
       PubSub.publish("gui:showNormalizedTargetVector", value);
+    });
+
+    awarenessAreaController.onChange((value: boolean) => {
+      PubSub.publish("gui:showAwarenessArea", value);
     });
   }
 }

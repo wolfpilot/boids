@@ -19,6 +19,7 @@ export const config = {
     count: 20,
     minSize: 30,
     maxSize: 60,
+    awarenessFactor: 10,
     colors: COLORS,
   },
 };

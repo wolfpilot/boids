@@ -16,6 +16,8 @@ import {
 import { config } from "./config";
 import { config as appConfig } from "../../config";
 
+type IBehaviourType = "seek";
+
 export interface IBoid {
   init: () => void;
   render: () => void;
@@ -61,6 +63,7 @@ class Boid implements IBoid {
   private color: string;
   private maxSpeed: number;
   private frictionFactor: number;
+  private behaviours: IBehaviourType[];
   public state: IState;
 
   constructor(options: IOptions) {
@@ -74,6 +77,9 @@ class Boid implements IBoid {
 
     // Friction is directly proportional to weight (size)
     this.frictionFactor = this.size / appConfig.boids.maxSize / 15;
+
+    // Set up all available behaviours
+    this.behaviours = ["seek"];
 
     // TODO: Get initial values from GUI
     this.state = {
@@ -116,14 +122,41 @@ class Boid implements IBoid {
     this.state.acceleration = multiply(this.state.acceleration, 0);
   }
 
+  private seek(target: IVector) {
+    const targetVector = subtract(target, this.state.location);
+    const normTargetVector = normalize(targetVector);
+
+    // TODO: Add attract GUI option
+    // Assume that the actor will desire to head towards its target at max speed
+    const desired = multiply(normTargetVector, this.maxSpeed);
+
+    // Assign a force that allows only a certain amount of maneuverability
+    const seekVector = subtract(desired, this.state.velocity);
+    const seek = limitXY(
+      seekVector,
+      config.maxSteeringForce,
+      config.maxSteeringForce
+    );
+
+    return seek;
+  }
+
+  private getComputedSteering(): IVector {
+    // Accumulator vector
+    let steer = new Vector(0, 0);
+
+    if (this.behaviours.includes("seek")) {
+      const vec = this.seek(mouseVector);
+
+      steer = add(steer, vec);
+    }
+
+    return steer;
+  }
+
   private update() {
     this.state.targetVector = subtract(mouseVector, this.state.location);
     this.state.normTargetVector = normalize(this.state.targetVector);
-
-    // TODO: Add attract GUI option
-    /** Set up forces */
-    // Assume that the actor will desire to head towards its target at max speed
-    const desired = multiply(this.state.normTargetVector, this.maxSpeed);
 
     // Calculate a stopping distance from the target
     // This prevents the boid spazzing out by always reaching and then overshooting its target
@@ -133,13 +166,7 @@ class Boid implements IBoid {
       return;
     }
 
-    // Assign a force that allows only a certain amount of maneuverability
-    const steerVector = subtract(desired, this.state.velocity);
-    const steer = limitXY(
-      steerVector,
-      config.maxSteeringForce,
-      config.maxSteeringForce
-    );
+    const steer = this.getComputedSteering();
 
     // Assign a friction-like force that pushes back against the current direction
     const normVelocity = normalize(this.state.velocity);
@@ -159,6 +186,7 @@ class Boid implements IBoid {
       this.maxSpeed,
       this.maxSpeed
     );
+
     this.state.location = add(this.state.location, this.state.velocity);
   }
 

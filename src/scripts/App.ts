@@ -2,6 +2,7 @@ import Canvas, { ICanvas } from "./actors/Canvas/Canvas";
 import Boid, { IBoid } from "./actors/Boid/Boid";
 
 // Utils
+import { Store } from "./Store";
 import { getRandomNumber } from "./utils/MathHelpers";
 
 // Interface
@@ -10,37 +11,36 @@ import GUI from "./interface/GUI";
 // Config
 import { config } from "./config";
 
-interface IState {
+interface IAppStoreState extends Store {
   isRunning: boolean;
+  boids: IBoid[];
 }
 
-interface IApp {
-  state: IState;
+interface IStore extends Store {
+  state: IAppStoreState;
 }
 
 // Setup
-let startTimestamp: number;
-
 const initialState = {
   isRunning: true,
 };
 
-// Setup
-class App implements IApp {
-  public state = {
-    ...initialState,
-  };
+let startTimestamp: number;
 
+// Create a new store
+export const store = new Store() as IStore;
+
+store.setState(initialState);
+
+// Setup
+class App {
   public canvasEl: HTMLCanvasElement;
   public ctx: CanvasRenderingContext2D;
   private canvas: ICanvas | any;
-  private boids: IBoid[];
 
   constructor() {
     this.canvasEl = <HTMLCanvasElement>document.getElementById("canvas");
     this.ctx = this.canvasEl.getContext("2d")!;
-
-    this.boids = [];
   }
 
   public init() {
@@ -58,7 +58,7 @@ class App implements IApp {
     gui.init();
     this.canvas.init();
 
-    this.boids = [...new Array(config.boids.count)].map(() => {
+    const boids = [...new Array(config.boids.count)].map(() => {
       const size = getRandomNumber(config.boids.minSize, config.boids.maxSize);
 
       const options = {
@@ -76,13 +76,17 @@ class App implements IApp {
       return new Boid(options);
     });
 
-    this.boids.forEach((boid: IBoid) => boid.init());
+    store.setState({
+      boids,
+    });
+
+    store.state.boids.forEach((boid: IBoid) => boid.init);
 
     requestAnimationFrame(this.tick);
   }
 
   private tick = (timestamp: number) => {
-    if (!this.state.isRunning) {
+    if (!store.state.isRunning) {
       return;
     }
 
@@ -99,8 +103,8 @@ class App implements IApp {
       this.canvas.render();
     }
 
-    if (this.boids && this.boids.length) {
-      this.boids.forEach((boid: IBoid) => boid.render());
+    if (store.state.boids && store.state.boids.length) {
+      store.state.boids.forEach((boid: IBoid) => boid.render());
     }
 
     requestAnimationFrame(newTimestamp => this.tick(newTimestamp));

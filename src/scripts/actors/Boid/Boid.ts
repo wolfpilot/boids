@@ -18,7 +18,7 @@ import { store } from "../../App";
 import { config } from "./config";
 import { config as appConfig } from "../../config";
 
-type IBehaviourType = "seek" | "align";
+type IBehaviourType = "seek" | "align" | "separate";
 
 export interface IBoid {
   init: (boids: IBoid[]) => void;
@@ -72,6 +72,7 @@ class Boid implements IBoid {
 
   constructor(options: IOptions) {
     this.ctx = options.ctx;
+
     this.size = options.size;
     this.awarenessAreaSize = options.awarenessAreaSize;
     this.color = options.color;
@@ -83,7 +84,7 @@ class Boid implements IBoid {
     this.frictionFactor = this.size / appConfig.boids.maxSize / 15;
 
     // Set up all available behaviours
-    this.behaviours = ["seek", "align"];
+    this.behaviours = ["seek", "align", "separate"];
 
     // TODO: Get initial values from GUI
     this.state = {
@@ -124,6 +125,49 @@ class Boid implements IBoid {
 
     // Reset acceleration
     this.state.acceleration = multiply(this.state.acceleration, 0);
+  }
+
+  // Keep a distance from neighbouring boids
+  private separate() {
+    let separate = new Vector(0, 0);
+
+    const neighbours = store.state.boids.filter((boid: IBoid) => {
+      // Skip the current boid
+      if (boid === this) {
+        return;
+      }
+
+      const separationArea =
+        this.size + boid.size + this.awarenessAreaSize / 10;
+
+      const nLocation = subtract(boid.state.location, this.state.location);
+      const nDistance = mag(nLocation);
+
+      if (nDistance > 0 && nDistance < separationArea) {
+        return boid;
+      }
+    });
+
+    // Check if any neighbors are found within the acceptable vicinity
+    if (neighbours.length === 0) {
+      return separate;
+    }
+
+    // Calculate the forces necessary to separate this from other boids
+    neighbours.forEach((boid: IBoid) => {
+      let desired = subtract(this.state.location, boid.state.location);
+
+      // Compute directional unit vector
+      desired = normalize(desired);
+
+      // Scale force proportionally to distance & radius
+      desired = multiply(desired, this.maxSpeed);
+      // desired.scale utils.map distSq, radiiSq, 0, 0, agent.maxSpeed
+
+      separate = add(separate, desired);
+    });
+
+    return separate;
   }
 
   // Find the average steering vector that will align with the rest of the "pack"
@@ -193,6 +237,12 @@ class Boid implements IBoid {
 
     if (this.behaviours.includes("align")) {
       const vec = this.align();
+
+      steer = add(steer, vec);
+    }
+
+    if (this.behaviours.includes("separate")) {
+      const vec = this.separate();
 
       steer = add(steer, vec);
     }

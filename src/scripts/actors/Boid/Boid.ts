@@ -21,7 +21,7 @@ import { config as appConfig } from "../../config";
 type IBehaviourType = "seek" | "align" | "separate";
 
 export interface IBoid {
-  init: (boids: IBoid[]) => void;
+  init: () => void;
   render: () => void;
   size: number;
   state: IState;
@@ -37,6 +37,7 @@ interface IState {
   showTargetVector: boolean;
   showNormalizedTargetVector: boolean;
   showAwarenessArea: boolean;
+  showSeparationArea: boolean;
 }
 
 interface IOptions {
@@ -63,6 +64,7 @@ document.addEventListener("mousemove", onMouseUpdate);
 class Boid implements IBoid {
   private ctx: CanvasRenderingContext2D;
   private awarenessAreaSize: number;
+  private separationAreaSize: number;
   private color: string;
   private maxSpeed: number;
   private frictionFactor: number;
@@ -75,6 +77,7 @@ class Boid implements IBoid {
 
     this.size = options.size;
     this.awarenessAreaSize = options.awarenessAreaSize;
+    this.separationAreaSize = this.size + this.awarenessAreaSize / 10;
     this.color = options.color;
 
     // Set a max speed directly proportional to the weight (size)
@@ -91,6 +94,7 @@ class Boid implements IBoid {
       showTargetVector: true,
       showNormalizedTargetVector: true,
       showAwarenessArea: true,
+      showSeparationArea: true,
       location: new Vector(options.x, options.y),
       acceleration: new Vector(0, 0),
       velocity: new Vector(0, 0),
@@ -98,6 +102,9 @@ class Boid implements IBoid {
       targetVector: new Vector(0, 0),
       normTargetVector: new Vector(0, 0),
     };
+
+    // Bind public functions
+    this.init = this.init.bind(this);
   }
 
   public init() {
@@ -116,6 +123,10 @@ class Boid implements IBoid {
     PubSub.subscribe(
       "gui:showAwarenessArea",
       (val: boolean) => (this.state.showAwarenessArea = val)
+    );
+    PubSub.subscribe(
+      "gui:showSeparationArea",
+      (val: boolean) => (this.state.showSeparationArea = val)
     );
   }
 
@@ -137,13 +148,10 @@ class Boid implements IBoid {
         return;
       }
 
-      const separationArea =
-        this.size + boid.size + this.awarenessAreaSize / 10;
-
       const nLocation = subtract(boid.state.location, this.state.location);
       const nDistance = mag(nLocation);
 
-      if (nDistance > 0 && nDistance < separationArea) {
+      if (nDistance > 0 && nDistance < this.separationAreaSize + boid.size) {
         return boid;
       }
     });
@@ -301,6 +309,10 @@ class Boid implements IBoid {
     if (this.state.showAwarenessArea) {
       this.drawAwarenessArea();
     }
+
+    if (this.state.showSeparationArea) {
+      this.drawSeparationArea();
+    }
   }
 
   // Draw the shape
@@ -362,6 +374,29 @@ class Boid implements IBoid {
     this.ctx.lineWidth = 1;
     this.ctx.strokeStyle = this.color;
     this.ctx.stroke();
+  }
+
+  // Draw area in which the boid wants to push itself away from others
+  private drawSeparationArea() {
+    this.ctx.save();
+    this.ctx.globalAlpha = 0.25;
+
+    this.ctx.beginPath();
+    this.ctx.moveTo(
+      this.state.location.x - this.size / 2,
+      this.state.location.y - this.size / 2
+    );
+    this.ctx.arc(
+      this.state.location.x,
+      this.state.location.y,
+      this.separationAreaSize,
+      0,
+      2 * Math.PI
+    );
+    this.ctx.fillStyle = this.color;
+    this.ctx.fill();
+
+    this.ctx.restore();
   }
 }
 

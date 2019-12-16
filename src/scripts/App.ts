@@ -80,7 +80,7 @@ class App {
       boids,
     });
 
-    store.state.boids.forEach((boid: IBoid) => boid.init);
+    store.state.boids.forEach((boid: IBoid) => boid.init());
 
     requestAnimationFrame(this.tick);
   }

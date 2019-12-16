@@ -7,20 +7,24 @@ import {
   applyForces,
   subtract,
   multiply,
+  divide,
   mag,
   normalize,
   limitMagnitude,
 } from "../../utils/vectorHelpers";
 
 // Config
+import { store } from "../../App";
 import { config } from "./config";
 import { config as appConfig } from "../../config";
 
-type IBehaviourType = "seek";
+type IBehaviourType = "seek" | "align";
 
 export interface IBoid {
-  init: () => void;
+  init: (boids: IBoid[]) => void;
   render: () => void;
+  size: number;
+  state: IState;
 }
 
 interface IState {
@@ -58,12 +62,12 @@ document.addEventListener("mousemove", onMouseUpdate);
 // Setup
 class Boid implements IBoid {
   private ctx: CanvasRenderingContext2D;
-  private size: number;
   private awarenessAreaSize: number;
   private color: string;
   private maxSpeed: number;
   private frictionFactor: number;
   private behaviours: IBehaviourType[];
+  public size: number;
   public state: IState;
 
   constructor(options: IOptions) {
@@ -79,7 +83,7 @@ class Boid implements IBoid {
     this.frictionFactor = this.size / appConfig.boids.maxSize / 15;
 
     // Set up all available behaviours
-    this.behaviours = ["seek"];
+    this.behaviours = ["seek", "align"];
 
     // TODO: Get initial values from GUI
     this.state = {
@@ -122,13 +126,53 @@ class Boid implements IBoid {
     this.state.acceleration = multiply(this.state.acceleration, 0);
   }
 
+  // Find the average steering vector that will align with the rest of the "pack"
+  private align() {
+    let align = new Vector(0, 0);
+
+    const neighbours = store.state.boids.filter((boid: IBoid) => {
+      // Skip the current boid
+      if (boid === this) {
+        return;
+      }
+
+      // Get a vector to the neighbour's position
+      const nLocation = subtract(boid.state.location, this.state.location);
+
+      // Calculate the vector's length
+      const nDistance = mag(nLocation);
+
+      if (nDistance > 0 && nDistance < this.awarenessAreaSize) {
+        return boid;
+      }
+    });
+
+    // Check if any neighbors are found within the acceptable vicinity
+    if (neighbours.length === 0) {
+      return align;
+    }
+
+    // Calculate the overall group direction
+    const groupVelocity = neighbours
+      .map((boid: IBoid) => boid.state.velocity)
+      .reduce((acc, val) => add(acc, val));
+
+    const normGroupVelocity = normalize(groupVelocity);
+    const averageVelocity = divide(normGroupVelocity, neighbours.length);
+
+    align = subtract(averageVelocity, this.state.velocity);
+    align = multiply(align, config.alignmentFactor);
+
+    return align;
+  }
+
   private seek(target: IVector) {
-    const targetVector = subtract(target, this.state.location);
-    const normTargetVector = normalize(targetVector);
+    const targetLocation = subtract(target, this.state.location);
+    const normTargetDirection = normalize(targetLocation);
 
     // TODO: Add attract GUI option
     // Assume that the actor will desire to head towards its target at max speed
-    const desired = multiply(normTargetVector, this.maxSpeed);
+    const desired = multiply(normTargetDirection, this.maxSpeed);
 
     // Assign a force that allows only a certain amount of maneuverability
     const seekVector = subtract(desired, this.state.velocity);
@@ -147,6 +191,12 @@ class Boid implements IBoid {
       steer = add(steer, vec);
     }
 
+    if (this.behaviours.includes("align")) {
+      const vec = this.align();
+
+      steer = add(steer, vec);
+    }
+
     return steer;
   }
 
@@ -156,9 +206,14 @@ class Boid implements IBoid {
 
     // Calculate a stopping distance from the target
     // This prevents the boid spazzing out by always reaching and then overshooting its target
-    const dxTarget = mag(this.state.targetVector);
+    const distanceFromTarget = mag(this.state.targetVector);
 
-    if (dxTarget < config.stopThreshold) {
+    if (
+      distanceFromTarget < config.stopThreshold &&
+      mag(this.state.velocity) < 0.1
+    ) {
+      this.state.velocity = new Vector(0, 0);
+
       return;
     }
 

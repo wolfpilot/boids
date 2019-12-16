@@ -9,7 +9,7 @@ import {
   multiply,
   mag,
   normalize,
-  limitXY,
+  limitMagnitude,
 } from "../../utils/vectorHelpers";
 
 // Config
@@ -132,11 +132,7 @@ class Boid implements IBoid {
 
     // Assign a force that allows only a certain amount of maneuverability
     const seekVector = subtract(desired, this.state.velocity);
-    const seek = limitXY(
-      seekVector,
-      config.maxSteeringForce,
-      config.maxSteeringForce
-    );
+    const seek = limitMagnitude(seekVector, config.maxSteeringForce);
 
     return seek;
   }
@@ -181,11 +177,7 @@ class Boid implements IBoid {
     this.state.acceleration = applyForces(this.state.acceleration, forces);
 
     this.state.velocity = add(this.state.velocity, this.state.acceleration);
-    this.state.velocity = limitXY(
-      this.state.velocity,
-      this.maxSpeed,
-      this.maxSpeed
-    );
+    this.state.velocity = limitMagnitude(this.state.velocity, this.maxSpeed);
 
     this.state.location = add(this.state.location, this.state.velocity);
   }

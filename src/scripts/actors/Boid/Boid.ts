@@ -7,18 +7,16 @@ import {
   applyForces,
   subtract,
   multiply,
-  divide,
   mag,
   normalize,
   limitMagnitude,
 } from "../../utils/vectorHelpers";
+import { IBehaviourType, seek, align, separate } from "../../behaviours/index";
 
 // Config
 import { store } from "../../App";
 import { config } from "./config";
 import { config as appConfig } from "../../config";
-
-type IBehaviourType = "seek" | "align" | "separate";
 
 export interface IBoid {
   init: () => void;
@@ -138,119 +136,43 @@ class Boid implements IBoid {
     this.state.acceleration = multiply(this.state.acceleration, 0);
   }
 
-  // Keep a distance from neighbouring boids
-  private separate() {
-    let separate = new Vector(0, 0);
-
-    const neighbours = store.state.boids.filter((boid: IBoid) => {
-      // Skip the current boid
-      if (boid === this) {
-        return;
-      }
-
-      const nLocation = subtract(boid.state.location, this.state.location);
-      const nDistance = mag(nLocation);
-
-      if (nDistance > 0 && nDistance < this.separationAreaSize + boid.size) {
-        return boid;
-      }
-    });
-
-    // Check if any neighbors are found within the acceptable vicinity
-    if (neighbours.length === 0) {
-      return separate;
-    }
-
-    // Calculate the forces necessary to separate this from other boids
-    neighbours.forEach((boid: IBoid) => {
-      let desired = subtract(this.state.location, boid.state.location);
-
-      // Compute directional unit vector
-      desired = normalize(desired);
-
-      // Scale force proportionally to distance & radius
-      desired = multiply(desired, this.maxSpeed);
-      // desired.scale utils.map distSq, radiiSq, 0, 0, agent.maxSpeed
-
-      separate = add(separate, desired);
-    });
-
-    return separate;
-  }
-
-  // Find the average steering vector that will align with the rest of the "pack"
-  private align() {
-    let align = new Vector(0, 0);
-
-    const neighbours = store.state.boids.filter((boid: IBoid) => {
-      // Skip the current boid
-      if (boid === this) {
-        return;
-      }
-
-      // Get a vector to the neighbour's position
-      const nLocation = subtract(boid.state.location, this.state.location);
-
-      // Calculate the vector's length
-      const nDistance = mag(nLocation);
-
-      if (nDistance > 0 && nDistance < this.awarenessAreaSize) {
-        return boid;
-      }
-    });
-
-    // Check if any neighbors are found within the acceptable vicinity
-    if (neighbours.length === 0) {
-      return align;
-    }
-
-    // Calculate the overall group direction
-    const groupVelocity = neighbours
-      .map((boid: IBoid) => boid.state.velocity)
-      .reduce((acc, val) => add(acc, val));
-
-    const normGroupVelocity = normalize(groupVelocity);
-    const averageVelocity = divide(normGroupVelocity, neighbours.length);
-
-    align = subtract(averageVelocity, this.state.velocity);
-    align = multiply(align, config.alignmentFactor);
-
-    return align;
-  }
-
-  private seek(target: IVector) {
-    const targetLocation = subtract(target, this.state.location);
-    const normTargetDirection = normalize(targetLocation);
-
-    // TODO: Add attract GUI option
-    // Assume that the actor will desire to head towards its target at max speed
-    const desired = multiply(normTargetDirection, this.maxSpeed);
-
-    // Assign a force that allows only a certain amount of maneuverability
-    const seekVector = subtract(desired, this.state.velocity);
-    const seek = limitMagnitude(seekVector, config.maxSteeringForce);
-
-    return seek;
-  }
-
   private getComputedSteering(): IVector {
     // Accumulator vector
     let steer = new Vector(0, 0);
+    const otherBoids = store.state.boids.filter((boid: IBoid) => boid !== this);
 
     if (this.behaviours.includes("seek")) {
-      const vec = this.seek(mouseVector);
+      const options = {
+        target: mouseVector,
+        source: this,
+        maxSteeringForce: config.maxSteeringForce,
+        maxSpeed: this.maxSpeed,
+      };
+      const vec = seek(options);
 
       steer = add(steer, vec);
     }
 
     if (this.behaviours.includes("align")) {
-      const vec = this.align();
+      const options = {
+        boids: otherBoids,
+        source: this,
+        awarenessAreaSize: this.awarenessAreaSize,
+        alignmentFactor: config.alignmentFactor,
+      };
+      const vec = align(options);
 
       steer = add(steer, vec);
     }
 
     if (this.behaviours.includes("separate")) {
-      const vec = this.separate();
+      const options = {
+        boids: otherBoids,
+        source: this,
+        separationAreaSize: this.separationAreaSize,
+        maxSpeed: this.maxSpeed,
+      };
+      const vec = separate(options);
 
       steer = add(steer, vec);
     }

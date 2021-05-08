@@ -1,18 +1,39 @@
 {
-  "compileOnSave": false,
   "compilerOptions": {
+    "target": "es6",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "lib": [
+      "dom",
+      "esnext",
+      "dom.iterable",
+      "scripthost"
+    ],
+    "baseUrl": "./",
+    "outDir": "./dist/",
     "strict": true,
-    "allowJs": true,
-    "target": "esnext",
-    "module": "esnext",
+    "sourceMap": true,
+    "skipLibCheck": true,
     "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": true,
+    "noFallthroughCasesInSwitch": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
     "noImplicitAny": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
+    "removeComments": false,
     "preserveConstEnums": true,
-    "skipLibCheck": true,
-    "lib": ["es2017", "es2015", "dom"]
   },
-  "include": ["typings", "./src/**/*"],
-  "exclude": [".cache", "public", "node_modules"]
+  "exclude": [
+    ".cache",
+    "node_modules",
+    "**/*.spec.ts"
+  ],
+  "include": [
+    "typings/**/*.d.ts",
+    "src/**/*.ts"
+  ],
+  "compileOnSave": true,
 }

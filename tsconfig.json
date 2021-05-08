@@ -25,6 +25,9 @@
     "noUnusedParameters": true,
     "removeComments": false,
     "preserveConstEnums": true,
+    "paths": {
+      "*": ["typings/*",],
+    }
   },
   "exclude": [
     ".cache",

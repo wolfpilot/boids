@@ -14,16 +14,12 @@
     "lint": "eslint -f stylish \"**/*.ts\""
   },
   "dependencies": {
-    "@babel/runtime": "^7.5.5",
-    "autoprefixer": "^10.2.5",
+    "autoprefixer": "^9.8.6",
     "dat.gui": "^0.7.7",
-    "postcss-modules": "^4.0.0"
+    "postcss": "^8.2.14",
+    "postcss-modules": "^3.2.2"
   },
   "devDependencies": {
-    "@babel/core": "^7.5.5",
-    "@babel/plugin-proposal-class-properties": "^7.5.5",
-    "@babel/plugin-transform-runtime": "^7.5.5",
-    "@babel/preset-env": "^7.5.5",
     "@types/dat.gui": "^0.7.6",
     "@typescript-eslint/eslint-plugin": "^4.22.1",
     "@typescript-eslint/parser": "^4.22.1",

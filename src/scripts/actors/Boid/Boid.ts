@@ -53,7 +53,7 @@ interface IOptions {
 // *: Temporarily using the mouse as the common boid target
 const mouseVector = new Vector(window.innerWidth / 2, window.innerHeight / 2);
 
-const onMouseUpdate = (e: MouseEvent) => {
+const onMouseUpdate = (e: MouseEvent): void => {
   mouseVector.x = e.pageX;
   mouseVector.y = e.pageY;
 };
@@ -107,11 +107,11 @@ class Boid implements IBoid {
     this.init = this.init.bind(this);
   }
 
-  public init() {
+  public init(): void {
     this.bindListeners();
   }
 
-  public bindListeners() {
+  public bindListeners(): void {
     PubSub.subscribe(
       "gui:showTargetVector",
       (val: boolean) => (this.state.showTargetVector = val)
@@ -130,7 +130,7 @@ class Boid implements IBoid {
     );
   }
 
-  public render() {
+  public render(): void {
     this.update();
     this.draw();
 
@@ -184,7 +184,7 @@ class Boid implements IBoid {
     return steer;
   }
 
-  private update() {
+  private update(): void {
     this.state.targetVector = subtract(mouseVector, this.state.location);
     this.state.normTargetVector = normalize(this.state.targetVector);
 
@@ -221,7 +221,7 @@ class Boid implements IBoid {
     this.state.location = add(this.state.location, this.state.velocity);
   }
 
-  private draw() {
+  private draw(): void {
     this.drawShape();
 
     if (this.state.showTargetVector) {
@@ -242,7 +242,7 @@ class Boid implements IBoid {
   }
 
   // Draw the shape
-  private drawShape() {
+  private drawShape(): void {
     this.ctx.beginPath();
     this.ctx.moveTo(
       this.state.location.x - this.size / 2,
@@ -260,7 +260,7 @@ class Boid implements IBoid {
   }
 
   // Draw vector to target
-  private drawTargetVector() {
+  private drawTargetVector(): void {
     this.ctx.beginPath();
     this.ctx.moveTo(this.state.location.x, this.state.location.y);
     this.ctx.lineWidth = 1;
@@ -270,7 +270,7 @@ class Boid implements IBoid {
   }
 
   // Draw normalized direction vector
-  private drawDirectionVector() {
+  private drawDirectionVector(): void {
     const normalizedDirectionVector = multiply(
       this.state.normTargetVector,
       this.size
@@ -288,7 +288,7 @@ class Boid implements IBoid {
   }
 
   // Draw area in which the boid can be affected by external forces
-  private drawAwarenessArea() {
+  private drawAwarenessArea(): void {
     this.ctx.beginPath();
     this.ctx.arc(
       this.state.location.x,
@@ -303,7 +303,7 @@ class Boid implements IBoid {
   }
 
   // Draw area in which the boid wants to push itself away from others
-  private drawSeparationArea() {
+  private drawSeparationArea(): void {
     this.ctx.save();
     this.ctx.globalAlpha = 0.25;
 

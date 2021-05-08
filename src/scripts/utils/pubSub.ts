@@ -11,7 +11,7 @@ interface ITopics {
 let topics: ITopics = {};
 let subID = -1;
 
-export const subscribe = (topic: string, cb: any) => {
+export const subscribe = (topic: string, cb: any): number => {
   subID += 1;
 
   // Create empty topic if key doesn't exist
@@ -27,7 +27,7 @@ export const subscribe = (topic: string, cb: any) => {
   return subID;
 };
 
-export const unsubscribe = (id: number) => {
+export const unsubscribe = (id: number): void => {
   if (!topics) {
     return;
   }
@@ -45,7 +45,7 @@ export const unsubscribe = (id: number) => {
   });
 };
 
-export const publish = (topic: string, args: any) => {
+export const publish = (topic: string, args: any): void => {
   // Exit early if topic doesn't exist
   if (!topics || !topics[topic]) {
     return;

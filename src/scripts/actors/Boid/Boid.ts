@@ -9,16 +9,20 @@ import {
   multiply,
   mag,
   normalize,
-  limitXY,
+  limitMagnitude,
 } from "../../utils/vectorHelpers";
+import { IBehaviourType, seek, align, separate } from "../../behaviours/index";
 
 // Config
+import { store } from "../../App";
 import { config } from "./config";
 import { config as appConfig } from "../../config";
 
 export interface IBoid {
   init: () => void;
   render: () => void;
+  size: number;
+  state: IState;
 }
 
 interface IState {
@@ -31,6 +35,7 @@ interface IState {
   showTargetVector: boolean;
   showNormalizedTargetVector: boolean;
   showAwarenessArea: boolean;
+  showSeparationArea: boolean;
 }
 
 interface IOptions {
@@ -56,17 +61,21 @@ document.addEventListener("mousemove", onMouseUpdate);
 // Setup
 class Boid implements IBoid {
   private ctx: CanvasRenderingContext2D;
-  private size: number;
   private awarenessAreaSize: number;
+  private separationAreaSize: number;
   private color: string;
   private maxSpeed: number;
   private frictionFactor: number;
+  private behaviours: IBehaviourType[];
+  public size: number;
   public state: IState;
 
   constructor(options: IOptions) {
     this.ctx = options.ctx;
+
     this.size = options.size;
     this.awarenessAreaSize = options.awarenessAreaSize;
+    this.separationAreaSize = this.size + this.awarenessAreaSize / 10;
     this.color = options.color;
 
     // Set a max speed directly proportional to the weight (size)
@@ -75,11 +84,15 @@ class Boid implements IBoid {
     // Friction is directly proportional to weight (size)
     this.frictionFactor = this.size / appConfig.boids.maxSize / 15;
 
+    // Set up all available behaviours
+    this.behaviours = ["seek", "align", "separate"];
+
     // TODO: Get initial values from GUI
     this.state = {
       showTargetVector: true,
       showNormalizedTargetVector: true,
       showAwarenessArea: true,
+      showSeparationArea: true,
       location: new Vector(options.x, options.y),
       acceleration: new Vector(0, 0),
       velocity: new Vector(0, 0),
@@ -87,6 +100,9 @@ class Boid implements IBoid {
       targetVector: new Vector(0, 0),
       normTargetVector: new Vector(0, 0),
     };
+
+    // Bind public functions
+    this.init = this.init.bind(this);
   }
 
   public init() {
@@ -106,6 +122,10 @@ class Boid implements IBoid {
       "gui:showAwarenessArea",
       (val: boolean) => (this.state.showAwarenessArea = val)
     );
+    PubSub.subscribe(
+      "gui:showSeparationArea",
+      (val: boolean) => (this.state.showSeparationArea = val)
+    );
   }
 
   public render() {
@@ -116,30 +136,68 @@ class Boid implements IBoid {
     this.state.acceleration = multiply(this.state.acceleration, 0);
   }
 
+  private getComputedSteering(): IVector {
+    // Accumulator vector
+    let steer = new Vector(0, 0);
+    const otherBoids = store.state.boids.filter((boid: IBoid) => boid !== this);
+
+    if (this.behaviours.includes("seek")) {
+      const options = {
+        target: mouseVector,
+        source: this,
+        maxSteeringForce: config.maxSteeringForce,
+        maxSpeed: this.maxSpeed,
+      };
+      const vec = seek(options);
+
+      steer = add(steer, vec);
+    }
+
+    if (this.behaviours.includes("align")) {
+      const options = {
+        boids: otherBoids,
+        source: this,
+        awarenessAreaSize: this.awarenessAreaSize,
+        alignmentFactor: config.alignmentFactor,
+      };
+      const vec = align(options);
+
+      steer = add(steer, vec);
+    }
+
+    if (this.behaviours.includes("separate")) {
+      const options = {
+        boids: otherBoids,
+        source: this,
+        separationAreaSize: this.separationAreaSize,
+        maxSpeed: this.maxSpeed,
+      };
+      const vec = separate(options);
+
+      steer = add(steer, vec);
+    }
+
+    return steer;
+  }
+
   private update() {
     this.state.targetVector = subtract(mouseVector, this.state.location);
     this.state.normTargetVector = normalize(this.state.targetVector);
 
-    // TODO: Add attract GUI option
-    /** Set up forces */
-    // Assume that the actor will desire to head towards its target at max speed
-    const desired = multiply(this.state.normTargetVector, this.maxSpeed);
-
     // Calculate a stopping distance from the target
     // This prevents the boid spazzing out by always reaching and then overshooting its target
-    const dxTarget = mag(this.state.targetVector);
+    const distanceFromTarget = mag(this.state.targetVector);
 
-    if (dxTarget < config.stopThreshold) {
+    if (
+      distanceFromTarget < config.stopThreshold &&
+      mag(this.state.velocity) < 0.1
+    ) {
+      this.state.velocity = new Vector(0, 0);
+
       return;
     }
 
-    // Assign a force that allows only a certain amount of maneuverability
-    const steerVector = subtract(desired, this.state.velocity);
-    const steer = limitXY(
-      steerVector,
-      config.maxSteeringForce,
-      config.maxSteeringForce
-    );
+    const steer = this.getComputedSteering();
 
     // Assign a friction-like force that pushes back against the current direction
     const normVelocity = normalize(this.state.velocity);
@@ -154,11 +212,8 @@ class Boid implements IBoid {
     this.state.acceleration = applyForces(this.state.acceleration, forces);
 
     this.state.velocity = add(this.state.velocity, this.state.acceleration);
-    this.state.velocity = limitXY(
-      this.state.velocity,
-      this.maxSpeed,
-      this.maxSpeed
-    );
+    this.state.velocity = limitMagnitude(this.state.velocity, this.maxSpeed);
+
     this.state.location = add(this.state.location, this.state.velocity);
   }
 
@@ -175,6 +230,10 @@ class Boid implements IBoid {
 
     if (this.state.showAwarenessArea) {
       this.drawAwarenessArea();
+    }
+
+    if (this.state.showSeparationArea) {
+      this.drawSeparationArea();
     }
   }
 
@@ -237,6 +296,29 @@ class Boid implements IBoid {
     this.ctx.lineWidth = 1;
     this.ctx.strokeStyle = this.color;
     this.ctx.stroke();
+  }
+
+  // Draw area in which the boid wants to push itself away from others
+  private drawSeparationArea() {
+    this.ctx.save();
+    this.ctx.globalAlpha = 0.25;
+
+    this.ctx.beginPath();
+    this.ctx.moveTo(
+      this.state.location.x - this.size / 2,
+      this.state.location.y - this.size / 2
+    );
+    this.ctx.arc(
+      this.state.location.x,
+      this.state.location.y,
+      this.separationAreaSize,
+      0,
+      2 * Math.PI
+    );
+    this.ctx.fillStyle = this.color;
+    this.ctx.fill();
+
+    this.ctx.restore();
   }
 }
 

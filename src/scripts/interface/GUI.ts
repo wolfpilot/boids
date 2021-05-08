@@ -7,6 +7,7 @@ const defaults = {
   showTargetVector: true,
   showNormalizedTargetVector: true,
   showAwarenessArea: true,
+  showSeparationArea: true,
 };
 
 class GUI {
@@ -24,6 +25,7 @@ class GUI {
       "showNormalizedTargetVector"
     );
     const awarenessAreaController = gui.add(defaults, "showAwarenessArea");
+    const separationAreaController = gui.add(defaults, "showSeparationArea");
 
     targetVectorController.onChange((value: boolean) => {
       PubSub.publish("gui:showTargetVector", value);
@@ -35,6 +37,10 @@ class GUI {
 
     awarenessAreaController.onChange((value: boolean) => {
       PubSub.publish("gui:showAwarenessArea", value);
+    });
+
+    separationAreaController.onChange((value: boolean) => {
+      PubSub.publish("gui:showSeparationArea", value);
     });
   }
 }

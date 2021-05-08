@@ -1,7 +1,7 @@
 import Vector, { IVector } from "../geometry/Vector";
 
 // Utils
-import { sum, limitNumber } from "./MathHelpers";
+import { sum } from "./MathHelpers";
 
 // Returns a new vector that adds v2 to v1
 export const add = (v1: IVector, v2: IVector) => {
@@ -47,11 +47,14 @@ export const normalize = (v: IVector) => {
 };
 
 // Return a new vector where the X and Y are limited by an absolute number
-export const limitXY = (vector: IVector, xLimit: number, yLimit: number) => {
-  const x = limitNumber(vector.x, xLimit);
-  const y = limitNumber(vector.y, yLimit);
+export const limitMagnitude = (v: IVector, max: number) => {
+  if (mag(v) > max) {
+    const normV = normalize(v);
 
-  return new Vector(x, y);
+    return multiply(normV, max);
+  } else {
+    return v;
+  }
 };
 
 // Return the combination of all forces applied to an initial force vector

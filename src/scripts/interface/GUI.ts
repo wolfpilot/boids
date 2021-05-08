@@ -11,7 +11,7 @@ const defaults = {
 };
 
 class GUI {
-  public init() {
+  public init(): void {
     this.setupGUI();
   }
 

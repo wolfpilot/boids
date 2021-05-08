@@ -1,6 +1,9 @@
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type ICallback<T = any> = (args?: T) => void;
+
 interface ISubscriber {
   id: number;
-  cb: any;
+  cb: ICallback;
 }
 
 interface ITopics {
@@ -8,10 +11,10 @@ interface ITopics {
 }
 
 // Setup
-let topics: ITopics = {};
+const topics: ITopics = {};
 let subID = -1;
 
-export const subscribe = (topic: string, cb: any): number => {
+export const subscribe = (topic: string, cb: ICallback): number => {
   subID += 1;
 
   // Create empty topic if key doesn't exist
@@ -45,7 +48,7 @@ export const unsubscribe = (id: number): void => {
   });
 };
 
-export const publish = (topic: string, args: any): void => {
+export const publish = (topic: string, args: unknown): void => {
   // Exit early if topic doesn't exist
   if (!topics || !topics[topic]) {
     return;

@@ -21,7 +21,7 @@ export const separate = ({
   source,
   separationAreaSize,
   maxSpeed,
-}: IOptions) => {
+}: IOptions): Vector => {
   let separate = new Vector(0, 0);
 
   // Get all other boids that can be found in the designated surrounding area

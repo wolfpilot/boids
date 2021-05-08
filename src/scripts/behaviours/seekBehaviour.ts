@@ -1,3 +1,4 @@
+import Vector from "../geometry/Vector";
 import { IVector } from "../geometry/Vector";
 import { IBoid } from "../actors/Boid/Boid";
 import {
@@ -19,7 +20,7 @@ export const seek = ({
   source,
   maxSteeringForce,
   maxSpeed,
-}: IOptions) => {
+}: IOptions): Vector => {
   const targetLocation = subtract(target, source.state.location);
   const normTargetDirection = normalize(targetLocation);
 

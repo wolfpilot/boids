@@ -22,13 +22,13 @@ class App {
 
   constructor() {
     this.canvasEl = <HTMLCanvasElement>document.getElementById("canvas");
-    this.ctx = this.canvasEl.getContext("2d")!;
+    this.ctx = <CanvasRenderingContext2D>this.canvasEl.getContext("2d");
     this.canvas = new Canvas(this.canvasEl, this.ctx);
 
     this.canvas.init();
   }
 
-  public init() {
+  public init(): void {
     if (!this.ctx) {
       throw new Error("Canvas context could not be initialised.");
     }

@@ -22,7 +22,7 @@ export const align = ({
   source,
   awarenessAreaSize,
   alignmentFactor,
-}: IOptions) => {
+}: IOptions): Vector => {
   let align = new Vector(0, 0);
 
   // Get all other boids that can be found in the designated surrounding area

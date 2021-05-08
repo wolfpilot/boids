@@ -1,7 +1,4 @@
-// Config
-import { config } from "./config";
-
-interface IState {
+export interface IState {
   isEnabled: boolean;
   fill: string;
 }
@@ -14,6 +11,12 @@ export interface ICanvas {
   update: (args: IState) => void;
 }
 
+// Setup
+const initialState: IState = {
+  isEnabled: true,
+  fill: "#fff",
+};
+
 class Canvas implements ICanvas {
   public state: IState;
   private canvas: HTMLCanvasElement;
@@ -24,7 +27,7 @@ class Canvas implements ICanvas {
     this.ctx = ctx;
 
     this.state = {
-      ...config,
+      ...initialState,
     };
   }
 

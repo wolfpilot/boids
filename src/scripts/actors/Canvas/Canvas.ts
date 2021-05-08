@@ -7,6 +7,7 @@ interface IState {
 }
 
 export interface ICanvas {
+  state: IState;
   init: () => void;
   render: () => void;
   handleResize: () => void;
@@ -14,7 +15,7 @@ export interface ICanvas {
 }
 
 class Canvas implements ICanvas {
-  private state: IState;
+  public state: IState;
   private canvas: HTMLCanvasElement;
   private ctx: CanvasRenderingContext2D;
 

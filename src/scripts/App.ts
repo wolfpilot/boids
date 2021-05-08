@@ -18,27 +18,27 @@ let startTimestamp: number;
 class App {
   public canvasEl: HTMLCanvasElement;
   public ctx: CanvasRenderingContext2D;
-  private canvas: ICanvas | any;
+  private canvas: ICanvas;
 
   constructor() {
     this.canvasEl = <HTMLCanvasElement>document.getElementById("canvas");
     this.ctx = this.canvasEl.getContext("2d")!;
+    this.canvas = new Canvas(this.canvasEl, this.ctx);
+
+    this.canvas.init();
   }
 
   public init() {
-    const wWidth = window.innerWidth;
-    const wHeight = window.innerHeight;
-
     if (!this.ctx) {
       throw new Error("Canvas context could not be initialised.");
     }
 
-    // Setup instances
+    const wWidth = window.innerWidth;
+    const wHeight = window.innerHeight;
+
     const gui = new GUI();
-    this.canvas = new Canvas(this.canvasEl, this.ctx);
 
     gui.init();
-    this.canvas.init();
 
     const boids = [...new Array(config.boids.count)].map(() => {
       const size = getRandomNumber(config.boids.minSize, config.boids.maxSize);

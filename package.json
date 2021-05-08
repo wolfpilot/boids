@@ -2,32 +2,43 @@
   "name": "boids",
   "description": "JS Canvas experiment with boids.",
   "version": "0.0.0",
-  "main": "./src/index.js",
+  "private": true,
+  "main": "src/index.js",
   "author": "Razvan Negrea <howl@wolfpilot.co> (www.wolfpilot.co)",
   "license": "MIT",
   "scripts": {
-    "dev": "parcel ./src/index.html",
-    "start": "yarn dev",
+    "prepare": "husky install",
+    "start": "parcel ./src/index.html",
     "prebuild": "rm -rf dist",
-    "build": "tsc --noEmit && parcel build ./src/index.html --target node --no-source-maps --public-url='/boids'"
-  },
-  "devDependencies": {
-    "@babel/core": "^7.5.5",
-    "@babel/plugin-proposal-class-properties": "^7.5.5",
-    "@babel/plugin-transform-runtime": "^7.5.5",
-    "@babel/preset-env": "^7.5.5",
-    "@types/dat.gui": "^0.7.5",
-    "parcel-bundler": "^1.12.3",
-    "prettier": "^1.18.2",
-    "tslint": "^5.18.0",
-    "tslint-config-prettier": "^1.18.0",
-    "tslint-plugin-prettier": "^2.0.1",
-    "typescript": "^3.5.3"
+    "build:parcel": "parcel build ./src/index.html --target node --no-source-maps --public-url='/boids'",
+    "build": "yarn clean && yarn validate && yarn build:parcel",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "format": "prettier 'src/**/*.ts' --write",
+    "validate": "tsc --noEmit",
+    "lint": "eslint -f stylish \"**/*.ts\""
   },
   "dependencies": {
-    "@babel/runtime": "^7.5.5",
-    "autoprefixer": "^9.6.1",
-    "dat.gui": "^0.7.6",
-    "postcss-modules": "^1.4.1"
+    "autoprefixer": "^9.8.6",
+    "dat.gui": "^0.7.7",
+    "postcss": "^8.2.14",
+    "postcss-modules": "^3.2.2",
+    "ts-node": "^9.1.1"
+  },
+  "devDependencies": {
+    "@types/dat.gui": "^0.7.6",
+    "@types/jest": "^26.0.23",
+    "@typescript-eslint/eslint-plugin": "^4.22.1",
+    "@typescript-eslint/parser": "^4.22.1",
+    "eslint": "^7.26.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-prettier": "^3.4.0",
+    "husky": "^6.0.0",
+    "jest": "^26.6.3",
+    "parcel-bundler": "^1.12.5",
+    "prettier": "^2.2.1",
+    "ts-jest": "^26.5.6",
+    "typescript": "^4.2.4"
   }
 }

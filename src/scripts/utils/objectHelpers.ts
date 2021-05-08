@@ -1,2 +1,2 @@
-export const isObject = (arg: any) =>
-  arg !== null && typeof arg === "object" && Array.isArray(arg) === false;
+export const isObject = (arg: unknown): boolean =>
+  arg !== null && typeof arg === "object" && Array.isArray(arg) === false

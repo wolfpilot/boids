@@ -10,7 +10,7 @@
       "scripthost"
     ],
     "baseUrl": "./",
-    "outDir": "./build/",
+    "outDir": "./dist/",
     "strict": true,
     "sourceMap": true,
     "skipLibCheck": true,

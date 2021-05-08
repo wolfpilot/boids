@@ -8,9 +8,8 @@
   "license": "MIT",
   "scripts": {
     "prepare": "husky install",
-    "clean": "rm -rf ./build",
     "start": "parcel ./src/index.html",
-    "prebuild": "rm -rf build",
+    "prebuild": "rm -rf dist",
     "build:parcel": "parcel build ./src/index.html --target node --no-source-maps --public-url='/boids'",
     "build": "yarn clean && yarn validate && yarn build:parcel",
     "test": "jest",

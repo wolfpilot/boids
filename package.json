@@ -6,11 +6,13 @@
   "author": "Razvan Negrea <howl@wolfpilot.co> (www.wolfpilot.co)",
   "license": "MIT",
   "scripts": {
+    "prepare": "husky install",
     "dev": "parcel ./src/index.html",
     "start": "yarn dev",
     "prebuild": "rm -rf build",
     "build": "tsc --noEmit && parcel build ./src/index.html --target node --no-source-maps --public-url='/boids'",
     "format": "prettier 'src/**/*.ts' --write",
+    "validate": "tsc --noEmit",
     "lint": "eslint -f stylish \"**/*.ts\""
   },
   "dependencies": {
@@ -26,6 +28,7 @@
     "eslint": "^7.26.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-prettier": "^3.4.0",
+    "husky": "^6.0.0",
     "parcel-bundler": "^1.12.5",
     "prettier": "^2.2.1",
     "typescript": "^4.2.4"

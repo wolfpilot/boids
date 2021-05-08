@@ -1,7 +1,7 @@
 import Vector, { IVector } from "../../geometry/Vector";
 
 // Utils
-import * as PubSub from "../../utils/pubSub";
+import * as PubSub from "../../services/pubSub";
 import {
   add,
   applyForces,

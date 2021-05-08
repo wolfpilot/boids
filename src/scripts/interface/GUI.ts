@@ -1,7 +1,7 @@
 import * as dat from "dat.gui";
 
 // Utils
-import * as PubSub from "../utils/pubSub";
+import * as PubSub from "../services/pubSub";
 
 const defaults = {
   showTargetVector: true,

@@ -12,7 +12,7 @@ const COLORS = [
   "#bceae9",
   "#95d3d5",
   "#c2a4e7",
-];
+]
 
 export const config = {
   boids: {
@@ -22,4 +22,4 @@ export const config = {
     awarenessFactor: 10,
     colors: COLORS,
   },
-};
+}

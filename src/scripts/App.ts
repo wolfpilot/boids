@@ -1,47 +1,47 @@
-import Canvas, { ICanvas } from "./actors/Canvas/Canvas";
-import Boid, { IBoid } from "./actors/Boid/Boid";
+import Canvas, { ICanvas } from "./actors/Canvas/Canvas"
+import Boid, { IBoid } from "./actors/Boid/Boid"
 
 // Stores
-import { appStore } from "./stores/appStore";
+import { appStore } from "./stores/appStore"
 
 // Utils
-import { getRandomNumber } from "./utils/MathHelpers";
+import { getRandomNumber } from "./utils/MathHelpers"
 
 // Interface
-import GUI from "./interface/GUI";
+import GUI from "./interface/GUI"
 
 // Config
-import { config } from "./config";
+import { config } from "./config"
 
-let startTimestamp: number;
+let startTimestamp: number
 
 class App {
-  public canvasEl: HTMLCanvasElement;
-  public ctx: CanvasRenderingContext2D;
-  private canvas: ICanvas;
+  public canvasEl: HTMLCanvasElement
+  public ctx: CanvasRenderingContext2D
+  private canvas: ICanvas
 
   constructor() {
-    this.canvasEl = <HTMLCanvasElement>document.getElementById("canvas");
-    this.ctx = <CanvasRenderingContext2D>this.canvasEl.getContext("2d");
-    this.canvas = new Canvas(this.canvasEl, this.ctx);
+    this.canvasEl = <HTMLCanvasElement>document.getElementById("canvas")
+    this.ctx = <CanvasRenderingContext2D>this.canvasEl.getContext("2d")
+    this.canvas = new Canvas(this.canvasEl, this.ctx)
 
-    this.canvas.init();
+    this.canvas.init()
   }
 
   public init(): void {
     if (!this.ctx) {
-      throw new Error("Canvas context could not be initialised.");
+      throw new Error("Canvas context could not be initialised.")
     }
 
-    const wWidth = window.innerWidth;
-    const wHeight = window.innerHeight;
+    const wWidth = window.innerWidth
+    const wHeight = window.innerHeight
 
-    const gui = new GUI();
+    const gui = new GUI()
 
-    gui.init();
+    gui.init()
 
     const boids = [...new Array(config.boids.count)].map(() => {
-      const size = getRandomNumber(config.boids.minSize, config.boids.maxSize);
+      const size = getRandomNumber(config.boids.minSize, config.boids.maxSize)
 
       const options = {
         ctx: this.ctx,
@@ -53,42 +53,42 @@ class App {
           config.boids.colors[
             getRandomNumber(0, config.boids.colors.length - 1)
           ],
-      };
+      }
 
-      return new Boid(options);
-    });
+      return new Boid(options)
+    })
 
     appStore.setState({
       boids,
-    });
+    })
 
-    appStore.state.boids.forEach((boid: IBoid) => boid.init());
+    appStore.state.boids.forEach((boid: IBoid) => boid.init())
 
-    requestAnimationFrame(this.tick);
+    requestAnimationFrame(this.tick)
   }
 
   private tick = (timestamp: number) => {
-    if (!appStore.state.isRunning) return;
+    if (!appStore.state.isRunning) return
 
     if (!startTimestamp) {
-      startTimestamp = timestamp;
+      startTimestamp = timestamp
     }
 
     // The elapsed time since starting a new animation cycle
-    const elapsed = timestamp - startTimestamp;
+    const elapsed = timestamp - startTimestamp
 
-    console.log(elapsed);
+    console.log(elapsed)
 
     if (this.canvas && this.canvas.state.isEnabled) {
-      this.canvas.render();
+      this.canvas.render()
     }
 
     if (appStore.state.boids && appStore.state.boids.length) {
-      appStore.state.boids.forEach((boid: IBoid) => boid.render());
+      appStore.state.boids.forEach((boid: IBoid) => boid.render())
     }
 
-    requestAnimationFrame(newTimestamp => this.tick(newTimestamp));
-  };
+    requestAnimationFrame((newTimestamp) => this.tick(newTimestamp))
+  }
 }
 
-export default App;
+export default App

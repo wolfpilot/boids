@@ -1,13 +1,13 @@
 export interface IBoidConfig {
-  maxSteeringForce: number;
-  stopThreshold: number;
-  alignmentFactor: number;
+  maxSteeringForce: number
+  stopThreshold: number
+  alignmentFactor: number
   targetVector: {
-    color: string;
-  };
+    color: string
+  }
   directionVector: {
-    color: string;
-  };
+    color: string
+  }
 }
 
 export const config: IBoidConfig = {
@@ -20,4 +20,4 @@ export const config: IBoidConfig = {
   directionVector: {
     color: "red",
   },
-};
+}

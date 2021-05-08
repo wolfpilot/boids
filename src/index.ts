@@ -1,14 +1,14 @@
-import App from "./scripts/App";
+import App from "./scripts/App"
 
-const app = new App();
+const app = new App()
 
 const isReady = () =>
-  new Promise(resolve => {
+  new Promise((resolve) => {
     if (document.readyState === "complete") {
-      resolve(true);
+      resolve(true)
     } else {
-      document.addEventListener("DOMContentLoaded", resolve);
+      document.addEventListener("DOMContentLoaded", resolve)
     }
-  });
+  })
 
-isReady().then(() => app.init());
+isReady().then(() => app.init())

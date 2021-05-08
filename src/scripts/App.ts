@@ -1,8 +1,10 @@
 import Canvas, { ICanvas } from "./actors/Canvas/Canvas";
 import Boid, { IBoid } from "./actors/Boid/Boid";
 
+// Stores
+import { appStore } from "./stores/appStore";
+
 // Utils
-import { Store } from "./Store";
 import { getRandomNumber } from "./utils/MathHelpers";
 
 // Interface
@@ -11,28 +13,8 @@ import GUI from "./interface/GUI";
 // Config
 import { config } from "./config";
 
-interface IAppStoreState extends Store {
-  isRunning: boolean;
-  boids: IBoid[];
-}
-
-interface IStore extends Store {
-  state: IAppStoreState;
-}
-
-// Setup
-const initialState = {
-  isRunning: true,
-};
-
 let startTimestamp: number;
 
-// Create a new store
-export const store = new Store() as IStore;
-
-store.setState(initialState);
-
-// Setup
 class App {
   public canvasEl: HTMLCanvasElement;
   public ctx: CanvasRenderingContext2D;
@@ -76,19 +58,17 @@ class App {
       return new Boid(options);
     });
 
-    store.setState({
+    appStore.setState({
       boids,
     });
 
-    store.state.boids.forEach((boid: IBoid) => boid.init());
+    appStore.state.boids.forEach((boid: IBoid) => boid.init());
 
     requestAnimationFrame(this.tick);
   }
 
   private tick = (timestamp: number) => {
-    if (!store.state.isRunning) {
-      return;
-    }
+    if (!appStore.state.isRunning) return;
 
     if (!startTimestamp) {
       startTimestamp = timestamp;
@@ -103,8 +83,8 @@ class App {
       this.canvas.render();
     }
 
-    if (store.state.boids && store.state.boids.length) {
-      store.state.boids.forEach((boid: IBoid) => boid.render());
+    if (appStore.state.boids && appStore.state.boids.length) {
+      appStore.state.boids.forEach((boid: IBoid) => boid.render());
     }
 
     requestAnimationFrame(newTimestamp => this.tick(newTimestamp));

@@ -14,9 +14,11 @@ import {
 import { IBehaviourType, seek, align, separate } from "../../behaviours/index";
 
 // Config
-import { store } from "../../App";
 import { config } from "./config";
 import { config as appConfig } from "../../config";
+
+// Stores
+import { appStore } from "../../stores/appStore";
 
 export interface IBoid {
   init: () => void;
@@ -139,7 +141,9 @@ class Boid implements IBoid {
   private getComputedSteering(): IVector {
     // Accumulator vector
     let steer = new Vector(0, 0);
-    const otherBoids = store.state.boids.filter((boid: IBoid) => boid !== this);
+    const otherBoids = appStore.state.boids.filter(
+      (boid: IBoid) => boid !== this
+    );
 
     if (this.behaviours.includes("seek")) {
       const options = {

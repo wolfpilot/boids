@@ -5,6 +5,7 @@ import Boid, { IBoid } from "./actors/Boid/Boid"
 import { appStore } from "./stores/appStore"
 
 // Utils
+import * as PubSub from "./services/pubSub"
 import { getRandomNumber } from "./utils/MathHelpers"
 
 // Interface
@@ -75,6 +76,7 @@ class App {
     })
 
     // Setup
+    this.bindListeners()
     this.canvas.init()
     this.gui.init()
 
@@ -85,6 +87,14 @@ class App {
     this.startAnimation()
   }
 
+  public bindListeners(): void {
+    PubSub.subscribe("gui:maxFps", (val: number) => {
+      appStore.setState({
+        maxFps: val,
+      })
+    })
+  }
+
   private startFpsCounter(): void {
     if (!config.app.showFps) return
 
@@ -92,11 +102,9 @@ class App {
   }
 
   private startAnimation(): void {
-    const fpsInterval = 1000 / config.app.maxFramerate
     const lastDrawTime = performance.now()
 
     appStore.setState({
-      fpsInterval,
       lastDrawTime,
     })
 
@@ -124,16 +132,18 @@ class App {
   private tick = (timestamp: number): void => {
     if (!appStore.state.isRunning) return
 
+    const fpsInterval = 1000 / appStore.state.maxFps
     const elapsed = timestamp - appStore.state.lastDrawTime
 
     requestAnimationFrame(this.tick)
 
     appStore.setState({
+      fpsInterval,
       elapsedTime: timestamp - appStore.state.lastDrawTime,
     })
 
-    if (elapsed > appStore.state.fpsInterval) {
-      const lastDrawTime = timestamp - (elapsed % appStore.state.fpsInterval)
+    if (elapsed > fpsInterval) {
+      const lastDrawTime = timestamp - (elapsed % fpsInterval)
 
       appStore.setState({
         lastDrawTime,

@@ -1,5 +1,5 @@
 // Utils
-import { isObject } from "../utils/objectHelpers"
+import { isObject } from "../utils/objectHelper"
 
 export class Store<TState> {
   public state: TState

@@ -1,7 +1,7 @@
 import Vector, { IVector } from "../geometry/Vector"
 
 // Utils
-import { sum } from "./MathHelpers"
+import { sum } from "./mathHelper"
 
 // Returns a new vector that adds v2 to v1
 export const add = (v1: IVector, v2: IVector): Vector =>

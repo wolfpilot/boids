@@ -6,7 +6,7 @@ import { appStore } from "./stores/appStore"
 
 // Utils
 import * as PubSub from "./services/pubSub"
-import { getRandomNumber } from "./utils/MathHelpers"
+import { getRandomNumber } from "./utils/mathHelper"
 
 // Interface
 import GUI from "./interface/GUI"

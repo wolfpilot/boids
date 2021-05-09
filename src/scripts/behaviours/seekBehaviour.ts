@@ -6,7 +6,7 @@ import {
   multiply,
   normalize,
   limitMagnitude,
-} from "../utils/vectorHelpers"
+} from "../utils/vectorHelper"
 
 interface IOptions {
   target: IVector

@@ -1,6 +1,6 @@
 import Vector from "../geometry/Vector"
 import { IBoid } from "../actors/Boid/Boid"
-import { add, subtract, multiply, normalize, mag } from "../utils/vectorHelpers"
+import { add, subtract, multiply, normalize, mag } from "../utils/vectorHelper"
 
 interface IOptions {
   boids: IBoid[]

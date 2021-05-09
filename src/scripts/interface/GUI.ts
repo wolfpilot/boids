@@ -1,9 +1,13 @@
 import * as dat from "dat.gui"
 
+// Config
+import { config } from "../config"
+
 // Utils
 import * as PubSub from "../services/pubSub"
 
 const defaults = {
+  maxFps: config.app.maxFramerate,
   showTargetVector: true,
   showNormalizedTargetVector: true,
   showAwarenessArea: true,
@@ -19,27 +23,29 @@ class GUI {
   private setupGUI() {
     const gui = new dat.GUI()
 
-    const targetVectorController = gui.add(defaults, "showTargetVector")
-    const normalizedVectorController = gui.add(
-      defaults,
-      "showNormalizedTargetVector"
-    )
-    const awarenessAreaController = gui.add(defaults, "showAwarenessArea")
-    const separationAreaController = gui.add(defaults, "showSeparationArea")
+    const maxFpsCtrl = gui.add(defaults, "maxFps")
+    const targetVectorCtrl = gui.add(defaults, "showTargetVector")
+    const normalizedVectorCtrl = gui.add(defaults, "showNormalizedTargetVector")
+    const awarenessAreaCtrl = gui.add(defaults, "showAwarenessArea")
+    const separationAreaCtrl = gui.add(defaults, "showSeparationArea")
 
-    targetVectorController.onChange((value: boolean) => {
+    maxFpsCtrl.onChange((value: number) => {
+      PubSub.publish("gui:maxFps", value)
+    })
+
+    targetVectorCtrl.onChange((value: boolean) => {
       PubSub.publish("gui:showTargetVector", value)
     })
 
-    normalizedVectorController.onChange((value: boolean) => {
+    normalizedVectorCtrl.onChange((value: boolean) => {
       PubSub.publish("gui:showNormalizedTargetVector", value)
     })
 
-    awarenessAreaController.onChange((value: boolean) => {
+    awarenessAreaCtrl.onChange((value: boolean) => {
       PubSub.publish("gui:showAwarenessArea", value)
     })
 
-    separationAreaController.onChange((value: boolean) => {
+    separationAreaCtrl.onChange((value: boolean) => {
       PubSub.publish("gui:showSeparationArea", value)
     })
   }

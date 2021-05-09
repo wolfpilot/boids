@@ -5,6 +5,7 @@ import Boid, { IBoid } from "./actors/Boid/Boid"
 import { appStore } from "./stores/appStore"
 
 // Utils
+import * as PubSub from "./services/pubSub"
 import { getRandomNumber } from "./utils/MathHelpers"
 
 // Interface
@@ -13,19 +14,48 @@ import GUI from "./interface/GUI"
 // Config
 import { config } from "./config"
 
-let startTimestamp: number
+// Utils
+const generateBoids = ({
+  ctx,
+  wWidth,
+  wHeight,
+}: {
+  ctx: CanvasRenderingContext2D
+  wWidth: number
+  wHeight: number
+}): IBoid[] => {
+  const boids = [...new Array(config.boids.count)].map(() => {
+    const size = getRandomNumber(config.boids.minSize, config.boids.maxSize)
+
+    const options = {
+      ctx,
+      x: getRandomNumber(0, wWidth),
+      y: getRandomNumber(0, wHeight),
+      size,
+      awarenessAreaSize: size * config.boids.awarenessFactor,
+      color:
+        config.boids.colors[getRandomNumber(0, config.boids.colors.length - 1)],
+    }
+
+    return new Boid(options)
+  })
+
+  return boids
+}
 
 class App {
   public canvasEl: HTMLCanvasElement
   public ctx: CanvasRenderingContext2D
   private canvas: ICanvas
+  private gui: GUI
 
   constructor() {
     this.canvasEl = <HTMLCanvasElement>document.getElementById("canvas")
-    this.ctx = <CanvasRenderingContext2D>this.canvasEl.getContext("2d")
+    this.ctx = <CanvasRenderingContext2D>(
+      this.canvasEl.getContext("2d", { alpha: false })
+    )
     this.canvas = new Canvas(this.canvasEl, this.ctx)
-
-    this.canvas.init()
+    this.gui = new GUI()
   }
 
   public init(): void {
@@ -33,52 +63,100 @@ class App {
       throw new Error("Canvas context could not be initialised.")
     }
 
+    // TODO: Dynamic resize listener and redraw
     const wWidth = window.innerWidth
     const wHeight = window.innerHeight
 
-    const gui = new GUI()
-
-    gui.init()
-
-    const boids = [...new Array(config.boids.count)].map(() => {
-      const size = getRandomNumber(config.boids.minSize, config.boids.maxSize)
-
-      const options = {
-        ctx: this.ctx,
-        x: getRandomNumber(0, wWidth),
-        y: getRandomNumber(0, wHeight),
-        size,
-        awarenessAreaSize: size * config.boids.awarenessFactor,
-        color:
-          config.boids.colors[
-            getRandomNumber(0, config.boids.colors.length - 1)
-          ],
-      }
-
-      return new Boid(options)
+    const boids = generateBoids({
+      ctx: this.ctx,
+      wWidth,
+      wHeight,
     })
 
     appStore.setState({
       boids,
     })
 
-    appStore.state.boids.forEach((boid: IBoid) => boid.init())
+    // Setup
+    this.bindListeners()
+    this.canvas.init()
+    this.gui.init()
+
+    appStore.state.boids.forEach((boid) => boid.init())
+
+    // Run
+    this.startFpsCounter()
+    this.startAnimation()
+  }
+
+  public bindListeners(): void {
+    PubSub.subscribe("gui:maxFps", (val: number) => {
+      appStore.setState({
+        maxFps: val,
+      })
+    })
+  }
+
+  private startFpsCounter(): void {
+    if (!config.app.showFps) return
+
+    setInterval(this.sampleFps, 1000)
+  }
+
+  private startAnimation(): void {
+    const lastDrawTime = performance.now()
+
+    appStore.setState({
+      lastDrawTime,
+    })
 
     requestAnimationFrame(this.tick)
   }
 
-  private tick = (timestamp: number) => {
-    if (!appStore.state.isRunning) return
+  private sampleFps(): void {
+    const now = performance.now()
 
-    if (!startTimestamp) {
-      startTimestamp = timestamp
+    if (appStore.state.fpsCount > 0) {
+      const delta = now - appStore.state.lastFpsSampleTime
+      const fps = ((appStore.state.fpsCount / delta) * 1000).toFixed(2)
+
+      appStore.setState({
+        fps,
+        fpsCount: 0,
+      })
     }
 
-    // The elapsed time since starting a new animation cycle
-    const elapsed = timestamp - startTimestamp
+    appStore.setState({
+      lastFpsSampleTime: now,
+    })
+  }
 
-    console.log(elapsed)
+  private tick = (timestamp: number): void => {
+    if (!appStore.state.isRunning) return
 
+    const fpsInterval = 1000 / appStore.state.maxFps
+    const elapsed = timestamp - appStore.state.lastDrawTime
+
+    requestAnimationFrame(this.tick)
+
+    appStore.setState({
+      fpsInterval,
+      elapsedTime: timestamp - appStore.state.lastDrawTime,
+    })
+
+    if (elapsed > fpsInterval) {
+      const lastDrawTime = timestamp - (elapsed % fpsInterval)
+
+      appStore.setState({
+        lastDrawTime,
+        fpsCount: appStore.state.fpsCount + 1,
+      })
+
+      this.draw()
+    }
+  }
+
+  private draw(): void {
     if (this.canvas && this.canvas.state.isEnabled) {
       this.canvas.render()
     }
@@ -86,8 +164,6 @@ class App {
     if (appStore.state.boids && appStore.state.boids.length) {
       appStore.state.boids.forEach((boid: IBoid) => boid.render())
     }
-
-    requestAnimationFrame((newTimestamp) => this.tick(newTimestamp))
   }
 }
 

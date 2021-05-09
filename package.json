@@ -8,7 +8,7 @@
   "license": "MIT",
   "scripts": {
     "prepare": "husky install",
-    "start": "parcel ./src/index.html",
+    "start": "parcel --port 3000 ./src/index.html",
     "prebuild": "rm -rf dist",
     "build:parcel": "parcel build ./src/index.html --target node --no-source-maps --public-url='/boids'",
     "build": "yarn clean && yarn validate && yarn build:parcel",

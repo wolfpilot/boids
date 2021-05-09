@@ -13,9 +13,6 @@ import GUI from "./interface/GUI"
 // Config
 import { config } from "./config"
 
-// Setup
-const MAX_FRAMERATE = 30
-
 // Utils
 const generateBoids = ({
   ctx,
@@ -73,20 +70,29 @@ class App {
       wHeight,
     })
 
-    this.canvas.init()
-    this.gui.init()
-
     appStore.setState({
       boids,
     })
 
-    appStore.state.boids.forEach((boid: IBoid) => boid.init())
+    // Setup
+    this.canvas.init()
+    this.gui.init()
 
+    appStore.state.boids.forEach((boid) => boid.init())
+
+    // Run
+    this.startFpsCounter()
     this.startAnimation()
   }
 
+  private startFpsCounter(): void {
+    if (!config.app.showFps) return
+
+    setInterval(this.sampleFps, 1000)
+  }
+
   private startAnimation(): void {
-    const fpsInterval = 1000 / MAX_FRAMERATE
+    const fpsInterval = 1000 / config.app.maxFramerate
     const lastDrawTime = performance.now()
 
     appStore.setState({
@@ -97,10 +103,27 @@ class App {
     requestAnimationFrame(this.tick)
   }
 
+  private sampleFps(): void {
+    const now = performance.now()
+
+    if (appStore.state.fpsCount > 0) {
+      const delta = now - appStore.state.lastFpsSampleTime
+      const fps = ((appStore.state.fpsCount / delta) * 1000).toFixed(2)
+
+      appStore.setState({
+        fps,
+        fpsCount: 0,
+      })
+    }
+
+    appStore.setState({
+      lastFpsSampleTime: now,
+    })
+  }
+
   private tick = (timestamp: number): void => {
     if (!appStore.state.isRunning) return
 
-    // The elapsed time since starting a new animation cycle
     const elapsed = timestamp - appStore.state.lastDrawTime
 
     requestAnimationFrame(this.tick)
@@ -109,12 +132,12 @@ class App {
       elapsedTime: timestamp - appStore.state.lastDrawTime,
     })
 
-    // Draw next frame if enough time has elapsed
     if (elapsed > appStore.state.fpsInterval) {
       const lastDrawTime = timestamp - (elapsed % appStore.state.fpsInterval)
 
       appStore.setState({
         lastDrawTime,
+        fpsCount: appStore.state.fpsCount + 1,
       })
 
       this.draw()

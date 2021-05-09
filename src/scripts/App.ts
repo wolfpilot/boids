@@ -13,6 +13,9 @@ import GUI from "./interface/GUI"
 // Config
 import { config } from "./config"
 
+// Setup
+const MAX_FRAMERATE = 30
+
 // Utils
 const generateBoids = ({
   ctx,
@@ -46,13 +49,13 @@ class App {
   public canvasEl: HTMLCanvasElement
   public ctx: CanvasRenderingContext2D
   private canvas: ICanvas
+  private gui: GUI
 
   constructor() {
     this.canvasEl = <HTMLCanvasElement>document.getElementById("canvas")
     this.ctx = <CanvasRenderingContext2D>this.canvasEl.getContext("2d")
     this.canvas = new Canvas(this.canvasEl, this.ctx)
-
-    this.canvas.init()
+    this.gui = new GUI()
   }
 
   public init(): void {
@@ -60,10 +63,9 @@ class App {
       throw new Error("Canvas context could not be initialised.")
     }
 
+    // TODO: Dynamic resize listener and redraw
     const wWidth = window.innerWidth
     const wHeight = window.innerHeight
-
-    const gui = new GUI()
 
     const boids = generateBoids({
       ctx: this.ctx,
@@ -71,7 +73,8 @@ class App {
       wHeight,
     })
 
-    gui.init()
+    this.canvas.init()
+    this.gui.init()
 
     appStore.setState({
       boids,
@@ -79,25 +82,46 @@ class App {
 
     appStore.state.boids.forEach((boid: IBoid) => boid.init())
 
+    this.startAnimation()
+  }
+
+  private startAnimation(): void {
+    const fpsInterval = 1000 / MAX_FRAMERATE
+    const lastDrawTime = performance.now()
+
+    appStore.setState({
+      fpsInterval,
+      lastDrawTime,
+    })
+
     requestAnimationFrame(this.tick)
   }
 
-  private tick = (timestamp: number) => {
+  private tick = (timestamp: number): void => {
     if (!appStore.state.isRunning) return
 
-    if (!appStore.state.startTimestamp) {
-      appStore.setState({
-        startTimestamp: timestamp,
-      })
-    }
-
     // The elapsed time since starting a new animation cycle
-    const elapsed = timestamp - appStore.state.startTimestamp
+    const elapsed = timestamp - appStore.state.lastDrawTime
+
+    requestAnimationFrame(this.tick)
 
     appStore.setState({
-      elapsedTime: elapsed,
+      elapsedTime: timestamp - appStore.state.lastDrawTime,
     })
 
+    // Draw next frame if enough time has elapsed
+    if (elapsed > appStore.state.fpsInterval) {
+      const lastDrawTime = timestamp - (elapsed % appStore.state.fpsInterval)
+
+      appStore.setState({
+        lastDrawTime,
+      })
+
+      this.draw()
+    }
+  }
+
+  private draw(): void {
     if (this.canvas && this.canvas.state.isEnabled) {
       this.canvas.render()
     }
@@ -105,8 +129,6 @@ class App {
     if (appStore.state.boids && appStore.state.boids.length) {
       appStore.state.boids.forEach((boid: IBoid) => boid.render())
     }
-
-    requestAnimationFrame((newTimestamp) => this.tick(newTimestamp))
   }
 }
 

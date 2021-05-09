@@ -4,18 +4,20 @@ import { IBoid } from "../actors/Boid/Boid"
 import { Store } from "./Store"
 
 export interface IAppStoreState {
-  startTimestamp: number
-  elapsedTime: number
   isRunning: boolean
+  elapsedTime: number
+  lastDrawTime: number
+  fpsInterval: number
   boids: IBoid[]
 }
 
 export type AppStore = Store<IAppStoreState>
 
 const initialState: IAppStoreState = {
-  startTimestamp: 0,
-  elapsedTime: 0,
   isRunning: true,
+  elapsedTime: 0,
+  lastDrawTime: 0,
+  fpsInterval: 0,
   boids: [],
 }
 

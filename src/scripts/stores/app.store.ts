@@ -29,6 +29,7 @@ const initialState: IAppStoreState = {
   lastFpsSampleTime: 0,
   lastDrawTime: 0,
   elapsedTime: 0,
+  // !: Move to a different store? Entities?
   boids: [],
 }
 

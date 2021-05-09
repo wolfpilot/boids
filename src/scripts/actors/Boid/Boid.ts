@@ -18,7 +18,7 @@ import { config } from "./config"
 import { config as appConfig } from "../../config"
 
 // Stores
-import { appStore } from "../../stores/appStore"
+import { appStore } from "../../stores/app.store"
 
 export interface IBoid {
   init: () => void

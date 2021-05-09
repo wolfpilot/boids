@@ -1,8 +1,9 @@
+// Actors
 import Canvas, { ICanvas } from "./actors/Canvas/Canvas"
 import Boid, { IBoid } from "./actors/Boid/Boid"
 
 // Stores
-import { appStore } from "./stores/appStore"
+import { appStore } from "./stores/app.store"
 
 // Utils
 import * as PubSub from "./services/pubSub"

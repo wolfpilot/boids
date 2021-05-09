@@ -51,7 +51,9 @@ class App {
 
   constructor() {
     this.canvasEl = <HTMLCanvasElement>document.getElementById("canvas")
-    this.ctx = <CanvasRenderingContext2D>this.canvasEl.getContext("2d")
+    this.ctx = <CanvasRenderingContext2D>(
+      this.canvasEl.getContext("2d", { alpha: false })
+    )
     this.canvas = new Canvas(this.canvasEl, this.ctx)
     this.gui = new GUI()
   }

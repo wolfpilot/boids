@@ -13,7 +13,34 @@ import GUI from "./interface/GUI"
 // Config
 import { config } from "./config"
 
-let startTimestamp: number
+// Utils
+const generateBoids = ({
+  ctx,
+  wWidth,
+  wHeight,
+}: {
+  ctx: CanvasRenderingContext2D
+  wWidth: number
+  wHeight: number
+}): IBoid[] => {
+  const boids = [...new Array(config.boids.count)].map(() => {
+    const size = getRandomNumber(config.boids.minSize, config.boids.maxSize)
+
+    const options = {
+      ctx,
+      x: getRandomNumber(0, wWidth),
+      y: getRandomNumber(0, wHeight),
+      size,
+      awarenessAreaSize: size * config.boids.awarenessFactor,
+      color:
+        config.boids.colors[getRandomNumber(0, config.boids.colors.length - 1)],
+    }
+
+    return new Boid(options)
+  })
+
+  return boids
+}
 
 class App {
   public canvasEl: HTMLCanvasElement
@@ -38,25 +65,13 @@ class App {
 
     const gui = new GUI()
 
-    gui.init()
-
-    const boids = [...new Array(config.boids.count)].map(() => {
-      const size = getRandomNumber(config.boids.minSize, config.boids.maxSize)
-
-      const options = {
-        ctx: this.ctx,
-        x: getRandomNumber(0, wWidth),
-        y: getRandomNumber(0, wHeight),
-        size,
-        awarenessAreaSize: size * config.boids.awarenessFactor,
-        color:
-          config.boids.colors[
-            getRandomNumber(0, config.boids.colors.length - 1)
-          ],
-      }
-
-      return new Boid(options)
+    const boids = generateBoids({
+      ctx: this.ctx,
+      wWidth,
+      wHeight,
     })
+
+    gui.init()
 
     appStore.setState({
       boids,
@@ -70,14 +85,18 @@ class App {
   private tick = (timestamp: number) => {
     if (!appStore.state.isRunning) return
 
-    if (!startTimestamp) {
-      startTimestamp = timestamp
+    if (!appStore.state.startTimestamp) {
+      appStore.setState({
+        startTimestamp: timestamp,
+      })
     }
 
     // The elapsed time since starting a new animation cycle
-    const elapsed = timestamp - startTimestamp
+    const elapsed = timestamp - appStore.state.startTimestamp
 
-    console.log(elapsed)
+    appStore.setState({
+      elapsedTime: elapsed,
+    })
 
     if (this.canvas && this.canvas.state.isEnabled) {
       this.canvas.render()

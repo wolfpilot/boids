@@ -10,7 +10,7 @@ import {
   mag,
   normalize,
   limitMagnitude,
-} from "../../utils/vectorHelpers"
+} from "../../utils/vectorHelper"
 import { IBehaviourType, seek, align, separate } from "../../behaviours/index"
 
 // Config

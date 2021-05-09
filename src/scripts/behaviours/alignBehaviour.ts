@@ -7,7 +7,7 @@ import {
   divide,
   normalize,
   mag,
-} from "../utils/vectorHelpers"
+} from "../utils/vectorHelper"
 
 interface IOptions {
   boids: IBoid[]

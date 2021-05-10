@@ -11,8 +11,8 @@ export interface IBoidConfig {
 }
 
 export const config: IBoidConfig = {
-  maxSteeringForce: 0.1,
-  stopThreshold: 0.05,
+  maxSteeringForce: 0.5,
+  stopThreshold: 2.5,
   alignmentFactor: 0.025,
   targetVector: {
     color: "black",

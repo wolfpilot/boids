@@ -22,6 +22,7 @@ export const config = {
     count: 20,
     minSize: 30,
     maxSize: 60,
+    brakingFactor: 15,
     awarenessFactor: 10,
     colors: COLORS,
   },

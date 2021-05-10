@@ -24,6 +24,7 @@ import Vector, { IVector } from "../../geometry/Vector"
 export interface IBoid {
   id: number
   size: number
+  brakingDistance: number
   awarenessAreaSize: number
   separationAreaSize: number
   maxSpeed: number
@@ -47,6 +48,7 @@ interface IOptions {
   x: number
   y: number
   size: number
+  brakingDistance: number
   awarenessAreaSize: number
   color: string
   state?: IState
@@ -78,6 +80,7 @@ class Boid implements IBoid {
   public id: number
   public size: number
   public awarenessAreaSize: number
+  public brakingDistance: number
   public separationAreaSize: number
   public maxSpeed: number
   public state: IState
@@ -91,6 +94,7 @@ class Boid implements IBoid {
     this.ctx = options.ctx
     this.size = options.size
     this.color = options.color
+    this.brakingDistance = options.brakingDistance
     this.awarenessAreaSize = options.awarenessAreaSize
     this.separationAreaSize = this.size + this.awarenessAreaSize / 10
 

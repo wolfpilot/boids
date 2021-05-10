@@ -5,6 +5,25 @@ export const sum = (numbers: number[]): number =>
   numbers.reduce((acc, val) => acc + val)
 
 /**
+ * Return a number mapped from one range to another
+ *
+ * For more info, see:
+ * https://stackoverflow.com/questions/5731863/mapping-a-numeric-range-onto-another
+ */
+export const mapFromToRange = (
+  num: number,
+  inputStart: number,
+  inputEnd: number,
+  outputStart: number,
+  outputEnd: number
+): number => {
+  const dIn = inputEnd - inputStart
+  const dOut = outputEnd - outputStart
+
+  return outputStart + (dOut / dIn) * (num - inputStart)
+}
+
+/**
  * Return a random number within defined range
  *
  * For more info, see:

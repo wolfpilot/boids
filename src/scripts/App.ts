@@ -35,6 +35,7 @@ const generateBoids = ({
       x: getRandomNumber(0, wWidth),
       y: getRandomNumber(0, wHeight),
       size,
+      brakingDistance: size * config.boids.brakingFactor,
       awarenessAreaSize: size * config.boids.awarenessFactor,
       color:
         config.boids.colors[getRandomNumber(0, config.boids.colors.length - 1)],

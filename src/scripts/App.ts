@@ -5,7 +5,7 @@ import Boid, { IBoid } from "./actors/Boid/Boid"
 // Stores
 import { appStore, appService, appQuery } from "./stores/app"
 import { guiQuery } from "./stores/gui"
-import { boidsStore } from "./stores/boids.store"
+import { boidsStore, boidsQuery } from "./stores/boids"
 
 // Utils
 import { getRandomNumber } from "./utils/mathHelper"
@@ -26,10 +26,11 @@ const generateBoids = ({
   wWidth: number
   wHeight: number
 }): IBoid[] => {
-  const boids = [...new Array(config.boids.count)].map(() => {
+  const boids = [...new Array(config.boids.count)].map((_, index) => {
     const size = getRandomNumber(config.boids.minSize, config.boids.maxSize)
 
     const options = {
+      id: index,
       ctx,
       x: getRandomNumber(0, wWidth),
       y: getRandomNumber(0, wHeight),
@@ -75,9 +76,7 @@ class App {
       wHeight,
     })
 
-    boidsStore.setState({
-      entities: boids,
-    })
+    boidsStore.set(boids)
 
     this.canvas.init()
     this.gui.init()
@@ -146,8 +145,8 @@ class App {
       this.canvas.render()
     }
 
-    if (boidsStore.state.entities && boidsStore.state.entities.length) {
-      boidsStore.state.entities.forEach((boid: IBoid) => boid.render())
+    if (boidsQuery.all && boidsQuery.all.length) {
+      boidsQuery.all.forEach((boid) => boid.render())
     }
   }
 }

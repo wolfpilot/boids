@@ -4,7 +4,7 @@ import { config as appConfig } from "../../config"
 
 // Store
 import { guiQuery } from "../../stores/gui"
-import { boidsStore } from "../../stores/boids.store"
+import { boidsStore, boidsQuery } from "../../stores/boids"
 
 // Utils
 import {
@@ -22,12 +22,17 @@ import { IBehaviourType, seek, align, separate } from "../../behaviours/index"
 import Vector, { IVector } from "../../geometry/Vector"
 
 export interface IBoid {
-  render: () => void
+  id: number
   size: number
+  awarenessAreaSize: number
+  separationAreaSize: number
+  maxSpeed: number
   state: IState
+  render: () => void
 }
 
 interface IState {
+  isInitialised: boolean
   location: IVector
   acceleration: IVector
   velocity: IVector
@@ -37,15 +42,27 @@ interface IState {
 }
 
 interface IOptions {
+  id: number
   ctx: CanvasRenderingContext2D
   x: number
   y: number
   size: number
   awarenessAreaSize: number
   color: string
+  state?: IState
 }
 
 // Setup
+const initialState: IState = {
+  isInitialised: false,
+  location: new Vector(0, 0),
+  acceleration: new Vector(0, 0),
+  velocity: new Vector(0, 0),
+  friction: new Vector(0, 0),
+  targetVector: new Vector(0, 0),
+  normTargetVector: new Vector(0, 0),
+}
+
 // *: Temporarily using the mouse as the common boid target
 const mouseVector = new Vector(window.innerWidth / 2, window.innerHeight / 2)
 
@@ -58,23 +75,24 @@ document.addEventListener("mousemove", onMouseUpdate)
 
 // Setup
 class Boid implements IBoid {
+  public id: number
+  public size: number
+  public awarenessAreaSize: number
+  public separationAreaSize: number
+  public maxSpeed: number
+  public state: IState
   private ctx: CanvasRenderingContext2D
-  private awarenessAreaSize: number
-  private separationAreaSize: number
   private color: string
-  private maxSpeed: number
   private frictionFactor: number
   private behaviours: IBehaviourType[]
-  public size: number
-  public state: IState
 
   constructor(options: IOptions) {
+    this.id = options.id
     this.ctx = options.ctx
-
     this.size = options.size
+    this.color = options.color
     this.awarenessAreaSize = options.awarenessAreaSize
     this.separationAreaSize = this.size + this.awarenessAreaSize / 10
-    this.color = options.color
 
     // Set a max speed directly proportional to the weight (size)
     this.maxSpeed = this.size / 5
@@ -85,35 +103,41 @@ class Boid implements IBoid {
     // Set up all available behaviours
     this.behaviours = ["seek", "align", "separate"]
 
-    this.state = {
-      location: new Vector(options.x, options.y),
-      acceleration: new Vector(0, 0),
-      velocity: new Vector(0, 0),
-      friction: new Vector(0, 0),
-      targetVector: new Vector(0, 0),
-      normTargetVector: new Vector(0, 0),
+    if (options.state?.isInitialised) {
+      this.state = { ...options.state }
+    } else {
+      this.state = {
+        ...initialState,
+        isInitialised: true,
+        location: new Vector(options.x, options.y),
+      }
     }
   }
 
   public render(): void {
     this.update()
     this.draw()
-
-    // Reset acceleration
-    this.state.acceleration = multiply(this.state.acceleration, 0)
   }
 
-  private getComputedSteering(): IVector {
+  private getComputedSteering(newState: IState): IVector {
+    const newBoid = {
+      ...this,
+      state: {
+        ...newState,
+      },
+    }
+
     // Accumulator vector
     let steer = new Vector(0, 0)
-    const otherBoids = boidsStore.state.entities.filter(
-      (boid: IBoid) => boid !== this
-    )
+
+    if (!this.behaviours || !this.behaviours.length) return steer
+
+    const otherBoids = boidsQuery.all.filter((boid: IBoid) => boid !== this)
 
     if (this.behaviours.includes("seek")) {
       const options = {
         target: mouseVector,
-        source: this,
+        source: newBoid,
         maxSteeringForce: config.maxSteeringForce,
         maxSpeed: this.maxSpeed,
       }
@@ -125,7 +149,7 @@ class Boid implements IBoid {
     if (this.behaviours.includes("align")) {
       const options = {
         boids: otherBoids,
-        source: this,
+        source: newBoid,
         awarenessAreaSize: this.awarenessAreaSize,
         alignmentFactor: config.alignmentFactor,
       }
@@ -137,7 +161,7 @@ class Boid implements IBoid {
     if (this.behaviours.includes("separate")) {
       const options = {
         boids: otherBoids,
-        source: this,
+        source: newBoid,
         separationAreaSize: this.separationAreaSize,
         maxSpeed: this.maxSpeed,
       }
@@ -150,26 +174,41 @@ class Boid implements IBoid {
   }
 
   private update(): void {
-    this.state.targetVector = subtract(mouseVector, this.state.location)
-    this.state.normTargetVector = normalize(this.state.targetVector)
+    // !: Batch all updates together... let newState at the start, update at the end?
+
+    // !: tempState to be shared within the whole instance
+    const newState = {
+      ...this.state,
+      targetVector: subtract(mouseVector, this.state.location),
+      normTargetVector: normalize(this.state.targetVector),
+    }
 
     // Calculate a stopping distance from the target
     // This prevents the boid spazzing out by always reaching and then overshooting its target
-    const distanceFromTarget = mag(this.state.targetVector)
+    const distanceFromTarget = mag(newState.targetVector)
 
+    // !: This shouldn't be true initially. Set init values to null?
     if (
       distanceFromTarget < config.stopThreshold &&
-      mag(this.state.velocity) < 0.1
+      mag(newState.velocity) < 0.1
     ) {
-      this.state.velocity = new Vector(0, 0)
+      console.log("STOP")
+
+      boidsStore.update(this.id, (entity) => ({
+        state: {
+          ...entity.state,
+          ...newState,
+          velocity: initialState.velocity,
+        },
+      }))
 
       return
     }
 
-    const steer = this.getComputedSteering()
+    const steer = this.getComputedSteering(newState)
 
     // Assign a friction-like force that pushes back against the current direction
-    const normVelocity = normalize(this.state.velocity)
+    const normVelocity = normalize(newState.velocity)
     const normFriction = multiply(normVelocity, -1)
     const friction = multiply(normFriction, this.frictionFactor)
 
@@ -178,12 +217,23 @@ class Boid implements IBoid {
     // Compound all external forces with the original vector. This will result
     // in a new vector pointing in the mean direction with a length
     // of the combined magnitude of all vectors.
-    this.state.acceleration = applyForces(this.state.acceleration, forces)
 
-    this.state.velocity = add(this.state.velocity, this.state.acceleration)
-    this.state.velocity = limitMagnitude(this.state.velocity, this.maxSpeed)
+    const newAcceleration = applyForces(newState.acceleration, forces)
+    const newVelocity = limitMagnitude(
+      add(newState.velocity, newAcceleration),
+      this.maxSpeed
+    )
+    const newLocation = add(newState.location, newVelocity)
 
-    this.state.location = add(this.state.location, this.state.velocity)
+    boidsStore.update(this.id, (entity) => ({
+      state: {
+        ...entity.state,
+        ...newState,
+        acceleration: initialState.acceleration,
+        velocity: newVelocity,
+        location: newLocation,
+      },
+    }))
   }
 
   private draw(): void {

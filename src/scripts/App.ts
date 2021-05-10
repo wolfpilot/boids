@@ -4,9 +4,9 @@ import Boid, { IBoid } from "./actors/Boid/Boid"
 
 // Stores
 import { appStore } from "./stores/app.store"
+import { guiQuery } from "./stores/gui"
 
 // Utils
-import * as PubSub from "./services/pubSub"
 import { getRandomNumber } from "./utils/mathHelper"
 
 // Interface
@@ -78,24 +78,11 @@ class App {
       boids,
     })
 
-    // Setup
-    this.bindListeners()
     this.canvas.init()
     this.gui.init()
 
-    appStore.state.boids.forEach((boid) => boid.init())
-
-    // Run
     this.startFpsCounter()
     this.startAnimation()
-  }
-
-  public bindListeners(): void {
-    PubSub.subscribe("gui:maxFps", (val: number) => {
-      appStore.setState({
-        maxFps: val,
-      })
-    })
   }
 
   private startFpsCounter(): void {
@@ -135,7 +122,7 @@ class App {
   private tick = (timestamp: number): void => {
     if (!appStore.state.isRunning) return
 
-    const fpsInterval = 1000 / appStore.state.maxFps
+    const fpsInterval = 1000 / guiQuery.maxFps
     const elapsed = timestamp - appStore.state.lastDrawTime
 
     requestAnimationFrame(this.tick)

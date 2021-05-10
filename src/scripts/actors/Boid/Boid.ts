@@ -1,7 +1,12 @@
-import Vector, { IVector } from "../../geometry/Vector"
+// Config
+import { config } from "./config"
+import { config as appConfig } from "../../config"
+
+// Store
+import { appStore } from "../../stores/app.store"
+import { guiQuery } from "../../stores/gui"
 
 // Utils
-import * as PubSub from "../../services/pubSub"
 import {
   add,
   applyForces,
@@ -13,15 +18,10 @@ import {
 } from "../../utils/vectorHelper"
 import { IBehaviourType, seek, align, separate } from "../../behaviours/index"
 
-// Config
-import { config } from "./config"
-import { config as appConfig } from "../../config"
-
-// Stores
-import { appStore } from "../../stores/app.store"
+// Geometry
+import Vector, { IVector } from "../../geometry/Vector"
 
 export interface IBoid {
-  init: () => void
   render: () => void
   size: number
   state: IState
@@ -34,10 +34,6 @@ interface IState {
   friction: IVector
   targetVector: IVector
   normTargetVector: IVector
-  showTargetVector: boolean
-  showNormalizedTargetVector: boolean
-  showAwarenessArea: boolean
-  showSeparationArea: boolean
 }
 
 interface IOptions {
@@ -89,12 +85,7 @@ class Boid implements IBoid {
     // Set up all available behaviours
     this.behaviours = ["seek", "align", "separate"]
 
-    // TODO: Get initial values from GUI
     this.state = {
-      showTargetVector: true,
-      showNormalizedTargetVector: true,
-      showAwarenessArea: true,
-      showSeparationArea: true,
       location: new Vector(options.x, options.y),
       acceleration: new Vector(0, 0),
       velocity: new Vector(0, 0),
@@ -102,32 +93,6 @@ class Boid implements IBoid {
       targetVector: new Vector(0, 0),
       normTargetVector: new Vector(0, 0),
     }
-
-    // Bind public functions
-    this.init = this.init.bind(this)
-  }
-
-  public init(): void {
-    this.bindListeners()
-  }
-
-  public bindListeners(): void {
-    PubSub.subscribe(
-      "gui:showTargetVector",
-      (val: boolean) => (this.state.showTargetVector = val)
-    )
-    PubSub.subscribe(
-      "gui:showNormalizedTargetVector",
-      (val: boolean) => (this.state.showNormalizedTargetVector = val)
-    )
-    PubSub.subscribe(
-      "gui:showAwarenessArea",
-      (val: boolean) => (this.state.showAwarenessArea = val)
-    )
-    PubSub.subscribe(
-      "gui:showSeparationArea",
-      (val: boolean) => (this.state.showSeparationArea = val)
-    )
   }
 
   public render(): void {
@@ -224,19 +189,19 @@ class Boid implements IBoid {
   private draw(): void {
     this.drawShape()
 
-    if (this.state.showTargetVector) {
+    if (guiQuery.allValues.showTargetVector) {
       this.drawTargetVector()
     }
 
-    if (this.state.showNormalizedTargetVector) {
+    if (guiQuery.allValues.showNormalizedTargetVector) {
       this.drawDirectionVector()
     }
 
-    if (this.state.showAwarenessArea) {
+    if (guiQuery.allValues.showAwarenessArea) {
       this.drawAwarenessArea()
     }
 
-    if (this.state.showSeparationArea) {
+    if (guiQuery.allValues.showSeparationArea) {
       this.drawSeparationArea()
     }
   }

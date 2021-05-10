@@ -3,8 +3,9 @@ import Canvas, { ICanvas } from "./actors/Canvas/Canvas"
 import Boid, { IBoid } from "./actors/Boid/Boid"
 
 // Stores
-import { appStore } from "./stores/app.store"
+import { appStore, appService, appQuery } from "./stores/app"
 import { guiQuery } from "./stores/gui"
+import { boidsStore } from "./stores/boids.store"
 
 // Utils
 import { getRandomNumber } from "./utils/mathHelper"
@@ -74,8 +75,8 @@ class App {
       wHeight,
     })
 
-    appStore.setState({
-      boids,
+    boidsStore.setState({
+      entities: boids,
     })
 
     this.canvas.init()
@@ -94,9 +95,7 @@ class App {
   private startAnimation(): void {
     const lastDrawTime = performance.now()
 
-    appStore.setState({
-      lastDrawTime,
-    })
+    appService.updateLastDrawTime(lastDrawTime)
 
     requestAnimationFrame(this.tick)
   }
@@ -104,40 +103,38 @@ class App {
   private sampleFps(): void {
     const now = performance.now()
 
-    if (appStore.state.fpsCount > 0) {
-      const delta = now - appStore.state.lastFpsSampleTime
-      const fps = ((appStore.state.fpsCount / delta) * 1000).toFixed(2)
+    if (appQuery.fpsCount > 0) {
+      const delta = now - appQuery.lastFpsSampleTime
+      const fps = ((appQuery.fpsCount / delta) * 1000).toFixed(2)
 
-      appStore.setState({
+      appStore.update({
         fps,
         fpsCount: 0,
       })
     }
 
-    appStore.setState({
-      lastFpsSampleTime: now,
-    })
+    appService.updateLastFpsSampleTime(now)
   }
 
   private tick = (timestamp: number): void => {
-    if (!appStore.state.isRunning) return
+    if (!appQuery.isRunning) return
 
     const fpsInterval = 1000 / guiQuery.maxFps
-    const elapsed = timestamp - appStore.state.lastDrawTime
+    const elapsed = timestamp - appQuery.lastDrawTime
 
     requestAnimationFrame(this.tick)
 
-    appStore.setState({
+    appStore.update({
       fpsInterval,
-      elapsedTime: timestamp - appStore.state.lastDrawTime,
+      elapsedTime: timestamp - appQuery.lastDrawTime,
     })
 
     if (elapsed > fpsInterval) {
       const lastDrawTime = timestamp - (elapsed % fpsInterval)
 
-      appStore.setState({
+      appStore.update({
         lastDrawTime,
-        fpsCount: appStore.state.fpsCount + 1,
+        fpsCount: appQuery.fpsCount + 1,
       })
 
       this.draw()
@@ -149,8 +146,8 @@ class App {
       this.canvas.render()
     }
 
-    if (appStore.state.boids && appStore.state.boids.length) {
-      appStore.state.boids.forEach((boid: IBoid) => boid.render())
+    if (boidsStore.state.entities && boidsStore.state.entities.length) {
+      boidsStore.state.entities.forEach((boid: IBoid) => boid.render())
     }
   }
 }

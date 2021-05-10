@@ -3,8 +3,8 @@ import { config } from "./config"
 import { config as appConfig } from "../../config"
 
 // Store
-import { appStore } from "../../stores/app.store"
 import { guiQuery } from "../../stores/gui"
+import { boidsStore } from "../../stores/boids.store"
 
 // Utils
 import {
@@ -106,7 +106,7 @@ class Boid implements IBoid {
   private getComputedSteering(): IVector {
     // Accumulator vector
     let steer = new Vector(0, 0)
-    const otherBoids = appStore.state.boids.filter(
+    const otherBoids = boidsStore.state.entities.filter(
       (boid: IBoid) => boid !== this
     )
 

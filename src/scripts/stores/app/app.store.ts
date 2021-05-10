@@ -1,7 +1,4 @@
-import { IBoid } from "../actors/Boid/Boid"
-
-// Utils
-import { Store } from "./Store"
+import { Store, StoreConfig } from "@datorama/akita"
 
 export interface IAppStoreState {
   isRunning: boolean
@@ -11,10 +8,7 @@ export interface IAppStoreState {
   lastFpsSampleTime: number
   lastDrawTime: number
   elapsedTime: number
-  boids: IBoid[]
 }
-
-export type AppStore = Store<IAppStoreState>
 
 const initialState: IAppStoreState = {
   isRunning: true,
@@ -24,7 +18,11 @@ const initialState: IAppStoreState = {
   lastFpsSampleTime: 0,
   lastDrawTime: 0,
   elapsedTime: 0,
-  boids: [],
 }
 
-export const appStore: AppStore = new Store(initialState)
+@StoreConfig({ name: "app" })
+export class AppStore extends Store<IAppStoreState> {
+  constructor() {
+    super(initialState)
+  }
+}

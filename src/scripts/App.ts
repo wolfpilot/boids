@@ -1,11 +1,11 @@
 // Actors
 import Canvas, { ICanvas } from "./actors/Canvas/Canvas"
-import Boid, { IBoid } from "./actors/Boid/Boid"
+import Boid from "./actors/Boid/Boid"
 
 // Stores
 import { appStore, appService, appQuery } from "./stores/app"
 import { guiQuery } from "./stores/gui"
-import { boidsStore, boidsQuery } from "./stores/boids"
+import { boidsStore } from "./stores/boids"
 
 // Utils
 import { getRandomNumber } from "./utils/mathHelper"
@@ -25,7 +25,7 @@ const generateBoids = ({
   ctx: CanvasRenderingContext2D
   wWidth: number
   wHeight: number
-}): IBoid[] => {
+}): Boid[] => {
   const boids = [...new Array(config.boids.count)].map((_, index) => {
     const size = getRandomNumber(config.boids.minSize, config.boids.maxSize)
 
@@ -52,14 +52,23 @@ class App {
   public ctx: CanvasRenderingContext2D
   private canvas: ICanvas
   private gui: GUI
+  private boids: Boid[]
 
   constructor() {
+    const wWidth = window.innerWidth
+    const wHeight = window.innerHeight
+
     this.canvasEl = <HTMLCanvasElement>document.getElementById("canvas")
     this.ctx = <CanvasRenderingContext2D>(
       this.canvasEl.getContext("2d", { alpha: false })
     )
     this.canvas = new Canvas(this.canvasEl, this.ctx)
     this.gui = new GUI()
+    this.boids = generateBoids({
+      ctx: this.ctx,
+      wWidth,
+      wHeight,
+    })
   }
 
   public init(): void {
@@ -67,20 +76,17 @@ class App {
       throw new Error("Canvas context could not be initialised.")
     }
 
-    // TODO: Dynamic resize listener and redraw
-    const wWidth = window.innerWidth
-    const wHeight = window.innerHeight
+    const boidEntities = this.boids.map((boid) => ({
+      id: boid.id,
+      size: boid.size,
+      state: boid.state,
+    }))
 
-    const boids = generateBoids({
-      ctx: this.ctx,
-      wWidth,
-      wHeight,
-    })
-
-    boidsStore.set(boids)
+    boidsStore.set(boidEntities)
 
     this.canvas.init()
     this.gui.init()
+    this.boids.forEach((boid) => boid.init())
 
     this.startFpsCounter()
     this.startAnimation()
@@ -143,11 +149,11 @@ class App {
 
   private draw(): void {
     if (this.canvas && this.canvas.state.isEnabled) {
-      this.canvas.render()
+      this.canvas.draw()
     }
 
-    if (boidsQuery.all && boidsQuery.all.length) {
-      boidsQuery.all.forEach((boid) => boid.render())
+    if (this.boids && this.boids.length) {
+      this.boids.forEach((boid) => boid.draw())
     }
   }
 }

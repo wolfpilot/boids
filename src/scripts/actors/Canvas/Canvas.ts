@@ -6,9 +6,7 @@ export interface IState {
 export interface ICanvas {
   state: IState
   init: () => void
-  render: () => void
-  handleResize: () => void
-  update: (args: IState) => void
+  draw: () => void
 }
 
 // Setup
@@ -35,19 +33,7 @@ class Canvas implements ICanvas {
     this.resize()
   }
 
-  public handleResize(): void {
-    this.resize()
-  }
-
-  public update(args: IState): void {
-    this.state = { ...this.state, ...args }
-  }
-
-  public render(): void {
-    this.draw()
-  }
-
-  private draw(): void {
+  public draw(): void {
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height)
     this.ctx.fillStyle = this.state.fill
     this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height)

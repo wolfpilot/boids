@@ -5,6 +5,8 @@ import { IAppStoreState, AppStore } from "./app.store"
 
 export class AppQuery extends Query<IAppStoreState> {
   allState$ = this.select()
+  elapsedTime$ = this.select("elapsedTime")
+  lastDrawTime$ = this.select("lastDrawTime")
 
   constructor(protected store: AppStore) {
     super(store)

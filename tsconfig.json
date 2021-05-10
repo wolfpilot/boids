@@ -25,6 +25,7 @@
     "noUnusedParameters": true,
     "removeComments": false,
     "preserveConstEnums": true,
+    "experimentalDecorators": true,
     "paths": {
       "*": ["typings/*",],
     }

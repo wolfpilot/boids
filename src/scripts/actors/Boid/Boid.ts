@@ -22,6 +22,12 @@ import { IBehaviourType, seek, align, separate } from "../../behaviours/index"
 // Geometry
 import Vector, { IVector } from "../../geometry/Vector"
 
+export enum BehaviourKind {
+  Seek = "seek",
+  Align = "align",
+  Separate = "separate",
+}
+
 export interface IState {
   location: IVector
   acceleration: IVector
@@ -104,7 +110,11 @@ class Boid implements IBoid {
     this.frictionFactor = this.size / appConfig.boids.maxSize / 15
 
     // Set up all available behaviours
-    this.behaviours = ["seek", "align", "separate"]
+    this.behaviours = [
+      BehaviourKind.Seek,
+      BehaviourKind.Align,
+      BehaviourKind.Separate,
+    ]
 
     this.state = {
       ...initialState,
@@ -131,7 +141,7 @@ class Boid implements IBoid {
 
     const otherBoids = boidsQuery.getOtherBoids(newBoid.id)
 
-    if (this.behaviours.includes("seek")) {
+    if (this.behaviours.includes(BehaviourKind.Seek)) {
       const options = {
         target: mouseVector,
         source: newBoid,
@@ -143,7 +153,7 @@ class Boid implements IBoid {
       steer = add(steer, vec)
     }
 
-    if (this.behaviours.includes("align")) {
+    if (this.behaviours.includes(BehaviourKind.Align)) {
       const options = {
         boids: otherBoids,
         source: newBoid,
@@ -155,7 +165,7 @@ class Boid implements IBoid {
       steer = add(steer, vec)
     }
 
-    if (this.behaviours.includes("separate")) {
+    if (this.behaviours.includes(BehaviourKind.Separate)) {
       const options = {
         boids: otherBoids,
         source: newBoid,

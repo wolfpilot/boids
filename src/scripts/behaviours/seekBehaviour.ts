@@ -1,35 +1,61 @@
-import Vector from "../geometry/Vector"
-import { IVector } from "../geometry/Vector"
-import { IBoid } from "../actors/Boid/Boid"
+// Types
+import { IBoidEntity } from "../types/entities"
+
+// Config
+import { config as boidConfig } from "../actors/Boid/config"
+
+// Utils
 import {
   subtract,
   multiply,
   normalize,
+  magSq,
   limitMagnitude,
 } from "../utils/vectorHelper"
+import { mapFromToRange } from "../utils/mathHelper"
+
+// Geometry
+import Vector, { IVector } from "../geometry/Vector"
 
 interface IOptions {
   target: IVector
-  source: IBoid
-  maxSteeringForce: number
-  maxSpeed: number
+  source: IBoidEntity
 }
 
-export const seek = ({
-  target,
-  source,
-  maxSteeringForce,
-  maxSpeed,
-}: IOptions): Vector => {
+// Setup
+const brakingForce = 100
+
+export const seek = ({ target, source }: IOptions): Vector => {
+  let desired = new Vector(0, 0)
+
   const targetLocation = subtract(target, source.state.location)
+  const targetDistanceSq = magSq(targetLocation)
   const normTargetDirection = normalize(targetLocation)
 
-  // Assume that the actor will desire to head towards its target at max speed
-  const desired = multiply(normTargetDirection, maxSpeed)
+  const shouldBrake =
+    targetDistanceSq > 0 && targetDistanceSq < source.config.brakingDistance
+
+  if (shouldBrake) {
+    const brakeSq = brakingForce * brakingForce
+
+    // Scale force proportionally to distance and braking force
+    const brakeMultiplier = mapFromToRange(
+      targetDistanceSq,
+      0,
+      brakeSq,
+      0,
+      source.config.maxSpeed
+    )
+
+    desired = multiply(targetLocation, brakeMultiplier)
+  } else {
+    // Assume that the actor will desire to head towards its target at max speed
+    desired = multiply(normTargetDirection, source.config.maxSpeed)
+  }
 
   // Assign a force that allows only a certain amount of maneuverability
   const seekVector = subtract(desired, source.state.velocity)
-  const seek = limitMagnitude(seekVector, maxSteeringForce)
+  const seek = limitMagnitude(seekVector, boidConfig.maxSteeringForce)
 
   return seek
 }

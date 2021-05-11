@@ -20,6 +20,7 @@
     "lint": "eslint -f stylish \"**/*.ts\""
   },
   "dependencies": {
+    "@datorama/akita": "^6.1.3",
     "autoprefixer": "^9.8.6",
     "dat.gui": "^0.7.7",
     "postcss": "^8.2.14",

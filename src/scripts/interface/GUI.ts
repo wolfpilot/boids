@@ -1,52 +1,48 @@
 import * as dat from "dat.gui"
 
-// Config
-import { config } from "../config"
+// Store
+import { guiService, guiQuery } from "../stores/gui"
 
-// Utils
-import * as PubSub from "../services/pubSub"
-
-const defaults = {
-  maxFps: config.app.maxFramerate,
-  showTargetVector: true,
-  showNormalizedTargetVector: true,
-  showAwarenessArea: true,
-  showSeparationArea: true,
-}
+// Create mutable config object from the store's initial state
+const defaults = { ...guiQuery.allValues }
 
 class GUI {
   public init(): void {
     this.setupGUI()
   }
 
-  // TODO: Split these later into setup UI and controllers
   private setupGUI() {
     const gui = new dat.GUI()
 
     const maxFpsCtrl = gui.add(defaults, "maxFps")
+    const showFpsCtrl = gui.add(defaults, "showFps")
     const targetVectorCtrl = gui.add(defaults, "showTargetVector")
     const normalizedVectorCtrl = gui.add(defaults, "showNormalizedTargetVector")
     const awarenessAreaCtrl = gui.add(defaults, "showAwarenessArea")
     const separationAreaCtrl = gui.add(defaults, "showSeparationArea")
 
     maxFpsCtrl.onChange((value: number) => {
-      PubSub.publish("gui:maxFps", value)
+      guiService.updateMaxFps(value)
+    })
+
+    showFpsCtrl.onChange((value: boolean) => {
+      guiService.updateShowFps(value)
     })
 
     targetVectorCtrl.onChange((value: boolean) => {
-      PubSub.publish("gui:showTargetVector", value)
+      guiService.updateShowTargetVector(value)
     })
 
     normalizedVectorCtrl.onChange((value: boolean) => {
-      PubSub.publish("gui:showNormalizedTargetVector", value)
+      guiService.updateShowNormalizedTargetVector(value)
     })
 
     awarenessAreaCtrl.onChange((value: boolean) => {
-      PubSub.publish("gui:showAwarenessArea", value)
+      guiService.updateShowAwarenessArea(value)
     })
 
     separationAreaCtrl.onChange((value: boolean) => {
-      PubSub.publish("gui:showSeparationArea", value)
+      guiService.updateShowSeparationArea(value)
     })
   }
 }

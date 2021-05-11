@@ -7,46 +7,15 @@ import { appStore, appService, appQuery } from "./stores/app"
 import { guiQuery } from "./stores/gui"
 import { boidsStore } from "./stores/boids"
 
-// Utils
-import { getRandomNumber } from "./utils/mathHelper"
-
-// Interface
-import GUI from "./interface/GUI"
-import FpsMonitor from "./interface/FpsMonitor"
-
 // Config
 import { config } from "./config"
 
 // Utils
-const generateBoids = ({
-  ctx,
-  wWidth,
-  wHeight,
-}: {
-  ctx: CanvasRenderingContext2D
-  wWidth: number
-  wHeight: number
-}): Boid[] => {
-  const boids = [...new Array(config.boids.count)].map((_, index) => {
-    const size = getRandomNumber(config.boids.minSize, config.boids.maxSize)
+import { generateRandomizedBoids } from "./utils/actorHelper"
 
-    const options = {
-      id: index,
-      ctx,
-      x: getRandomNumber(0, wWidth),
-      y: getRandomNumber(0, wHeight),
-      size,
-      brakingDistance: size * config.boids.brakingFactor,
-      awarenessAreaSize: size * config.boids.awarenessFactor,
-      color:
-        config.boids.colors[getRandomNumber(0, config.boids.colors.length - 1)],
-    }
-
-    return new Boid(options)
-  })
-
-  return boids
-}
+// Interface
+import GUI from "./interface/GUI"
+import FpsMonitor from "./interface/FpsMonitor"
 
 class App {
   public canvasEl: HTMLCanvasElement
@@ -67,10 +36,11 @@ class App {
     this.canvas = new Canvas(this.canvasEl, this.ctx)
     this.gui = new GUI()
     this.fpsMonitor = new FpsMonitor()
-    this.boids = generateBoids({
+    this.boids = generateRandomizedBoids({
+      ...config.boids,
       ctx: this.ctx,
-      wWidth,
-      wHeight,
+      maxX: wWidth,
+      maxY: wHeight,
     })
   }
 

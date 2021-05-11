@@ -16,7 +16,7 @@ const COLORS = [
 
 export const config = {
   boids: {
-    count: 20,
+    total: 20,
     minSize: 30,
     maxSize: 60,
     brakingFactor: 15,

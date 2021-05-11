@@ -17,12 +17,9 @@ import {
 // Geometry
 import Vector from "../geometry/Vector"
 
-// Actors
-import { IBoid } from "../actors/Boid/Boid"
-
 interface IOptions {
   boids: IBoidEntity[]
-  source: IBoid
+  source: IBoidEntity
 }
 
 // Find the average steering vector that will align with the rest of the "pack"

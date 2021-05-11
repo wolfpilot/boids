@@ -1,3 +1,6 @@
+// Types
+import { IBoidEntity } from "../../types/entities"
+
 // Config
 import { config } from "./config"
 import { config as appConfig } from "../../config"
@@ -126,112 +129,112 @@ class Boid implements IBoid {
     appQuery.elapsedTime$.subscribe(this.update)
   }
 
-  private getComputedSteering(newState: IBoidState): IVector {
-    const newBoid = {
-      ...this,
-      state: {
-        ...newState,
-      },
-    }
-
-    // Accumulator vector
-    let steer = new Vector(0, 0)
-
-    if (!this.behaviours || !this.behaviours.length) return steer
-
-    const otherBoids = boidsQuery.getOtherBoids(newBoid.id)
-
-    if (this.behaviours.includes(BehaviourKind.Seek)) {
-      const options = {
-        target: mouseVector,
-        source: newBoid,
-      }
-      const vec = seek(options)
-
-      steer = add(steer, vec)
-    }
-
-    if (this.behaviours.includes(BehaviourKind.Align)) {
-      const options = {
-        boids: otherBoids,
-        source: newBoid,
-      }
-      const vec = align(options)
-
-      steer = add(steer, vec)
-    }
-
-    if (this.behaviours.includes(BehaviourKind.Separate)) {
-      const options = {
-        boids: otherBoids,
-        source: newBoid,
-      }
-      const vec = separate(options)
-
-      steer = add(steer, vec)
-    }
-
-    return steer
-  }
-
   private update = (): void => {
     const boidEntity = boidsQuery.getBoid(this.id)
 
     if (!boidEntity) return
 
-    // *: tempState to be shared within the whole instance
-    const newState = {
-      ...boidEntity?.state,
-      targetVector: subtract(mouseVector, boidEntity.state.location),
-      normTargetVector: normalize(boidEntity.state.targetVector),
+    const targetVector = subtract(mouseVector, boidEntity.state.location)
+    const targetDistance = mag(targetVector)
+    const normTargetVector = normalize(boidEntity.state.targetVector)
+    const velocityMag = mag(boidEntity.state.velocity)
+
+    const newBoidEntity = {
+      ...boidEntity,
+      state: {
+        ...boidEntity.state,
+        targetVector,
+        normTargetVector,
+      },
     }
 
-    // Calculate a stopping distance from the target.
-    // This prevents the boid spazzing out by always
-    // reaching and then overshooting its target.
-    const distanceFromTarget = mag(newState.targetVector)
+    const shouldStop =
+      targetDistance < config.stopDistanceThreshold &&
+      velocityMag < config.stopVelocityTreshold
 
-    if (
-      distanceFromTarget < config.stopThreshold &&
-      mag(newState.velocity) < 0.1
-    ) {
-      boidsStore.update(this.id, (entity) => ({
-        state: {
-          ...entity.state,
-          ...newState,
-          velocity: initialState.velocity,
-        },
-      }))
+    shouldStop
+      ? this.handleStopUpdate(newBoidEntity)
+      : this.handleContinueUpdate(newBoidEntity)
+  }
 
-      return
-    }
+  private handleStopUpdate(newBoidEntity: IBoidEntity): void {
+    boidsStore.update(newBoidEntity.id, {
+      state: {
+        ...newBoidEntity.state,
+        velocity: initialState.velocity,
+      },
+    })
+  }
 
-    const steer = this.getComputedSteering(newState)
+  private handleContinueUpdate(newBoidEntity: IBoidEntity): void {
+    const steer = this.getComputedSteering(newBoidEntity)
 
-    // Assign a friction-like force that pushes back against the current direction
-    const normVelocity = normalize(newState.velocity)
+    // Assign an opposing force that simulates friction
+    const normVelocity = normalize(newBoidEntity.state.velocity)
     const normFriction = multiply(normVelocity, -1)
-    const friction = multiply(normFriction, this.config.frictionFactor)
+    const friction = multiply(normFriction, newBoidEntity.config.frictionFactor)
 
     const forces = [steer, friction]
 
     // Compound all external forces with the original vector
-    const newAcceleration = applyForces(newState.acceleration, forces)
-    const newVelocity = limitMagnitude(
-      add(newState.velocity, newAcceleration),
-      this.config.maxSpeed
+    const nextAcceleration = applyForces(
+      newBoidEntity.state.acceleration,
+      forces
     )
-    const newLocation = add(newState.location, newVelocity)
+    const velocity = limitMagnitude(
+      add(newBoidEntity.state.velocity, nextAcceleration),
+      newBoidEntity.config.maxSpeed
+    )
+    const location = add(newBoidEntity.state.location, velocity)
 
-    boidsStore.update(this.id, (entity) => ({
+    boidsStore.update(newBoidEntity.id, {
       state: {
-        ...entity.state,
-        ...newState,
-        acceleration: initialState.acceleration,
-        velocity: newVelocity,
-        location: newLocation,
+        ...newBoidEntity.state,
+        acceleration: initialState.acceleration, // Reset
+        velocity,
+        location,
       },
-    }))
+    })
+  }
+
+  private getComputedSteering(boidEntity: IBoidEntity): IVector {
+    let acc = new Vector(0, 0)
+
+    if (!this.behaviours || !this.behaviours.length) return acc
+
+    const otherBoidEntities = boidsQuery.getOtherBoids(boidEntity.id)
+
+    if (this.behaviours.includes(BehaviourKind.Seek)) {
+      const options = {
+        target: mouseVector,
+        source: boidEntity,
+      }
+      const vec = seek(options)
+
+      acc = add(acc, vec)
+    }
+
+    if (this.behaviours.includes(BehaviourKind.Align)) {
+      const options = {
+        boids: otherBoidEntities,
+        source: boidEntity,
+      }
+      const vec = align(options)
+
+      acc = add(acc, vec)
+    }
+
+    if (this.behaviours.includes(BehaviourKind.Separate)) {
+      const options = {
+        boids: otherBoidEntities,
+        source: boidEntity,
+      }
+      const vec = separate(options)
+
+      acc = add(acc, vec)
+    }
+
+    return acc
   }
 
   public draw(): void {

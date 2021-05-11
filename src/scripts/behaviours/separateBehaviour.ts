@@ -7,12 +7,9 @@ import { add, subtract, multiply, normalize, mag } from "../utils/vectorHelper"
 // Geometry
 import Vector from "../geometry/Vector"
 
-// Actors
-import { IBoid } from "../actors/Boid/Boid"
-
 interface IOptions {
   boids: IBoidEntity[]
-  source: IBoid
+  source: IBoidEntity
 }
 
 // Keep a distance from neighbouring boids

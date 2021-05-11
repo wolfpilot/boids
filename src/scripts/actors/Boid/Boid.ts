@@ -28,7 +28,17 @@ export enum BehaviourKind {
   Separate = "separate",
 }
 
-export interface IState {
+export interface IBoidConfig {
+  size: number
+  maxSpeed: number
+  frictionFactor: number
+  brakingDistance: number
+  awarenessAreaSize: number
+  separationAreaSize: number
+  color: string
+}
+
+export interface IBoidState {
   location: IVector
   acceleration: IVector
   velocity: IVector
@@ -39,12 +49,8 @@ export interface IState {
 
 export interface IBoid {
   id: number
-  size: number
-  brakingDistance: number
-  awarenessAreaSize: number
-  separationAreaSize: number
-  maxSpeed: number
-  state: IState
+  config: IBoidConfig
+  state: IBoidState
   init: () => void
   draw: () => void
 }
@@ -61,7 +67,7 @@ interface IOptions {
 }
 
 // Setup
-const initialState: IState = {
+const initialState: IBoidState = {
   location: new Vector(0, 0),
   acceleration: new Vector(0, 0),
   velocity: new Vector(0, 0),
@@ -83,38 +89,32 @@ document.addEventListener("mousemove", onMouseUpdate)
 // Setup
 class Boid implements IBoid {
   public id: number
-  public size: number
-  public awarenessAreaSize: number
-  public brakingDistance: number
-  public separationAreaSize: number
-  public maxSpeed: number
-  public state: IState
+  public config: IBoidConfig
+  public state: IBoidState
   private ctx: CanvasRenderingContext2D
-  private color: string
-  private frictionFactor: number
   private behaviours: IBehaviourType[]
 
   constructor(options: IOptions) {
     this.id = options.id
     this.ctx = options.ctx
-    this.size = options.size
-    this.color = options.color
-    this.brakingDistance = options.brakingDistance
-    this.awarenessAreaSize = options.awarenessAreaSize
-    this.separationAreaSize = this.size + this.awarenessAreaSize / 10
 
-    // Set a max speed directly proportional to the weight (size)
-    this.maxSpeed = this.size / 5
-
-    // Friction is directly proportional to weight (size)
-    this.frictionFactor = this.size / appConfig.boids.maxSize / 15
-
-    // Set up all available behaviours
     this.behaviours = [
       BehaviourKind.Seek,
       BehaviourKind.Align,
       BehaviourKind.Separate,
     ]
+
+    this.config = {
+      size: options.size,
+      // Max speed is directly proportional to the weight (size)
+      maxSpeed: options.size / 5,
+      brakingDistance: options.brakingDistance,
+      awarenessAreaSize: options.awarenessAreaSize,
+      separationAreaSize: options.size + options.awarenessAreaSize / 10,
+      // Friction is directly proportional to weight (size)
+      frictionFactor: options.size / appConfig.boids.maxSize / 15,
+      color: options.color,
+    }
 
     this.state = {
       ...initialState,
@@ -126,7 +126,7 @@ class Boid implements IBoid {
     appQuery.elapsedTime$.subscribe(this.update)
   }
 
-  private getComputedSteering(newState: IState): IVector {
+  private getComputedSteering(newState: IBoidState): IVector {
     const newBoid = {
       ...this,
       state: {
@@ -145,8 +145,6 @@ class Boid implements IBoid {
       const options = {
         target: mouseVector,
         source: newBoid,
-        maxSteeringForce: config.maxSteeringForce,
-        maxSpeed: this.maxSpeed,
       }
       const vec = seek(options)
 
@@ -157,8 +155,6 @@ class Boid implements IBoid {
       const options = {
         boids: otherBoids,
         source: newBoid,
-        awarenessAreaSize: this.awarenessAreaSize,
-        alignmentFactor: config.alignmentFactor,
       }
       const vec = align(options)
 
@@ -169,8 +165,6 @@ class Boid implements IBoid {
       const options = {
         boids: otherBoids,
         source: newBoid,
-        separationAreaSize: this.separationAreaSize,
-        maxSpeed: this.maxSpeed,
       }
       const vec = separate(options)
 
@@ -185,14 +179,16 @@ class Boid implements IBoid {
 
     if (!boidEntity) return
 
+    // *: tempState to be shared within the whole instance
     const newState = {
       ...boidEntity?.state,
       targetVector: subtract(mouseVector, boidEntity.state.location),
       normTargetVector: normalize(boidEntity.state.targetVector),
     }
 
-    // Calculate a stopping distance from the target
-    // This prevents the boid spazzing out by always reaching and then overshooting its target
+    // Calculate a stopping distance from the target.
+    // This prevents the boid spazzing out by always
+    // reaching and then overshooting its target.
     const distanceFromTarget = mag(newState.targetVector)
 
     if (
@@ -215,17 +211,15 @@ class Boid implements IBoid {
     // Assign a friction-like force that pushes back against the current direction
     const normVelocity = normalize(newState.velocity)
     const normFriction = multiply(normVelocity, -1)
-    const friction = multiply(normFriction, this.frictionFactor)
+    const friction = multiply(normFriction, this.config.frictionFactor)
 
     const forces = [steer, friction]
 
-    // Compound all external forces with the original vector. This will result
-    // in a new vector pointing in the mean direction with a length
-    // of the combined magnitude of all vectors.
+    // Compound all external forces with the original vector
     const newAcceleration = applyForces(newState.acceleration, forces)
     const newVelocity = limitMagnitude(
       add(newState.velocity, newAcceleration),
-      this.maxSpeed
+      this.config.maxSpeed
     )
     const newLocation = add(newState.location, newVelocity)
 
@@ -265,19 +259,25 @@ class Boid implements IBoid {
   }
 
   // Draw the shape
-  private drawShape(state: IState): void {
+  private drawShape(state: IBoidState): void {
     this.ctx.beginPath()
     this.ctx.moveTo(
-      state.location.x - this.size / 2,
-      state.location.y - this.size / 2
+      state.location.x - this.config.size / 2,
+      state.location.y - this.config.size / 2
     )
-    this.ctx.arc(state.location.x, state.location.y, this.size, 0, 2 * Math.PI)
-    this.ctx.fillStyle = this.color
+    this.ctx.arc(
+      state.location.x,
+      state.location.y,
+      this.config.size,
+      0,
+      2 * Math.PI
+    )
+    this.ctx.fillStyle = this.config.color
     this.ctx.fill()
   }
 
   // Draw vector to target
-  private drawTargetVector(state: IState): void {
+  private drawTargetVector(state: IBoidState): void {
     this.ctx.beginPath()
     this.ctx.moveTo(state.location.x, state.location.y)
     this.ctx.lineWidth = 1
@@ -287,10 +287,10 @@ class Boid implements IBoid {
   }
 
   // Draw normalized direction vector
-  private drawDirectionVector(state: IState): void {
+  private drawDirectionVector(state: IBoidState): void {
     const normalizedDirectionVector = multiply(
       state.normTargetVector,
-      this.size
+      this.config.size
     )
 
     this.ctx.beginPath()
@@ -305,38 +305,38 @@ class Boid implements IBoid {
   }
 
   // Draw area in which the boid can be affected by external forces
-  private drawAwarenessArea(state: IState): void {
+  private drawAwarenessArea(state: IBoidState): void {
     this.ctx.beginPath()
     this.ctx.arc(
       state.location.x,
       state.location.y,
-      this.awarenessAreaSize,
+      this.config.awarenessAreaSize,
       0,
       2 * Math.PI
     )
     this.ctx.lineWidth = 1
-    this.ctx.strokeStyle = this.color
+    this.ctx.strokeStyle = this.config.color
     this.ctx.stroke()
   }
 
   // Draw area in which the boid wants to push itself away from others
-  private drawSeparationArea(state: IState): void {
+  private drawSeparationArea(state: IBoidState): void {
     this.ctx.save()
     this.ctx.globalAlpha = 0.25
 
     this.ctx.beginPath()
     this.ctx.moveTo(
-      state.location.x - this.size / 2,
-      state.location.y - this.size / 2
+      state.location.x - this.config.size / 2,
+      state.location.y - this.config.size / 2
     )
     this.ctx.arc(
       state.location.x,
       state.location.y,
-      this.separationAreaSize,
+      this.config.separationAreaSize,
       0,
       2 * Math.PI
     )
-    this.ctx.fillStyle = this.color
+    this.ctx.fillStyle = this.config.color
     this.ctx.fill()
 
     this.ctx.restore()

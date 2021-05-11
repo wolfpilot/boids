@@ -1,8 +1,7 @@
-import Vector from "../geometry/Vector"
-import { IVector } from "../geometry/Vector"
-import { IBoid } from "../actors/Boid/Boid"
+// Config
+import { config as boidConfig } from "../actors/Boid/config"
 
-// Helpers
+// Utils
 import {
   subtract,
   multiply,
@@ -12,22 +11,21 @@ import {
 } from "../utils/vectorHelper"
 import { mapFromToRange } from "../utils/mathHelper"
 
+// Geometry
+import Vector, { IVector } from "../geometry/Vector"
+
+// Actors
+import { IBoid } from "../actors/Boid/Boid"
+
 interface IOptions {
   target: IVector
   source: IBoid
-  maxSteeringForce: number
-  maxSpeed: number
 }
 
 // Setup
 const brakingForce = 100
 
-export const seek = ({
-  target,
-  source,
-  maxSteeringForce,
-  maxSpeed,
-}: IOptions): Vector => {
+export const seek = ({ target, source }: IOptions): Vector => {
   let desired = new Vector(0, 0)
 
   const targetLocation = subtract(target, source.state.location)
@@ -35,7 +33,10 @@ export const seek = ({
   const normTargetDirection = normalize(targetLocation)
 
   // Check if in braking range
-  if (targetDistanceSq > 0 && targetDistanceSq < source.brakingDistance) {
+  if (
+    targetDistanceSq > 0 &&
+    targetDistanceSq < source.config.brakingDistance
+  ) {
     const brakeSq = brakingForce * brakingForce
 
     // Scale force proportionally to distance and braking force
@@ -44,18 +45,18 @@ export const seek = ({
       0,
       brakeSq,
       0,
-      source.maxSpeed
+      source.config.maxSpeed
     )
 
     desired = multiply(targetLocation, brakeMultiplier)
   } else {
     // Assume that the actor will desire to head towards its target at max speed
-    desired = multiply(normTargetDirection, maxSpeed)
+    desired = multiply(normTargetDirection, source.config.maxSpeed)
   }
 
   // Assign a force that allows only a certain amount of maneuverability
   const seekVector = subtract(desired, source.state.velocity)
-  const seek = limitMagnitude(seekVector, maxSteeringForce)
+  const seek = limitMagnitude(seekVector, boidConfig.maxSteeringForce)
 
   return seek
 }

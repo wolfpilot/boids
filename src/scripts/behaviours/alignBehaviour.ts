@@ -1,6 +1,9 @@
 // Types
 import { IBoidEntity } from "../types/entities"
 
+// Config
+import { config as boidConfig } from "../actors/Boid/config"
+
 // Utils
 import {
   add,
@@ -20,17 +23,10 @@ import { IBoid } from "../actors/Boid/Boid"
 interface IOptions {
   boids: IBoidEntity[]
   source: IBoid
-  awarenessAreaSize: number
-  alignmentFactor: number
 }
 
 // Find the average steering vector that will align with the rest of the "pack"
-export const align = ({
-  boids,
-  source,
-  awarenessAreaSize,
-  alignmentFactor,
-}: IOptions): Vector => {
+export const align = ({ boids, source }: IOptions): Vector => {
   let align = new Vector(0, 0)
 
   // Get all other boids that can be found in the designated surrounding area
@@ -41,7 +37,7 @@ export const align = ({
     // Calculate the vector's length
     const nDistance = mag(nLocation)
 
-    if (nDistance > 0 && nDistance < awarenessAreaSize) {
+    if (nDistance > 0 && nDistance < source.config.awarenessAreaSize) {
       return boid
     }
   })
@@ -60,7 +56,7 @@ export const align = ({
   const averageVelocity = divide(normGroupVelocity, neighbours.length)
 
   align = subtract(averageVelocity, source.state.velocity)
-  align = multiply(align, alignmentFactor)
+  align = multiply(align, boidConfig.alignmentFactor)
 
   return align
 }

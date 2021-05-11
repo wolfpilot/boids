@@ -13,17 +13,10 @@ import { IBoid } from "../actors/Boid/Boid"
 interface IOptions {
   boids: IBoidEntity[]
   source: IBoid
-  separationAreaSize: number
-  maxSpeed: number
 }
 
 // Keep a distance from neighbouring boids
-export const separate = ({
-  boids,
-  source,
-  separationAreaSize,
-  maxSpeed,
-}: IOptions): Vector => {
+export const separate = ({ boids, source }: IOptions): Vector => {
   let separate = new Vector(0, 0)
 
   // Get all other boids that can be found in the designated surrounding area
@@ -31,7 +24,10 @@ export const separate = ({
     const nLocation = subtract(boid.state.location, source.state.location)
     const nDistance = mag(nLocation)
 
-    if (nDistance > 0 && nDistance < separationAreaSize + boid.size) {
+    if (
+      nDistance > 0 &&
+      nDistance < source.config.separationAreaSize + boid.config.size
+    ) {
       return boid
     }
   })
@@ -49,7 +45,7 @@ export const separate = ({
     desired = normalize(desired)
 
     // Scale force proportionally to distance & radius
-    desired = multiply(desired, maxSpeed)
+    desired = multiply(desired, source.config.maxSpeed)
     // desired.scale utils.map distSq, radiiSq, 0, 0, agent.maxSpeed
 
     separate = add(separate, desired)

@@ -5,6 +5,7 @@ import { IGuiStoreState, GuiStore } from "./gui.store"
 
 export class GuiQuery extends Query<IGuiStoreState> {
   allState$ = this.select()
+  showFps$ = this.select("showFps")
 
   constructor(protected store: GuiStore) {
     super(store)

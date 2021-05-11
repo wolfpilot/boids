@@ -1,3 +1,5 @@
+import { Subscription } from "rxjs"
+
 // Store
 import { appQuery } from "../stores/app"
 import { guiQuery } from "../stores/gui"
@@ -14,19 +16,30 @@ const initialState: IFpsMonitorState = {
 
 class FpsMonitor {
   public state: IFpsMonitorState
+  private lastDrawTimeSub: Subscription | null
+  private renderInterval: NodeJS.Timeout | null
 
   constructor() {
     this.state = {
       ...initialState,
     }
+
+    this.lastDrawTimeSub = null
+    this.renderInterval = null
   }
 
   public init(): void {
-    if (!guiQuery.showFps) return
+    guiQuery.showFps$.subscribe(this.handleShowFps)
+  }
 
-    appQuery.lastDrawTime$.subscribe(this.tick)
-
-    setInterval(this.render, 1000)
+  private handleShowFps = (showFps: boolean): void => {
+    if (showFps) {
+      this.lastDrawTimeSub = appQuery.lastDrawTime$.subscribe(this.tick)
+      this.renderInterval = setInterval(this.render, 1000)
+    } else {
+      this.lastDrawTimeSub && this.lastDrawTimeSub.unsubscribe()
+      this.renderInterval && clearInterval(this.renderInterval)
+    }
   }
 
   private tick = (): void => {

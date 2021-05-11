@@ -24,7 +24,7 @@ class FpsMonitor {
   public init(): void {
     if (!guiQuery.showFps) return
 
-    appQuery.elapsedTime$.subscribe(this.tick)
+    appQuery.lastDrawTime$.subscribe(this.tick)
 
     setInterval(this.render, 1000)
   }

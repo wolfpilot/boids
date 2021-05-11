@@ -12,6 +12,7 @@ import { getRandomNumber } from "./utils/mathHelper"
 
 // Interface
 import GUI from "./interface/GUI"
+import FpsMonitor from "./interface/FpsMonitor"
 
 // Config
 import { config } from "./config"
@@ -52,6 +53,7 @@ class App {
   public ctx: CanvasRenderingContext2D
   private canvas: ICanvas
   private gui: GUI
+  private fpsMonitor: FpsMonitor
   private boids: Boid[]
 
   constructor() {
@@ -64,6 +66,7 @@ class App {
     )
     this.canvas = new Canvas(this.canvasEl, this.ctx)
     this.gui = new GUI()
+    this.fpsMonitor = new FpsMonitor()
     this.boids = generateBoids({
       ctx: this.ctx,
       wWidth,
@@ -86,16 +89,10 @@ class App {
 
     this.canvas.init()
     this.gui.init()
+    this.fpsMonitor.init()
     this.boids.forEach((boid) => boid.init())
 
-    this.startFpsCounter()
     this.startAnimation()
-  }
-
-  private startFpsCounter(): void {
-    if (!config.app.showFps) return
-
-    setInterval(this.sampleFps, 1000)
   }
 
   private startAnimation(): void {
@@ -106,41 +103,23 @@ class App {
     requestAnimationFrame(this.tick)
   }
 
-  private sampleFps(): void {
-    const now = performance.now()
-
-    if (appQuery.fpsCount > 0) {
-      const delta = now - appQuery.lastFpsSampleTime
-      const fps = ((appQuery.fpsCount / delta) * 1000).toFixed(2)
-
-      appStore.update({
-        fps,
-        fpsCount: 0,
-      })
-    }
-
-    appService.updateLastFpsSampleTime(now)
-  }
-
   private tick = (timestamp: number): void => {
     if (!appQuery.isRunning) return
 
-    const fpsInterval = 1000 / guiQuery.maxFps
-    const elapsed = timestamp - appQuery.lastDrawTime
-
     requestAnimationFrame(this.tick)
 
+    const elapsedTime = timestamp - appQuery.lastDrawTime
+    const fpsInterval = 1000 / guiQuery.maxFps
+
     appStore.update({
-      fpsInterval,
-      elapsedTime: timestamp - appQuery.lastDrawTime,
+      elapsedTime,
     })
 
-    if (elapsed > fpsInterval) {
-      const lastDrawTime = timestamp - (elapsed % fpsInterval)
+    if (elapsedTime > fpsInterval) {
+      const lastDrawTime = timestamp - (elapsedTime % fpsInterval)
 
       appStore.update({
         lastDrawTime,
-        fpsCount: appQuery.fpsCount + 1,
       })
 
       this.draw()

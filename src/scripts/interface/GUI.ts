@@ -15,6 +15,7 @@ class GUI {
     const gui = new dat.GUI()
 
     const maxFpsCtrl = gui.add(defaults, "maxFps")
+    const showFpsCtrl = gui.add(defaults, "showFps")
     const targetVectorCtrl = gui.add(defaults, "showTargetVector")
     const normalizedVectorCtrl = gui.add(defaults, "showNormalizedTargetVector")
     const awarenessAreaCtrl = gui.add(defaults, "showAwarenessArea")
@@ -22,6 +23,10 @@ class GUI {
 
     maxFpsCtrl.onChange((value: number) => {
       guiService.updateMaxFps(value)
+    })
+
+    showFpsCtrl.onChange((value: boolean) => {
+      guiService.updateShowFps(value)
     })
 
     targetVectorCtrl.onChange((value: boolean) => {

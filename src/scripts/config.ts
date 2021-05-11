@@ -15,9 +15,6 @@ const COLORS = [
 ]
 
 export const config = {
-  app: {
-    showFps: true,
-  },
   boids: {
     count: 20,
     minSize: 30,

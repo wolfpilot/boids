@@ -18,6 +18,10 @@ export class GuiQuery extends Query<IGuiStoreState> {
     return this.getValue().maxFps
   }
 
+  get showFps(): boolean {
+    return this.getValue().showFps
+  }
+
   get showTargetVector(): boolean {
     return this.getValue().showTargetVector
   }

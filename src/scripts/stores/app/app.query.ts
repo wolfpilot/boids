@@ -20,27 +20,11 @@ export class AppQuery extends Query<IAppStoreState> {
     return this.getValue().isRunning
   }
 
-  get fps(): string {
-    return this.getValue().fps
-  }
-
-  get fpsCount(): number {
-    return this.getValue().fpsCount
-  }
-
-  get fpsInterval(): number {
-    return this.getValue().fpsInterval
-  }
-
-  get lastFpsSampleTime(): number {
-    return this.getValue().lastFpsSampleTime
+  get elapsedTime(): number {
+    return this.getValue().elapsedTime
   }
 
   get lastDrawTime(): number {
     return this.getValue().lastDrawTime
-  }
-
-  get elapsedTime(): number {
-    return this.getValue().elapsedTime
   }
 }

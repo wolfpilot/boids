@@ -7,27 +7,11 @@ export class AppService {
     this.appStore.update({ isRunning: val })
   }
 
-  updateFps(val: string): void {
-    this.appStore.update({ fps: val })
-  }
-
-  updateFpsCount(val: number): void {
-    this.appStore.update({ fpsCount: val })
-  }
-
-  updateFpsInterval(val: number): void {
-    this.appStore.update({ fpsInterval: val })
-  }
-
-  updateLastFpsSampleTime(val: number): void {
-    this.appStore.update({ lastFpsSampleTime: val })
+  updateElapsedTime(val: number): void {
+    this.appStore.update({ elapsedTime: val })
   }
 
   updateLastDrawTime(val: number): void {
     this.appStore.update({ lastDrawTime: val })
-  }
-
-  updateElapsedTime(val: number): void {
-    this.appStore.update({ elapsedTime: val })
   }
 }

@@ -32,11 +32,10 @@ export const seek = ({ target, source }: IOptions): Vector => {
   const targetDistanceSq = magSq(targetLocation)
   const normTargetDirection = normalize(targetLocation)
 
-  // Check if in braking range
-  if (
-    targetDistanceSq > 0 &&
-    targetDistanceSq < source.config.brakingDistance
-  ) {
+  const shouldBrake =
+    targetDistanceSq > 0 && targetDistanceSq < source.config.brakingDistance
+
+  if (shouldBrake) {
     const brakeSq = brakingForce * brakingForce
 
     // Scale force proportionally to distance and braking force

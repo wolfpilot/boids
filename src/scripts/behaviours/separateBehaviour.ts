@@ -12,27 +12,25 @@ interface IOptions {
   source: IBoidEntity
 }
 
+// Utils
+const isInRange = (target: IBoidEntity, source: IBoidEntity): boolean => {
+  const nLocation = subtract(target.state.location, source.state.location)
+  const nDistance = mag(nLocation)
+
+  return (
+    nDistance > 0 &&
+    nDistance < source.config.separationAreaSize + target.config.size
+  )
+}
+
 // Keep a distance from neighbouring boids
 export const separate = ({ boids, source }: IOptions): Vector => {
   let separate = new Vector(0, 0)
 
-  // Get all other boids that can be found in the designated surrounding area
-  const neighbours = boids.filter((boid) => {
-    const nLocation = subtract(boid.state.location, source.state.location)
-    const nDistance = mag(nLocation)
-
-    if (
-      nDistance > 0 &&
-      nDistance < source.config.separationAreaSize + boid.config.size
-    ) {
-      return boid
-    }
-  })
+  const neighbours = boids.filter((boid) => isInRange(boid, source))
 
   // Check if any neighbors are found within the acceptable vicinity
-  if (neighbours.length === 0) {
-    return separate
-  }
+  if (neighbours.length === 0) return separate
 
   // Calculate the forces necessary to separate this from other boids
   neighbours.forEach((boid) => {
@@ -43,7 +41,6 @@ export const separate = ({ boids, source }: IOptions): Vector => {
 
     // Scale force proportionally to distance & radius
     desired = multiply(desired, source.config.maxSpeed)
-    // desired.scale utils.map distSq, radiiSq, 0, 0, agent.maxSpeed
 
     separate = add(separate, desired)
   })

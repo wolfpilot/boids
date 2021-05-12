@@ -33,7 +33,7 @@ export const seek = ({ target, source }: IOptions): Vector => {
   const normTargetDirection = normalize(targetLocation)
 
   const shouldBrake =
-    targetDistanceSq > 0 && targetDistanceSq < source.config.brakingDistance
+    targetDistanceSq > 0 && targetDistanceSq < source.traits.brakingDistance
 
   if (shouldBrake) {
     const brakeSq = brakingForce * brakingForce
@@ -44,13 +44,13 @@ export const seek = ({ target, source }: IOptions): Vector => {
       0,
       brakeSq,
       0,
-      source.config.maxSpeed
+      source.traits.maxSpeed
     )
 
     desired = multiply(targetLocation, brakeMultiplier)
   } else {
     // Assume that the actor will desire to head towards its target at max speed
-    desired = multiply(normTargetDirection, source.config.maxSpeed)
+    desired = multiply(normTargetDirection, source.traits.maxSpeed)
   }
 
   // Assign a force that allows only a certain amount of maneuverability

@@ -2,7 +2,7 @@ import type { Config } from "@jest/types"
 
 const config: Config.InitialOptions = {
   preset: "ts-jest",
-  testEnvironment: "node",
+  testEnvironment: "jsdom",
   testMatch: ["<rootDir>/src/**/*.spec.ts"],
   testPathIgnorePatterns: ["/node_modules/"],
   coverageDirectory: "./coverage",
@@ -17,6 +17,7 @@ const config: Config.InitialOptions = {
       diagnostics: false,
     },
   },
+  setupFiles: ["jest-canvas-mock"],
   transform: {},
 }
 

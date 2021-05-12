@@ -19,7 +19,7 @@ const isInRange = (target: IBoidEntity, source: IBoidEntity): boolean => {
 
   return (
     nDistance > 0 &&
-    nDistance < source.config.separationAreaSize + target.config.size
+    nDistance < source.traits.separationAreaSize + target.traits.size
   )
 }
 
@@ -40,7 +40,7 @@ export const separate = ({ boids, source }: IOptions): Vector => {
     desired = normalize(desired)
 
     // Scale force proportionally to distance & radius
-    desired = multiply(desired, source.config.maxSpeed)
+    desired = multiply(desired, source.traits.maxSpeed)
 
     separate = add(separate, desired)
   })

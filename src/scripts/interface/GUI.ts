@@ -14,12 +14,22 @@ class GUI {
   private setupGUI() {
     const gui = new dat.GUI()
 
-    const maxFpsCtrl = gui.add(defaults, "maxFps")
-    const showFpsCtrl = gui.add(defaults, "showFps")
-    const targetVectorCtrl = gui.add(defaults, "showTargetVector")
-    const normalizedVectorCtrl = gui.add(defaults, "showNormalizedTargetVector")
-    const awarenessAreaCtrl = gui.add(defaults, "showAwarenessArea")
-    const separationAreaCtrl = gui.add(defaults, "showSeparationArea")
+    const fpsFolder = gui.addFolder("fps")
+    const boidFolder = gui.addFolder("vector")
+
+    const maxFpsCtrl = fpsFolder.add(defaults, "maxFps")
+    const showFpsCtrl = fpsFolder.add(defaults, "showFps")
+
+    const targetVectorCtrl = boidFolder.add(defaults, "showTargetVector")
+    const normalizedVectorCtrl = boidFolder.add(
+      defaults,
+      "showNormalizedTargetVector"
+    )
+    const awarenessAreaCtrl = boidFolder.add(defaults, "showAwarenessArea")
+    const separationAreaCtrl = boidFolder.add(defaults, "showSeparationArea")
+
+    fpsFolder.open()
+    boidFolder.open()
 
     maxFpsCtrl.onChange((value: number) => {
       guiService.updateMaxFps(value)

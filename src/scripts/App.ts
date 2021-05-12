@@ -7,47 +7,32 @@ import { appStore, appService, appQuery } from "./stores/app"
 import { guiQuery } from "./stores/gui"
 import { boidsStore } from "./stores/boids"
 
+// Config
+import { config } from "./config"
+
 // Utils
-import { getRandomNumber } from "./utils/mathHelper"
+import { generateRandomizedBoids } from "./utils/actorHelper"
 
 // Interface
 import GUI from "./interface/GUI"
 import FpsMonitor from "./interface/FpsMonitor"
 
-// Config
-import { config } from "./config"
-
-// Utils
-const generateBoids = ({
-  ctx,
-  wWidth,
-  wHeight,
-}: {
-  ctx: CanvasRenderingContext2D
-  wWidth: number
-  wHeight: number
-}): Boid[] => {
-  const boids = [...new Array(config.boids.count)].map((_, index) => {
-    const size = getRandomNumber(config.boids.minSize, config.boids.maxSize)
-
-    const options = {
-      id: index,
-      ctx,
-      x: getRandomNumber(0, wWidth),
-      y: getRandomNumber(0, wHeight),
-      size,
-      brakingDistance: size * config.boids.brakingFactor,
-      awarenessAreaSize: size * config.boids.awarenessFactor,
-      color:
-        config.boids.colors[getRandomNumber(0, config.boids.colors.length - 1)],
-    }
-
-    return new Boid(options)
-  })
-
-  return boids
-}
-
+/**
+ * The "game" engine.
+ *
+ * Responsible for two main tasks:
+ * 1. Run the update loop which keeps track of internal timestamps.
+ *
+ *    Actors can subscribe to either the elapsed or last draw time
+ *    to keep renders in sync. Essentially, this simply calculates
+ *    the next state to be drawn.
+ *
+ * 2. Call individual actors to draw at the specified FPS interval.
+ *
+ *    Actors should NOT draw on each state update since there is no
+ *    guarantee that they will end up in sync. Instead, call each
+ *    actor's draw method in a logical stacking order.
+ */
 class App {
   public canvasEl: HTMLCanvasElement
   public ctx: CanvasRenderingContext2D
@@ -67,10 +52,11 @@ class App {
     this.canvas = new Canvas(this.canvasEl, this.ctx)
     this.gui = new GUI()
     this.fpsMonitor = new FpsMonitor()
-    this.boids = generateBoids({
+    this.boids = generateRandomizedBoids({
+      ...config.boids,
       ctx: this.ctx,
-      wWidth,
-      wHeight,
+      maxX: wWidth,
+      maxY: wHeight,
     })
   }
 
@@ -81,7 +67,7 @@ class App {
 
     const boidEntities = this.boids.map((boid) => ({
       id: boid.id,
-      config: boid.config,
+      traits: boid.traits,
       state: boid.state,
     }))
 

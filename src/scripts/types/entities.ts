@@ -1,8 +1,8 @@
 // Types
-import { IBoidConfig, IBoidState } from "../actors/Boid/Boid"
+import { IBoidTraits, IBoidState } from "../actors/Boid/Boid"
 
 export interface IBoidEntity {
   id: number
-  config: IBoidConfig
+  traits: IBoidTraits
   state: IBoidState
 }

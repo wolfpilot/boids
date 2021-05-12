@@ -43,9 +43,9 @@ describe("actorHelper", () => {
   test.each(result)("should validate each Boid instance", (boid) => {
     expect(boid instanceof Boid).toBe(true)
 
-    expect(options.colors).toContain(boid.config.color)
-    expect(boid.config.size).toBeGreaterThanOrEqual(options.minSize)
-    expect(boid.config.size).toBeLessThanOrEqual(options.maxSize)
+    expect(options.colors).toContain(boid.traits.color)
+    expect(boid.traits.size).toBeGreaterThanOrEqual(options.minSize)
+    expect(boid.traits.size).toBeLessThanOrEqual(options.maxSize)
 
     const spyInit = jest.spyOn(Boid.prototype, "init")
     boid.init()

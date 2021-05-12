@@ -30,7 +30,7 @@ export enum BehaviourKind {
   Separate = "separate",
 }
 
-export interface IBoidConfig {
+export interface IBoidTraits {
   size: number
   maxSpeed: number
   frictionFactor: number
@@ -51,7 +51,7 @@ export interface IBoidState {
 
 export interface IBoid {
   id: number
-  config: IBoidConfig
+  traits: IBoidTraits
   state: IBoidState
   init: () => void
   draw: () => void
@@ -94,7 +94,7 @@ document.addEventListener("mousemove", onMouseUpdate)
 // Setup
 class Boid implements IBoid {
   public id: number
-  public config: IBoidConfig
+  public traits: IBoidTraits
   public state: IBoidState
   private ctx: CanvasRenderingContext2D
   private behaviours: IBehaviourType[]
@@ -122,7 +122,7 @@ class Boid implements IBoid {
     ]
 
     // Traits scale proportionally or exponentially with the weight (size)
-    this.config = {
+    this.traits = {
       size: size,
       maxSpeed: size * maxSpeedMultiplier,
       frictionFactor: size * size * size * frictionMultiplier,
@@ -185,7 +185,7 @@ class Boid implements IBoid {
     // Assign an opposing force that simulates friction
     const normVelocity = normalize(newBoidEntity.state.velocity)
     const normFriction = multiply(normVelocity, -1)
-    const friction = multiply(normFriction, newBoidEntity.config.frictionFactor)
+    const friction = multiply(normFriction, newBoidEntity.traits.frictionFactor)
 
     const forces = [steer, friction]
 
@@ -196,7 +196,7 @@ class Boid implements IBoid {
     )
     const velocity = limitMagnitude(
       add(newBoidEntity.state.velocity, nextAcceleration),
-      newBoidEntity.config.maxSpeed
+      newBoidEntity.traits.maxSpeed
     )
     const location = add(newBoidEntity.state.location, velocity)
 
@@ -278,17 +278,17 @@ class Boid implements IBoid {
   private drawShape(state: IBoidState): void {
     this.ctx.beginPath()
     this.ctx.moveTo(
-      state.location.x - this.config.size / 2,
-      state.location.y - this.config.size / 2
+      state.location.x - this.traits.size / 2,
+      state.location.y - this.traits.size / 2
     )
     this.ctx.arc(
       state.location.x,
       state.location.y,
-      this.config.size,
+      this.traits.size,
       0,
       2 * Math.PI
     )
-    this.ctx.fillStyle = this.config.color
+    this.ctx.fillStyle = this.traits.color
     this.ctx.fill()
   }
 
@@ -306,7 +306,7 @@ class Boid implements IBoid {
   private drawDirectionVector(state: IBoidState): void {
     const normalizedDirectionVector = multiply(
       state.normTargetVector,
-      this.config.size
+      this.traits.size
     )
 
     this.ctx.beginPath()
@@ -326,12 +326,12 @@ class Boid implements IBoid {
     this.ctx.arc(
       state.location.x,
       state.location.y,
-      this.config.awarenessAreaSize,
+      this.traits.awarenessAreaSize,
       0,
       2 * Math.PI
     )
     this.ctx.lineWidth = 1
-    this.ctx.strokeStyle = this.config.color
+    this.ctx.strokeStyle = this.traits.color
     this.ctx.stroke()
   }
 
@@ -342,17 +342,17 @@ class Boid implements IBoid {
 
     this.ctx.beginPath()
     this.ctx.moveTo(
-      state.location.x - this.config.size / 2,
-      state.location.y - this.config.size / 2
+      state.location.x - this.traits.size / 2,
+      state.location.y - this.traits.size / 2
     )
     this.ctx.arc(
       state.location.x,
       state.location.y,
-      this.config.separationAreaSize,
+      this.traits.separationAreaSize,
       0,
       2 * Math.PI
     )
-    this.ctx.fillStyle = this.config.color
+    this.ctx.fillStyle = this.traits.color
     this.ctx.fill()
 
     this.ctx.restore()

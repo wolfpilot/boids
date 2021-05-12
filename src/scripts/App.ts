@@ -67,7 +67,7 @@ class App {
 
     const boidEntities = this.boids.map((boid) => ({
       id: boid.id,
-      config: boid.config,
+      traits: boid.traits,
       state: boid.state,
     }))
 

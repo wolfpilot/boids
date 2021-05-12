@@ -17,6 +17,22 @@ import { generateRandomizedBoids } from "./utils/actorHelper"
 import GUI from "./interface/GUI"
 import FpsMonitor from "./interface/FpsMonitor"
 
+/**
+ * The "game" engine.
+ *
+ * Responsible for two main tasks:
+ * 1. Run the update loop which keeps track of internal timestamps.
+ *
+ *    Actors can subscribe to either the elapsed or last draw time
+ *    to keep renders in sync. Essentially, this simply calculates
+ *    the next state to be drawn.
+ *
+ * 2. Call individual actors to draw at the specified FPS interval.
+ *
+ *    Actors should NOT draw on each state update since there is no
+ *    guarantee that they will end up in sync. Instead, call each
+ *    actor's draw method in a logical stacking order.
+ */
 class App {
   public canvasEl: HTMLCanvasElement
   public ctx: CanvasRenderingContext2D

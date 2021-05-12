@@ -4,64 +4,43 @@ import { getRandomNumber } from "./mathHelper"
 // Actors
 import Boid from "../actors/Boid/Boid"
 
-export interface IGenerateBoidOptions {
-  id: number
-  ctx: CanvasRenderingContext2D
-  x: number
-  y: number
-  size: number
-  brakingFactor: number
-  awarenessFactor: number
-  color: string
-}
-
 export interface IGenerateRandomizedBoidsOptions {
-  ctx: CanvasRenderingContext2D
   total: number
+  ctx: CanvasRenderingContext2D
   maxX: number
   maxY: number
   minSize: number
   maxSize: number
-  brakingFactor: number
-  awarenessFactor: number
+  maxSpeedMultiplier: number
+  brakingMultiplier: number
+  awarenessMultiplier: number
+  separationMultiplier: number
+  frictionMultiplier: number
   colors: string[]
 }
 
-export const generateBoid = ({
-  id,
-  ctx,
-  x,
-  y,
-  size,
-  brakingFactor,
-  awarenessFactor,
-  color,
-}: IGenerateBoidOptions): Boid => {
-  const options = {
-    id,
-    ctx,
-    x,
-    y,
-    size,
-    brakingDistance: size * brakingFactor,
-    awarenessAreaSize: size * awarenessFactor,
-    color,
-  }
-
-  return new Boid(options)
-}
-
 export const generateRandomizedBoids = ({
-  ctx,
   total,
+  ctx,
   maxX,
   maxY,
   minSize,
   maxSize,
-  brakingFactor,
-  awarenessFactor,
+  maxSpeedMultiplier,
+  frictionMultiplier,
+  brakingMultiplier,
+  awarenessMultiplier,
+  separationMultiplier,
   colors,
 }: IGenerateRandomizedBoidsOptions): Boid[] => {
+  if (total < 1) {
+    throw new Error("Total number should be a minimum of 1.")
+  }
+
+  if (minSize < 0 || maxSize < minSize) {
+    throw new Error("The min or max size params are incorrect.")
+  }
+
   return [...new Array(total)].map((_, index) => {
     const options = {
       id: index,
@@ -69,11 +48,14 @@ export const generateRandomizedBoids = ({
       x: getRandomNumber(0, maxX),
       y: getRandomNumber(0, maxY),
       size: getRandomNumber(minSize, maxSize),
-      brakingFactor,
-      awarenessFactor,
+      maxSpeedMultiplier,
+      frictionMultiplier,
+      brakingMultiplier,
+      awarenessMultiplier,
+      separationMultiplier,
       color: colors[getRandomNumber(0, colors.length - 1)],
     }
 
-    return generateBoid(options)
+    return new Boid(options)
   })
 }

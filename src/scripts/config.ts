@@ -6,8 +6,11 @@ export const config = {
     total: 20,
     minSize: 30,
     maxSize: 60,
-    brakingFactor: 15,
-    awarenessFactor: 10,
+    maxSpeedMultiplier: 0.2,
+    brakingMultiplier: 15,
+    awarenessMultiplier: 8,
+    separationMultiplier: 1.25,
+    frictionMultiplier: 0.00000333,
     colors: BOID_COLORS,
   },
 }

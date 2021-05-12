@@ -3,7 +3,6 @@ import { IBoidEntity } from "../../types/entities"
 
 // Config
 import { config } from "./config"
-import { config as appConfig } from "../../config"
 
 // Store
 import { appQuery } from "../../stores/app"
@@ -64,8 +63,11 @@ interface IOptions {
   x: number
   y: number
   size: number
-  brakingDistance: number
-  awarenessAreaSize: number
+  maxSpeedMultiplier: number
+  frictionMultiplier: number
+  brakingMultiplier: number
+  awarenessMultiplier: number
+  separationMultiplier: number
   color: string
 }
 
@@ -97,9 +99,21 @@ class Boid implements IBoid {
   private ctx: CanvasRenderingContext2D
   private behaviours: IBehaviourType[]
 
-  constructor(options: IOptions) {
-    this.id = options.id
-    this.ctx = options.ctx
+  constructor({
+    id,
+    ctx,
+    x,
+    y,
+    size,
+    maxSpeedMultiplier,
+    frictionMultiplier,
+    brakingMultiplier,
+    awarenessMultiplier,
+    separationMultiplier,
+    color,
+  }: IOptions) {
+    this.id = id
+    this.ctx = ctx
 
     this.behaviours = [
       BehaviourKind.Seek,
@@ -107,21 +121,20 @@ class Boid implements IBoid {
       BehaviourKind.Separate,
     ]
 
+    // Traits scale proportionally or exponentially with the weight (size)
     this.config = {
-      size: options.size,
-      // Max speed is directly proportional to the weight (size)
-      maxSpeed: options.size / 5,
-      brakingDistance: options.brakingDistance,
-      awarenessAreaSize: options.awarenessAreaSize,
-      separationAreaSize: options.size + options.awarenessAreaSize / 10,
-      // Friction is directly proportional to weight (size)
-      frictionFactor: options.size / appConfig.boids.maxSize / 15,
-      color: options.color,
+      size: size,
+      maxSpeed: size * maxSpeedMultiplier,
+      frictionFactor: size * size * size * frictionMultiplier,
+      brakingDistance: size * size * brakingMultiplier,
+      awarenessAreaSize: size * awarenessMultiplier,
+      separationAreaSize: size * separationMultiplier,
+      color: color,
     }
 
     this.state = {
       ...initialState,
-      location: new Vector(options.x, options.y),
+      location: new Vector(x, y),
     }
   }
 

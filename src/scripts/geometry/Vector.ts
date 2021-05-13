@@ -1,7 +1,5 @@
-export interface IVector {
-  x: number
-  y: number
-}
+// Types
+import { IVector } from "../types/geometry"
 
 class Vector implements IVector {
   public x: number

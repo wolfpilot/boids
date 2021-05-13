@@ -7,6 +7,9 @@ import { appStore, appService, appQuery } from "./stores/app"
 import { guiQuery } from "./stores/gui"
 import { boidsStore } from "./stores/boids"
 
+// Managers
+import PointerManager from "./managers/PointerManager"
+
 // Config
 import { config } from "./config"
 
@@ -72,6 +75,8 @@ class App {
     }))
 
     boidsStore.set(boidEntities)
+
+    PointerManager.init()
 
     this.canvas.init()
     this.gui.init()

@@ -1,7 +1,11 @@
-import Vector, { IVector } from "../geometry/Vector"
+// Types
+import { IVector } from "../types/geometry"
 
 // Utils
 import { sum } from "./mathHelper"
+
+// Geometry
+import Vector from "../geometry/Vector"
 
 // Returns a new vector that adds v2 to v1
 export const add = (v1: IVector, v2: IVector): Vector =>

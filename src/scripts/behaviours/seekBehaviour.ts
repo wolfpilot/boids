@@ -1,5 +1,6 @@
 // Types
 import { IBoidEntity } from "../types/entities"
+import { IVector } from "../types/geometry"
 
 // Config
 import { config as boidConfig } from "../actors/Boid/config"
@@ -15,7 +16,7 @@ import {
 import { mapFromToRange } from "../utils/mathHelper"
 
 // Geometry
-import Vector, { IVector } from "../geometry/Vector"
+import Vector from "../geometry/Vector"
 
 interface IOptions {
   target: IVector

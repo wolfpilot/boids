@@ -1,5 +1,6 @@
 // Types
 import { IBoidEntity } from "../../types/entities"
+import { IVector } from "../../types/geometry"
 
 // Config
 import { config } from "./config"
@@ -7,6 +8,7 @@ import { config } from "./config"
 // Store
 import { appQuery } from "../../stores/app"
 import { guiQuery } from "../../stores/gui"
+import { uiQuery } from "../../stores/ui"
 import { boidsStore, boidsQuery } from "../../stores/boids"
 
 // Utils
@@ -22,7 +24,7 @@ import {
 import { IBehaviourType, seek, align, separate } from "../../behaviours/index"
 
 // Geometry
-import Vector, { IVector } from "../../geometry/Vector"
+import Vector from "../../geometry/Vector"
 
 export enum BehaviourKind {
   Seek = "seek",
@@ -81,20 +83,10 @@ const initialState: IBoidState = {
   normTargetVector: new Vector(0, 0),
 }
 
-// *: Temporarily using the mouse as the common boid target
-const mouseVector = new Vector(window.innerWidth / 2, window.innerHeight / 2)
-
-const onMouseUpdate = (e: MouseEvent): void => {
-  mouseVector.x = e.pageX
-  mouseVector.y = e.pageY
-}
-
-document.addEventListener("mousemove", onMouseUpdate)
-
 // Setup
 class Boid implements IBoid {
-  public id: number
-  public traits: IBoidTraits
+  public readonly id: number
+  public readonly traits: IBoidTraits
   public state: IBoidState
   private ctx: CanvasRenderingContext2D
   private behaviours: IBehaviourType[]
@@ -147,7 +139,10 @@ class Boid implements IBoid {
 
     if (!boidEntity) return
 
-    const targetVector = subtract(mouseVector, boidEntity.state.location)
+    const targetVector = subtract(
+      uiQuery.pointerVector,
+      boidEntity.state.location
+    )
     const targetDistance = mag(targetVector)
     const normTargetVector = normalize(boidEntity.state.targetVector)
     const velocityMag = mag(boidEntity.state.velocity)
@@ -219,7 +214,7 @@ class Boid implements IBoid {
 
     if (this.behaviours.includes(BehaviourKind.Seek)) {
       const options = {
-        target: mouseVector,
+        target: uiQuery.pointerVector,
         source: boidEntity,
       }
       const vec = seek(options)
@@ -297,7 +292,7 @@ class Boid implements IBoid {
     this.ctx.beginPath()
     this.ctx.moveTo(state.location.x, state.location.y)
     this.ctx.lineWidth = 1
-    this.ctx.lineTo(mouseVector.x, mouseVector.y)
+    this.ctx.lineTo(uiQuery.pointerVector.x, uiQuery.pointerVector.y)
     this.ctx.strokeStyle = config.targetVector.color
     this.ctx.stroke()
   }

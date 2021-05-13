@@ -8,6 +8,7 @@ import { guiQuery } from "./stores/gui"
 import { boidsStore } from "./stores/boids"
 
 // Managers
+import VisibilityManager from "./managers/VisibilityManager"
 import PointerManager from "./managers/PointerManager"
 
 // Config
@@ -76,6 +77,7 @@ class App {
 
     boidsStore.set(boidEntities)
 
+    VisibilityManager.init()
     PointerManager.init()
 
     this.canvas.init()

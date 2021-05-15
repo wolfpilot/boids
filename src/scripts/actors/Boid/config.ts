@@ -12,6 +12,9 @@ export interface IBoidConfig {
   velocityVector: {
     color: string
   }
+  brakingArea: {
+    color: string
+  }
 }
 
 export const config: IBoidConfig = {
@@ -27,5 +30,8 @@ export const config: IBoidConfig = {
   },
   velocityVector: {
     color: "#151515",
+  },
+  brakingArea: {
+    color: "#ff0000",
   },
 }

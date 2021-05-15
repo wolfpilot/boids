@@ -42,4 +42,8 @@ export class GuiQuery extends Query<IGuiStoreState> {
   get showSeparationArea(): boolean {
     return this.getValue().showSeparationArea
   }
+
+  get showStoppingArea(): boolean {
+    return this.getValue().showStoppingArea
+  }
 }

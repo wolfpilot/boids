@@ -245,10 +245,26 @@ class Boid implements IBoid {
     return acc
   }
 
+  // !: Draw stopping/braking zone when active
+  // !: isOffscreen -> return; update, but don't draw
   public draw(): void {
+    // !: throw? complete on die?
+
     const boidEntity = boidsQuery.getBoid(this.id)
 
     if (!boidEntity?.state) return
+
+    if (guiQuery.allValues.showAwarenessArea) {
+      this.drawAwarenessArea(boidEntity.state)
+    }
+
+    if (guiQuery.allValues.showSeparationArea) {
+      this.drawSeparationArea(boidEntity.state)
+    }
+
+    if (guiQuery.allValues.showStoppingArea) {
+      this.drawStoppingArea(boidEntity.state)
+    }
 
     this.drawShape(boidEntity.state)
 
@@ -263,14 +279,67 @@ class Boid implements IBoid {
     if (guiQuery.allValues.showVelocityVector) {
       this.drawVelocityVector(boidEntity.state)
     }
+  }
 
-    if (guiQuery.allValues.showAwarenessArea) {
-      this.drawAwarenessArea(boidEntity.state)
-    }
+  // Draw area in which the boid can be affected by external forces
+  private drawAwarenessArea(state: IBoidState): void {
+    this.ctx.beginPath()
+    this.ctx.arc(
+      state.location.x,
+      state.location.y,
+      this.traits.awarenessAreaSize,
+      0,
+      2 * Math.PI
+    )
+    this.ctx.lineWidth = 1
+    this.ctx.strokeStyle = this.traits.color
+    this.ctx.stroke()
+  }
 
-    if (guiQuery.allValues.showSeparationArea) {
-      this.drawSeparationArea(boidEntity.state)
-    }
+  // Draw area in which the boid wants to push itself away from others
+  private drawSeparationArea(state: IBoidState): void {
+    this.ctx.save()
+    this.ctx.globalAlpha = 0.35
+
+    this.ctx.beginPath()
+    this.ctx.moveTo(
+      state.location.x - this.traits.size / 2,
+      state.location.y - this.traits.size / 2
+    )
+    this.ctx.arc(
+      state.location.x,
+      state.location.y,
+      this.traits.separationAreaSize,
+      0,
+      2 * Math.PI
+    )
+    this.ctx.fillStyle = this.traits.color
+    this.ctx.fill()
+
+    this.ctx.restore()
+  }
+
+  // Draw area in which the boid deccelerates near the target
+  private drawStoppingArea(state: IBoidState): void {
+    this.ctx.save()
+    this.ctx.globalAlpha = 0.05
+
+    this.ctx.beginPath()
+    this.ctx.moveTo(
+      state.location.x - this.traits.size / 2,
+      state.location.y - this.traits.size / 2
+    )
+    this.ctx.arc(
+      state.location.x,
+      state.location.y,
+      this.traits.brakingDistance,
+      0,
+      2 * Math.PI
+    )
+    this.ctx.fillStyle = config.brakingArea.color
+    this.ctx.fill()
+
+    this.ctx.restore()
   }
 
   // Draw the shape
@@ -332,44 +401,6 @@ class Boid implements IBoid {
     )
     this.ctx.strokeStyle = config.velocityVector.color
     this.ctx.stroke()
-  }
-
-  // Draw area in which the boid can be affected by external forces
-  private drawAwarenessArea(state: IBoidState): void {
-    this.ctx.beginPath()
-    this.ctx.arc(
-      state.location.x,
-      state.location.y,
-      this.traits.awarenessAreaSize,
-      0,
-      2 * Math.PI
-    )
-    this.ctx.lineWidth = 1
-    this.ctx.strokeStyle = this.traits.color
-    this.ctx.stroke()
-  }
-
-  // Draw area in which the boid wants to push itself away from others
-  private drawSeparationArea(state: IBoidState): void {
-    this.ctx.save()
-    this.ctx.globalAlpha = 0.25
-
-    this.ctx.beginPath()
-    this.ctx.moveTo(
-      state.location.x - this.traits.size / 2,
-      state.location.y - this.traits.size / 2
-    )
-    this.ctx.arc(
-      state.location.x,
-      state.location.y,
-      this.traits.separationAreaSize,
-      0,
-      2 * Math.PI
-    )
-    this.ctx.fillStyle = this.traits.color
-    this.ctx.fill()
-
-    this.ctx.restore()
   }
 }
 

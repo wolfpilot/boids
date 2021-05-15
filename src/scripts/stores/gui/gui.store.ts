@@ -8,6 +8,7 @@ export interface IGuiStoreState {
   showVelocityVector: boolean
   showAwarenessArea: boolean
   showSeparationArea: boolean
+  showStoppingArea: boolean
 }
 
 const initialState: IGuiStoreState = {
@@ -18,6 +19,7 @@ const initialState: IGuiStoreState = {
   showVelocityVector: true,
   showAwarenessArea: true,
   showSeparationArea: true,
+  showStoppingArea: false,
 }
 
 @StoreConfig({ name: "gui" })

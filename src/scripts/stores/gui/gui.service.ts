@@ -30,4 +30,8 @@ export class GuiService {
   updateShowSeparationArea(val: boolean): void {
     this.guiStore.update({ showSeparationArea: val })
   }
+
+  updateShowStoppingArea(val: boolean): void {
+    this.guiStore.update({ showStoppingArea: val })
+  }
 }

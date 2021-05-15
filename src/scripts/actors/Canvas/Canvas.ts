@@ -34,7 +34,6 @@ class Canvas implements ICanvas {
   }
 
   public draw(): void {
-    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height)
     this.ctx.fillStyle = this.state.fill
     this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height)
   }

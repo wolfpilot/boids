@@ -7,7 +7,7 @@ export const config = {
     minSize: 30,
     maxSize: 60,
     maxSpeedMultiplier: 0.2,
-    brakingMultiplier: 15,
+    brakingMultiplier: 0.15,
     awarenessMultiplier: 8,
     separationMultiplier: 1.25,
     frictionMultiplier: 0.00000333,

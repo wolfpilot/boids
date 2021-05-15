@@ -25,8 +25,11 @@ class GUI {
       defaults,
       "showNormalizedTargetVector"
     )
+    const velocityVectorCtrl = boidFolder.add(defaults, "showVelocityVector")
+
     const awarenessAreaCtrl = boidFolder.add(defaults, "showAwarenessArea")
     const separationAreaCtrl = boidFolder.add(defaults, "showSeparationArea")
+    const stoppingAreaCtrl = boidFolder.add(defaults, "showStoppingArea")
 
     fpsFolder.open()
     boidFolder.open()
@@ -47,12 +50,20 @@ class GUI {
       guiService.updateShowNormalizedTargetVector(value)
     })
 
+    velocityVectorCtrl.onChange((value: boolean) => {
+      guiService.updateShowVelocityVector(value)
+    })
+
     awarenessAreaCtrl.onChange((value: boolean) => {
       guiService.updateShowAwarenessArea(value)
     })
 
     separationAreaCtrl.onChange((value: boolean) => {
       guiService.updateShowSeparationArea(value)
+    })
+
+    stoppingAreaCtrl.onChange((value: boolean) => {
+      guiService.updateShowStoppingArea(value)
     })
   }
 }

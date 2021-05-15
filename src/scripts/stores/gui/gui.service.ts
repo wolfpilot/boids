@@ -19,11 +19,19 @@ export class GuiService {
     this.guiStore.update({ showNormalizedTargetVector: val })
   }
 
+  updateShowVelocityVector(val: boolean): void {
+    this.guiStore.update({ showVelocityVector: val })
+  }
+
   updateShowAwarenessArea(val: boolean): void {
     this.guiStore.update({ showAwarenessArea: val })
   }
 
   updateShowSeparationArea(val: boolean): void {
     this.guiStore.update({ showSeparationArea: val })
+  }
+
+  updateShowStoppingArea(val: boolean): void {
+    this.guiStore.update({ showStoppingArea: val })
   }
 }

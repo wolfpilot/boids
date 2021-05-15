@@ -9,8 +9,8 @@ import { config as boidConfig } from "../actors/Boid/config"
 import {
   subtract,
   multiply,
-  normalize,
-  magSq,
+  mag,
+  setMagnitude,
   limitMagnitude,
 } from "../utils/vectorHelper"
 import { mapFromToRange } from "../utils/mathHelper"
@@ -23,40 +23,36 @@ interface IOptions {
   source: IBoidEntity
 }
 
-// Setup
-const brakingForce = 100
-
 export const seek = ({ target, source }: IOptions): Vector => {
-  let desired = new Vector(0, 0)
+  let desiredVelocity = new Vector(0, 0)
 
-  const targetLocation = subtract(target, source.state.location)
-  const targetDistanceSq = magSq(targetLocation)
-  const normTargetDirection = normalize(targetLocation)
+  const targetVector = subtract(target, source.state.location)
+  const targetDistance = mag(targetVector)
 
   const shouldBrake =
-    targetDistanceSq > 0 && targetDistanceSq < source.traits.brakingDistance
+    targetDistance > 0 && targetDistance < source.traits.brakingDistance
 
   if (shouldBrake) {
-    const brakeSq = brakingForce * brakingForce
-
-    // Scale force proportionally to distance and braking force
-    const brakeMultiplier = mapFromToRange(
-      targetDistanceSq,
+    // Scale force proportionally to distance and max speed
+    const speed = mapFromToRange(
+      targetDistance,
       0,
-      brakeSq,
+      100,
       0,
       source.traits.maxSpeed
     )
 
-    desired = multiply(targetLocation, brakeMultiplier)
+    desiredVelocity = multiply(targetVector, speed)
   } else {
     // Assume that the actor will desire to head towards its target at max speed
-    desired = multiply(normTargetDirection, source.traits.maxSpeed)
+    desiredVelocity = setMagnitude(targetVector, source.traits.maxSpeed)
   }
 
-  // Assign a force that allows only a certain amount of maneuverability
-  const seekVector = subtract(desired, source.state.velocity)
-  const seek = limitMagnitude(seekVector, boidConfig.maxSteeringForce)
+  // Calculate the resulting steering vector
+  const steerVector = subtract(desiredVelocity, source.state.velocity)
 
-  return seek
+  // Assign a force that allows only a certain amount of maneuverability
+  const res = limitMagnitude(steerVector, boidConfig.maxSteeringForce)
+
+  return res
 }

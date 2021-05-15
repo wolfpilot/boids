@@ -31,6 +31,10 @@ export class GuiQuery extends Query<IGuiStoreState> {
     return this.getValue().showNormalizedTargetVector
   }
 
+  get showVelocityVector(): boolean {
+    return this.getValue().showVelocityVector
+  }
+
   get showAwarenessArea(): boolean {
     return this.getValue().showAwarenessArea
   }

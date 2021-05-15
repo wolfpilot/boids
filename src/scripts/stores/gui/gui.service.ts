@@ -19,6 +19,10 @@ export class GuiService {
     this.guiStore.update({ showNormalizedTargetVector: val })
   }
 
+  updateShowVelocityVector(val: boolean): void {
+    this.guiStore.update({ showVelocityVector: val })
+  }
+
   updateShowAwarenessArea(val: boolean): void {
     this.guiStore.update({ showAwarenessArea: val })
   }

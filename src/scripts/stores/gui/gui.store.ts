@@ -5,6 +5,7 @@ export interface IGuiStoreState {
   showFps: boolean
   showTargetVector: boolean
   showNormalizedTargetVector: boolean
+  showVelocityVector: boolean
   showAwarenessArea: boolean
   showSeparationArea: boolean
 }
@@ -14,6 +15,7 @@ const initialState: IGuiStoreState = {
   showFps: true,
   showTargetVector: true,
   showNormalizedTargetVector: true,
+  showVelocityVector: true,
   showAwarenessArea: true,
   showSeparationArea: true,
 }

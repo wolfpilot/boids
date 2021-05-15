@@ -260,6 +260,10 @@ class Boid implements IBoid {
       this.drawDirectionVector(boidEntity.state)
     }
 
+    if (guiQuery.allValues.showVelocityVector) {
+      this.drawVelocityVector(boidEntity.state)
+    }
+
     if (guiQuery.allValues.showAwarenessArea) {
       this.drawAwarenessArea(boidEntity.state)
     }
@@ -306,12 +310,27 @@ class Boid implements IBoid {
 
     this.ctx.beginPath()
     this.ctx.moveTo(state.location.x, state.location.y)
-    this.ctx.lineWidth = 2
+    this.ctx.lineWidth = 3
     this.ctx.lineTo(
       state.location.x + normalizedDirectionVector.x,
       state.location.y + normalizedDirectionVector.y
     )
     this.ctx.strokeStyle = config.directionVector.color
+    this.ctx.stroke()
+  }
+
+  // Draw the resulting force vector
+  private drawVelocityVector(state: IBoidState): void {
+    const upscaledVelocityVector = multiply(state.velocity, 5)
+
+    this.ctx.beginPath()
+    this.ctx.moveTo(state.location.x, state.location.y)
+    this.ctx.lineWidth = 3
+    this.ctx.lineTo(
+      state.location.x + upscaledVelocityVector.x,
+      state.location.y + upscaledVelocityVector.y
+    )
+    this.ctx.strokeStyle = config.velocityVector.color
     this.ctx.stroke()
   }
 

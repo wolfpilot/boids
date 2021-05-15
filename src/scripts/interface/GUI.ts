@@ -25,6 +25,8 @@ class GUI {
       defaults,
       "showNormalizedTargetVector"
     )
+    const velocityVectorCtrl = boidFolder.add(defaults, "showVelocityVector")
+
     const awarenessAreaCtrl = boidFolder.add(defaults, "showAwarenessArea")
     const separationAreaCtrl = boidFolder.add(defaults, "showSeparationArea")
 
@@ -45,6 +47,10 @@ class GUI {
 
     normalizedVectorCtrl.onChange((value: boolean) => {
       guiService.updateShowNormalizedTargetVector(value)
+    })
+
+    velocityVectorCtrl.onChange((value: boolean) => {
+      guiService.updateShowVelocityVector(value)
     })
 
     awarenessAreaCtrl.onChange((value: boolean) => {

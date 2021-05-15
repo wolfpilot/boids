@@ -59,6 +59,12 @@ export const limitMagnitude = (v: IVector, max: number): Vector => {
   }
 }
 
+export const setMagnitude = (v: IVector, factor: number): IVector => {
+  const normV = normalize(v)
+
+  return multiply(normV, factor)
+}
+
 // Return the combination of all forces applied to an initial force vector
 export const applyForces = (v: IVector, vectors: IVector[]): Vector => {
   const xCoords = vectors.map((v: IVector) => v.x)

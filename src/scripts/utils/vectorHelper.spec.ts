@@ -96,6 +96,15 @@ describe("vectorHelper", () => {
     expect(result2).toStrictEqual(expected2)
   })
 
+  it("should set the magnitude of a provided vector", () => {
+    const v = new Vector(-10, 25)
+
+    const result = vectorHelper.mag(vectorHelper.setMagnitude(v, 3))
+    const expected = 3
+
+    expect(result).toBeCloseTo(expected)
+  })
+
   it("should apply forces to the vector", () => {
     const v = new Vector(-10, 25)
     const forces = [new Vector(2, 5), new Vector(-7, 0), new Vector(20, 0.7)]

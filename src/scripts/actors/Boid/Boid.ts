@@ -21,7 +21,7 @@ import {
   normalize,
   limitMagnitude,
 } from "../../utils/vectorHelper"
-import { IBehaviourType, seek, align, separate } from "../../behaviours/index"
+import { seek, align, separate } from "../../behaviours/index"
 
 // Geometry
 import Vector from "../../geometry/Vector"
@@ -89,7 +89,7 @@ class Boid implements IBoid {
   public readonly traits: IBoidTraits
   public state: IBoidState
   private ctx: CanvasRenderingContext2D
-  private behaviours: IBehaviourType[]
+  private behaviours: BehaviourKind[]
 
   constructor({
     id,
@@ -113,15 +113,15 @@ class Boid implements IBoid {
       BehaviourKind.Separate,
     ]
 
-    // Traits scale proportionally or exponentially with the weight (size)
+    // Traits scale with the weight (size)
     this.traits = {
-      size: size,
+      size,
       maxSpeed: size * maxSpeedMultiplier,
       frictionFactor: size * size * size * frictionMultiplier,
       brakingDistance: size * size * brakingMultiplier,
       awarenessAreaSize: size * awarenessMultiplier,
       separationAreaSize: size * separationMultiplier,
-      color: color,
+      color,
     }
 
     this.state = {

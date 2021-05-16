@@ -15,7 +15,7 @@ import PointerManager from "./managers/PointerManager"
 import { config } from "./config"
 
 // Utils
-import { generateRandomizedBoids } from "./utils/actorHelper"
+import { generateRandomizedBoids } from "./utils/boidHelper"
 
 // Interface
 import GUI from "./interface/GUI"

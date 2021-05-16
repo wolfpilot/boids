@@ -1,7 +1,7 @@
 import "jest-canvas-mock"
 
 // Utils
-import { generateRandomizedBoids } from "./actorHelper"
+import { generateRandomizedBoids } from "./boidHelper"
 
 // Constants
 import { BOID_COLORS } from "../constants/colors"
@@ -15,7 +15,7 @@ let ctx
 
 const options = {
   total: 5,
-  ctx: ctx,
+  ctx,
   maxX: 1920,
   maxY: 1080,
   minSize: 10,
@@ -28,7 +28,7 @@ const options = {
   colors: BOID_COLORS,
 }
 
-const result = generateRandomizedBoids(options)
+const randomBoids = generateRandomizedBoids(options)
 
 beforeEach(() => {
   canvas = document.createElement("canvas")
@@ -37,10 +37,10 @@ beforeEach(() => {
 
 describe("actorHelper", () => {
   it("should generate an array of Boids within the specified constraints", () => {
-    expect(result.length).toBe(options.total)
+    expect(randomBoids.length).toBe(options.total)
   })
 
-  test.each(result)("should validate each Boid instance", (boid) => {
+  test.each(randomBoids)("should validate each Boid instance", (boid) => {
     expect(boid instanceof Boid).toBe(true)
 
     expect(options.colors).toContain(boid.traits.color)

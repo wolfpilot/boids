@@ -12,12 +12,12 @@ export interface IGuiStoreState {
 }
 
 const initialState: IGuiStoreState = {
-  maxFps: 30,
+  maxFps: 60,
   showFps: true,
   showTargetVector: true,
   showNormalizedTargetVector: true,
   showVelocityVector: true,
-  showAwarenessArea: true,
+  showAwarenessArea: false,
   showSeparationArea: true,
   showStoppingArea: false,
 }

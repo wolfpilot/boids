@@ -21,6 +21,7 @@ import {
   normalize,
   limitMagnitude,
 } from "../../utils/vectorHelper"
+import { isEntityOffscreen } from "../../utils/entityHelper"
 import { seek, align, separate } from "../../behaviours/index"
 
 // Geometry
@@ -245,14 +246,17 @@ class Boid implements IBoid {
     return acc
   }
 
-  // !: Draw stopping/braking zone when active
-  // !: isOffscreen -> return; update, but don't draw
   public draw(): void {
     // !: throw? complete on die?
 
     const boidEntity = boidsQuery.getBoid(this.id)
 
     if (!boidEntity?.state) return
+
+    const isOffscreen = isEntityOffscreen({
+      v: boidEntity.state.location,
+      radius: boidEntity.traits.size,
+    })
 
     if (guiQuery.allValues.showAwarenessArea) {
       this.drawAwarenessArea(boidEntity.state)
@@ -265,6 +269,9 @@ class Boid implements IBoid {
     if (guiQuery.allValues.showStoppingArea) {
       this.drawStoppingArea(boidEntity.state)
     }
+
+    // Skip drawing if offscreen
+    if (isOffscreen) return
 
     this.drawShape(boidEntity.state)
 

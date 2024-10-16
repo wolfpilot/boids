@@ -6,7 +6,7 @@ export const config = {
     total: 20,
     minSize: 30,
     maxSize: 60,
-    maxSpeedMultiplier: 0.2,
+    maxSpeedMultiplier: 0.1,
     brakingMultiplier: 0.15,
     awarenessMultiplier: 8,
     separationMultiplier: 1.25,

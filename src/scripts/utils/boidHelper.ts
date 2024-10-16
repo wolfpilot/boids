@@ -4,7 +4,7 @@ import { getRandomNumber } from "./mathHelper"
 // Actors
 import Boid from "../actors/Boid/Boid"
 
-export interface IGenerateRandomizedBoidsOptions {
+interface IGenerateRandomizedBoidsOptions {
   total: number
   ctx: CanvasRenderingContext2D
   maxX: number

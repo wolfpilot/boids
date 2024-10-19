@@ -1,0 +1,30 @@
+# IDE auto-generated files
+.idea/
+.vscode
+
+# Operating system
+.DS_Store
+Thumbs.db
+
+# NPM
+node_modules
+package-lock.json
+
+# Yarn
+.yarn-integrity
+
+# Cache
+.cache
+.npm
+
+# Logs
+logs
+*.log
+
+# Env files
+.env.local
+.env.*.local
+
+# Output
+/dist
+/coverage

@@ -5,7 +5,7 @@ import { IGuiStoreState, GuiStore } from "./gui.store"
 
 export class GuiQuery extends Query<IGuiStoreState> {
   allState$ = this.select()
-  showFps$ = this.select("showFps")
+  logFps$ = this.select("logFps")
 
   constructor(protected store: GuiStore) {
     super(store)
@@ -19,8 +19,8 @@ export class GuiQuery extends Query<IGuiStoreState> {
     return this.getValue().maxFps
   }
 
-  get showFps(): boolean {
-    return this.getValue().showFps
+  get logFps(): boolean {
+    return this.getValue().logFps
   }
 
   get showTargetVector(): boolean {

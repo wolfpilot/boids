@@ -7,8 +7,8 @@ export class GuiService {
     this.guiStore.update({ maxFps: val })
   }
 
-  updateShowFps(val: boolean): void {
-    this.guiStore.update({ showFps: val })
+  updateLogFps(val: boolean): void {
+    this.guiStore.update({ logFps: val })
   }
 
   updateShowTargetVector(val: boolean): void {

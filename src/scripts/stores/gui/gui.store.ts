@@ -2,7 +2,7 @@ import { Store, StoreConfig } from "@datorama/akita"
 
 export interface IGuiStoreState {
   maxFps: number
-  showFps: boolean
+  logFps: boolean
   showTargetVector: boolean
   showNormalizedTargetVector: boolean
   showVelocityVector: boolean
@@ -13,10 +13,10 @@ export interface IGuiStoreState {
 
 const initialState: IGuiStoreState = {
   maxFps: 60,
-  showFps: true,
-  showTargetVector: true,
-  showNormalizedTargetVector: true,
-  showVelocityVector: true,
+  logFps: true,
+  showTargetVector: false,
+  showNormalizedTargetVector: false,
+  showVelocityVector: false,
   showAwarenessArea: false,
   showSeparationArea: true,
   showStoppingArea: false,

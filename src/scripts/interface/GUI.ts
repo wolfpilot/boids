@@ -18,7 +18,7 @@ class GUI {
     const boidFolder = gui.addFolder("vector")
 
     const maxFpsCtrl = fpsFolder.add(defaults, "maxFps")
-    const showFpsCtrl = fpsFolder.add(defaults, "showFps")
+    const logFpsCtrl = fpsFolder.add(defaults, "logFps")
 
     const targetVectorCtrl = boidFolder.add(defaults, "showTargetVector")
     const normalizedVectorCtrl = boidFolder.add(
@@ -38,8 +38,8 @@ class GUI {
       guiService.updateMaxFps(value)
     })
 
-    showFpsCtrl.onChange((value: boolean) => {
-      guiService.updateShowFps(value)
+    logFpsCtrl.onChange((value: boolean) => {
+      guiService.updateLogFps(value)
     })
 
     targetVectorCtrl.onChange((value: boolean) => {

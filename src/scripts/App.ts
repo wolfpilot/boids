@@ -5,7 +5,8 @@ import Boid from "./actors/Boid/Boid"
 // Stores
 import { appStore, appService, appQuery } from "./stores/app"
 import { guiQuery } from "./stores/gui"
-import { boidsStore } from "./stores/boids"
+import { boidsStore, boidsQuery } from "./stores/boids"
+import { uiQuery } from "./stores/ui"
 
 // Managers
 import VisibilityManager from "./managers/VisibilityManager"
@@ -16,27 +17,13 @@ import { config } from "./config"
 
 // Utils
 import { generateRandomizedBoids } from "./utils/boidHelper"
+import { stepBoids } from "./simulation/stepBoids"
 
 // Interface
 import GUI from "./interface/GUI"
 import FpsMonitor from "./interface/FpsMonitor"
 
-/**
- * The "game" engine.
- *
- * Responsible for two main tasks:
- * 1. Run the update loop which keeps track of internal timestamps.
- *
- *    Actors can subscribe to either the elapsed or last draw time
- *    to keep renders in sync. Essentially, this simply calculates
- *    the next state to be drawn.
- *
- * 2. Call individual actors to draw at the specified FPS interval.
- *
- *    Actors should NOT draw on each state update since there is no
- *    guarantee that they will end up in sync. Instead, call each
- *    actor's draw method in a logical stacking order.
- */
+/** Advances all boids from one shared snapshot, then draws the completed state. */
 class App {
   public canvasEl: HTMLCanvasElement
   public ctx: CanvasRenderingContext2D
@@ -83,8 +70,6 @@ class App {
     this.canvas.init()
     this.gui.init()
     this.fpsMonitor.init()
-    this.boids.forEach((boid) => boid.init())
-
     this.startAnimation()
   }
 
@@ -107,6 +92,7 @@ class App {
     appStore.update({
       elapsedTime,
     })
+    this.stepSimulation()
 
     if (elapsedTime > fpsInterval) {
       const lastDrawTime = timestamp - (elapsedTime % fpsInterval)
@@ -117,6 +103,11 @@ class App {
 
       this.draw()
     }
+  }
+
+  private stepSimulation(): void {
+    const snapshot = boidsQuery.all
+    boidsStore.set(stepBoids(snapshot, uiQuery.pointerVector))
   }
 
   private draw(): void {

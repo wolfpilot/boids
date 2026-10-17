@@ -5,6 +5,7 @@ Just a fun little project exploring Boid simulations in JS Canvas.
 ## Table of contents
 
 - [Intro](#intro)
+- [How it works](#how-it-works)
 - [Demo](#demo)
 - [Getting started](#getting-started)
 - [Resources](#resources)
@@ -12,7 +13,37 @@ Just a fun little project exploring Boid simulations in JS Canvas.
 
 ## Intro
 
-This is a short study into coding artificial life using Math, Physics and code. For now, I have only implemented the basic behaviours (alignment, seeking and separation), however I hope that one day I'll have the time to come back to this for further enhancements.
+This Canvas experiment currently has three steering behaviours: seek the pointer, align with nearby boids, and separate from boids that get too close.
+
+## How it works
+
+[`App`](src/scripts/App.ts) coordinates two phases: update boid state, then draw the latest state.
+
+[`Loop`](src/scripts/engine/Loop.ts) uses `requestAnimationFrame` to decide how many physics updates are due and whether a draw is due. The loop handles timing; it does not calculate steering or touch the canvas.
+
+### Update
+
+For each due physics update, `App.update()` reads the current boid entities from the store as a snapshot. [`stepBoids()`](src/scripts/engine/utils/stepBoids.ts) calculates each boid's next velocity and position from that **same input snapshot**, using the pointer target, nearby boids, steering forces, and friction.
+
+It then returns a new collection which `App` publishes to the store in one operation.
+
+A boid therefore cannot react to another boid's new position until the next physics update. If several updates are due in one browser frame, each update starts from the collection published by the previous one.
+
+### Drawing
+
+When a draw is due, `App` clears the canvas and asks each `Boid` actor to draw.
+
+The actors look up their latest entities in the store, so drawing uses the completed physics state. Drawing does not advance physics. There is no interpolation between physics states; a draw shows the latest published state.
+
+### Timing
+
+It's important to understand that the update loop and drawing loop are completely separate.
+
+Physics runs in fixed 1/60-second updates. Browser animation callbacks can arrive at uneven intervals, so the loop saves leftover time until another full update is due. The GUI's `maxFps` setting caps **drawing only**; changing it does not change the physics update rate. At a steady 30 FPS draw rate, there are typically two physics updates between draws.
+
+After a slow or suspended browser frame, the loop allows at most five physics updates at once and drops excess elapsed time rather than trying to replay a long pause. When the page is hidden, it stops requesting frames. When the page becomes visible, it restarts with a fresh clock. Boid velocities are applied once per fixed update, rather than scaled by each browser frame's elapsed time.
+
+Neighbour searches currently scan the flock for each boid, so their cost grows roughly with the square of the boid count. The default flock has 20 boids; a spatial grid would be a useful later change for much larger flocks.
 
 ## Demo
 

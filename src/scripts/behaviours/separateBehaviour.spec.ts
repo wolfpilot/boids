@@ -1,11 +1,11 @@
 import { separate } from "./separateBehaviour"
-import { IBoidEntity } from "../types/entities"
+import { createBoidEntity } from "../utils/testHelpers"
 
-const boid = (x: number): IBoidEntity =>
-  ({
-    traits: { separationAreaSize: 10, size: 0, maxSpeed: 1 },
+const boid = (x: number) =>
+  createBoidEntity({
+    traits: { separationAreaSize: 9, size: 1, maxSpeed: 1 },
     state: { location: { x, y: 0 } },
-  }) as IBoidEntity
+  })
 
 describe("separate", () => {
   it("pushes harder against a closer neighbour", () => {

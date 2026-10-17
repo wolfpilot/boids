@@ -1,14 +1,11 @@
 import { seek } from "./seekBehaviour"
-import { IBoidEntity } from "../types/entities"
+import { createBoidEntity } from "../utils/testHelpers"
 
-const source = (brakingDistance: number, velocityX = 0): IBoidEntity =>
-  ({
+const source = (brakingDistance: number, velocityX = 0) =>
+  createBoidEntity({
     traits: { brakingDistance, maxSpeed: 1 },
-    state: {
-      location: { x: 0, y: 0 },
-      velocity: { x: velocityX, y: 0 },
-    },
-  }) as IBoidEntity
+    state: { velocity: { x: velocityX, y: 0 } },
+  })
 
 describe("seek", () => {
   it("uses the boid's braking distance to set desired speed", () => {

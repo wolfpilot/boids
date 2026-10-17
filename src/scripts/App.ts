@@ -17,14 +17,23 @@ import { config } from "./config"
 
 // Utils
 import { generateRandomizedBoids } from "./utils/boidHelper"
-import { stepBoids } from "./simulation/stepBoids"
-import FixedStepLoop, { ILoopTick } from "./simulation/FixedStepLoop"
+import { calculateNextBoidStates } from "./simulation/calculateNextBoidStates"
+import FixedTimestepLoop, { IFramePlan } from "./simulation/FixedTimestepLoop"
 
 // Interface
 import GUI from "./interface/GUI"
 import FpsMonitor from "./interface/FpsMonitor"
 
-/** Advances all boids from one shared snapshot, then draws the completed state. */
+/**
+ * App coordinates physics and drawing. Each fixed physics update reads the
+ * current boids as one snapshot, calculates every next state from that same
+ * input, and publishes the completed collection. If several updates are due,
+ * each one starts from the collection published by the previous update.
+ *
+ * Drawing happens after those updates. The canvas is cleared, then each Boid
+ * actor reads its latest state from the store and draws it. Drawing does not
+ * change the physics state; the loop only decides when these phases are due.
+ */
 class App {
   public canvasEl: HTMLCanvasElement
   public ctx: CanvasRenderingContext2D
@@ -32,7 +41,7 @@ class App {
   private gui: GUI
   private fpsMonitor: FpsMonitor
   private boids: Boid[]
-  private loop: FixedStepLoop
+  private loop: FixedTimestepLoop
 
   constructor() {
     const wWidth = window.innerWidth
@@ -51,8 +60,8 @@ class App {
       maxX: wWidth,
       maxY: wHeight,
     })
-    this.loop = new FixedStepLoop({
-      onTick: this.handleLoopTick,
+    this.loop = new FixedTimestepLoop({
+      onFrame: this.applyFramePlan,
       maxFps: guiQuery.maxFps,
     })
   }
@@ -76,22 +85,29 @@ class App {
     this.canvas.init()
     this.gui.init()
     this.fpsMonitor.init()
-    guiQuery.maxFps$.subscribe((maxFps) => this.loop.setMaxFps(maxFps))
+
+    // Keep the FPS cap up to date when the GUI setting changes
+    guiQuery.maxFps$.subscribe((maxFps) => {
+      this.loop.setMaxFps(maxFps)
+    })
+
+    // VisibilityManager updates isRunning when the tab is hidden or shown
     appQuery.isRunning$.subscribe((isRunning) => {
-      if (isRunning) this.loop.start()
-      else this.loop.stop()
+      isRunning ? this.loop.start() : this.loop.stop()
     })
   }
 
-  private handleLoopTick = ({
+  private applyFramePlan = ({
     timestamp,
-    elapsedTime,
-    simulationSteps,
+    elapsedMs,
+    physicsUpdates,
     shouldDraw,
-  }: ILoopTick) => {
-    appService.updateElapsedTime(elapsedTime)
+  }: IFramePlan) => {
+    appService.updateElapsedTime(elapsedMs)
 
-    for (let i = 0; i < simulationSteps; i++) this.stepSimulation()
+    for (let i = 0; i < physicsUpdates; i++) {
+      this.advanceBoidPhysics()
+    }
 
     if (shouldDraw) {
       appService.updateLastDrawTime(timestamp)
@@ -99,10 +115,10 @@ class App {
     }
   }
 
-  private stepSimulation() {
+  private advanceBoidPhysics() {
     const snapshot = boidsQuery.all
 
-    boidsStore.set(stepBoids(snapshot, uiQuery.pointerVector))
+    boidsStore.set(calculateNextBoidStates(snapshot, uiQuery.pointerVector))
   }
 
   private draw() {

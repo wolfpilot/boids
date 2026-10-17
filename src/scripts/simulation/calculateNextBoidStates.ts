@@ -13,13 +13,14 @@ import {
   subtract,
 } from "../utils/vectorHelper"
 
-const stepBoid = (
+const calculateNextBoidState = (
   source: IBoidEntity,
   snapshot: readonly IBoidEntity[],
   target: IVector
 ): IBoidEntity => {
-  const neighbours = snapshot.filter((boid) => boid.id !== source.id)
   const targetVector = subtract(target, source.state.location)
+
+  const neighbours = snapshot.filter((boid) => boid.id !== source.id)
   const neighbourSteering = add(
     align({ boids: neighbours, source }),
     separate({ boids: neighbours, source })
@@ -60,6 +61,7 @@ const stepBoid = (
     add(source.state.velocity, acceleration),
     source.traits.maxSpeed
   )
+  const location = add(source.state.location, velocity)
 
   return {
     ...source,
@@ -67,12 +69,13 @@ const stepBoid = (
       ...state,
       acceleration: new Vector(0, 0),
       velocity,
-      location: add(source.state.location, velocity),
+      location,
     },
   }
 }
 
-export const stepBoids = (
+export const calculateNextBoidStates = (
   snapshot: readonly IBoidEntity[],
   target: IVector
-): IBoidEntity[] => snapshot.map((boid) => stepBoid(boid, snapshot, target))
+): IBoidEntity[] =>
+  snapshot.map((boid) => calculateNextBoidState(boid, snapshot, target))

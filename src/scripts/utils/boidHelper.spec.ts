@@ -10,7 +10,7 @@ import { BOID_COLORS } from "../constants/colors"
 import Boid from "../actors/Boid/Boid"
 
 let canvas: HTMLCanvasElement
-let ctx: CanvasRenderingContext2D
+let ctx: CanvasRenderingContext2D | null
 let randomBoids: Boid[] = []
 
 const options = {
@@ -30,6 +30,8 @@ const options = {
 beforeEach(() => {
   canvas = document.createElement("canvas")
   ctx = canvas.getContext("2d")
+
+  if (!ctx) return
 
   randomBoids = generateRandomizedBoids({
     ...options,

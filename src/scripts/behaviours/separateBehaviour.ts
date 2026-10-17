@@ -1,8 +1,18 @@
 // Types
 import { IBoidEntity } from "../types/entities"
 
+// Config
+import { config as boidConfig } from "../actors/Boid/config"
+
 // Utils
-import { add, subtract, multiply, normalize, mag } from "../utils/vectorHelper"
+import {
+  add,
+  subtract,
+  multiply,
+  normalize,
+  mag,
+  limitMagnitude,
+} from "../utils/vectorHelper"
 
 // Geometry
 import Vector from "../geometry/Vector"
@@ -35,15 +45,18 @@ export const separate = ({ boids, source }: IOptions): Vector => {
   // Calculate the forces necessary to separate this from other boids
   neighbours.forEach((boid) => {
     let desired = subtract(source.state.location, boid.state.location)
+    const distance = mag(desired)
+    const radius = source.traits.separationAreaSize + boid.traits.size
 
     // Compute directional unit vector
     desired = normalize(desired)
 
-    // Scale force proportionally to distance & radius
-    desired = multiply(desired, source.traits.maxSpeed)
+    // Increase separation as the neighbour gets closer.
+    const strength = (radius - distance) / radius
+    desired = multiply(desired, source.traits.maxSpeed * strength)
 
     separate = add(separate, desired)
   })
 
-  return separate
+  return limitMagnitude(separate, boidConfig.maxSteeringForce)
 }

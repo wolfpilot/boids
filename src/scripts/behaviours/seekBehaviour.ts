@@ -8,12 +8,10 @@ import { config as boidConfig } from "../actors/Boid/config"
 // Utils
 import {
   subtract,
-  multiply,
   mag,
   setMagnitude,
   limitMagnitude,
 } from "../utils/vectorHelper"
-import { mapFromToRange } from "../utils/mathHelper"
 
 // Geometry
 import Vector from "../geometry/Vector"
@@ -29,20 +27,13 @@ export const seek = ({ target, source }: IOptions): Vector => {
   const targetVector = subtract(target, source.state.location)
   const targetDistance = mag(targetVector)
 
-  const shouldBrake =
-    targetDistance > 0 && targetDistance < source.traits.brakingDistance
-
-  if (shouldBrake) {
-    // Scale force proportionally to distance and max speed
-    const speed = mapFromToRange(
-      targetDistance,
-      0,
-      100,
-      0,
-      source.traits.maxSpeed
-    )
-
-    desiredVelocity = multiply(targetVector, speed)
+  if (targetDistance === 0) {
+    desiredVelocity = new Vector(0, 0)
+  } else if (targetDistance < source.traits.brakingDistance) {
+    // Slow down in proportion to the remaining distance.
+    const speed =
+      (targetDistance / source.traits.brakingDistance) * source.traits.maxSpeed
+    desiredVelocity = setMagnitude(targetVector, speed)
   } else {
     // Assume that the actor will desire to head towards its target at max speed
     desiredVelocity = setMagnitude(targetVector, source.traits.maxSpeed)

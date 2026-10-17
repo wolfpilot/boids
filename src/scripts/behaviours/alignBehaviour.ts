@@ -5,14 +5,7 @@ import { IBoidEntity } from "../types/entities"
 import { config as boidConfig } from "../actors/Boid/config"
 
 // Utils
-import {
-  add,
-  subtract,
-  multiply,
-  divide,
-  normalize,
-  mag,
-} from "../utils/vectorHelper"
+import { add, subtract, multiply, divide, mag } from "../utils/vectorHelper"
 
 // Geometry
 import Vector from "../geometry/Vector"
@@ -43,8 +36,7 @@ export const align = ({ boids, source }: IOptions): Vector => {
     .map((boid) => boid.state.velocity)
     .reduce((acc, val) => add(acc, val))
 
-  const normGroupVelocity = normalize(groupVelocity)
-  const averageVelocity = divide(normGroupVelocity, neighbours.length)
+  const averageVelocity = divide(groupVelocity, neighbours.length)
 
   align = subtract(averageVelocity, source.state.velocity)
   align = multiply(align, boidConfig.alignmentFactor)

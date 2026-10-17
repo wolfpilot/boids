@@ -4,11 +4,16 @@ export interface IFrameScheduler {
   cancelFrame: (id: number) => void
 }
 
+export interface ILoopTick {
+  timestamp: number
+  elapsedTime: number
+  simulationSteps: number
+  shouldDraw: boolean
+}
+
 interface IOptions {
-  step: () => void
-  draw: (timestamp: number) => void
-  getMaxFps: () => number
-  onFrame?: (elapsedTime: number) => void
+  onTick: (tick: ILoopTick) => void
+  maxFps: number
   scheduler?: IFrameScheduler
 }
 
@@ -23,29 +28,23 @@ const browserScheduler: IFrameScheduler = {
 }
 
 export default class FixedStepLoop {
-  private readonly step: () => void
-  private readonly draw: (timestamp: number) => void
-  private readonly getMaxFps: () => number
-  private readonly onFrame?: (elapsedTime: number) => void
+  private readonly onTick: (tick: ILoopTick) => void
   private readonly scheduler: IFrameScheduler
+  private maxFps: number
   private frameId: number | null = null
   private running = false
   private lastFrameTime = 0
   private lastDrawTime = 0
   private accumulator = 0
 
-  constructor({
-    step,
-    draw,
-    getMaxFps,
-    onFrame,
-    scheduler = browserScheduler,
-  }: IOptions) {
-    this.step = step
-    this.draw = draw
-    this.getMaxFps = getMaxFps
-    this.onFrame = onFrame
+  constructor({ onTick, maxFps, scheduler = browserScheduler }: IOptions) {
+    this.onTick = onTick
+    this.maxFps = maxFps
     this.scheduler = scheduler
+  }
+
+  public setMaxFps(maxFps: number): void {
+    this.maxFps = maxFps
   }
 
   public start(): void {
@@ -77,31 +76,31 @@ export default class FixedStepLoop {
     )
     this.lastFrameTime = timestamp
     this.accumulator += elapsedTime
-    this.onFrame?.(elapsedTime)
 
-    let steps = 0
+    let simulationSteps = 0
     while (
       this.accumulator + EPSILON >= STEP_MS &&
-      steps < MAX_STEPS_PER_FRAME
+      simulationSteps < MAX_STEPS_PER_FRAME
     ) {
-      this.step()
       this.accumulator -= STEP_MS
-      steps++
+      simulationSteps++
     }
     this.accumulator = Math.max(0, this.accumulator)
 
-    const renderInterval = 1000 / Math.max(1, this.getMaxFps())
+    const renderInterval = 1000 / Math.max(1, this.maxFps)
     const elapsedSinceDraw = timestamp - this.lastDrawTime
     const elapsedRenderIntervals = Math.floor(
       (elapsedSinceDraw + EPSILON) / renderInterval
     )
-    if (elapsedRenderIntervals > 0) {
+    const shouldDraw = elapsedRenderIntervals > 0
+    if (shouldDraw) {
       this.lastDrawTime = Math.min(
         timestamp,
         this.lastDrawTime + elapsedRenderIntervals * renderInterval
       )
-      this.draw(timestamp)
     }
+
+    this.onTick({ timestamp, elapsedTime, simulationSteps, shouldDraw })
 
     if (this.running) this.frameId = this.scheduler.requestFrame(this.tick)
   }

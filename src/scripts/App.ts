@@ -18,7 +18,7 @@ import { config } from "./config"
 // Utils
 import { generateRandomizedBoids } from "./utils/boidHelper"
 import { stepBoids } from "./simulation/stepBoids"
-import FixedStepLoop from "./simulation/FixedStepLoop"
+import FixedStepLoop, { ILoopTick } from "./simulation/FixedStepLoop"
 
 // Interface
 import GUI from "./interface/GUI"
@@ -52,13 +52,8 @@ class App {
       maxY: wHeight,
     })
     this.loop = new FixedStepLoop({
-      step: () => this.stepSimulation(),
-      draw: (timestamp) => {
-        appService.updateLastDrawTime(timestamp)
-        this.draw()
-      },
-      getMaxFps: () => guiQuery.maxFps,
-      onFrame: (elapsedTime) => appService.updateElapsedTime(elapsedTime),
+      onTick: this.handleLoopTick,
+      maxFps: guiQuery.maxFps,
     })
   }
 
@@ -81,10 +76,27 @@ class App {
     this.canvas.init()
     this.gui.init()
     this.fpsMonitor.init()
+    guiQuery.maxFps$.subscribe((maxFps) => this.loop.setMaxFps(maxFps))
     appQuery.isRunning$.subscribe((isRunning) => {
       if (isRunning) this.loop.start()
       else this.loop.stop()
     })
+  }
+
+  private handleLoopTick = ({
+    timestamp,
+    elapsedTime,
+    simulationSteps,
+    shouldDraw,
+  }: ILoopTick): void => {
+    appService.updateElapsedTime(elapsedTime)
+
+    for (let i = 0; i < simulationSteps; i++) this.stepSimulation()
+
+    if (shouldDraw) {
+      appService.updateLastDrawTime(timestamp)
+      this.draw()
+    }
   }
 
   private stepSimulation(): void {

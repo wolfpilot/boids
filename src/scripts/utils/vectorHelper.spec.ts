@@ -66,7 +66,7 @@ describe("vectorHelper", () => {
     const v = new Vector(0, 0)
 
     const result = vectorHelper.normalize(v)
-    const expected = new Vector(1, 0)
+    const expected = new Vector(0, 0)
 
     expect(result).toStrictEqual(expected)
   })
@@ -103,6 +103,12 @@ describe("vectorHelper", () => {
     const expected = 3
 
     expect(result).toBeCloseTo(expected)
+  })
+
+  it("should not create a direction when setting the magnitude of a zero vector", () => {
+    expect(vectorHelper.setMagnitude(new Vector(0, 0), 3)).toStrictEqual(
+      new Vector(0, 0)
+    )
   })
 
   it("should apply forces to the vector", () => {

@@ -42,7 +42,7 @@ export const normalize = (v: IVector): Vector => {
   const magnitude = mag(v)
 
   if (magnitude === 0) {
-    return new Vector(1, 0)
+    return new Vector(0, 0)
   } else {
     return divide(v, magnitude)
   }

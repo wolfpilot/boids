@@ -82,6 +82,7 @@ export default class Loop {
         UPDATE_INTERVAL_MS * MAX_UPDATES_PER_FRAME
       )
     )
+
     this.lastFrameTime = timestamp
     this.unprocessedTimeMs += elapsedMs
 

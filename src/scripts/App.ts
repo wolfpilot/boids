@@ -1,12 +1,9 @@
 // Actors
 import Canvas, { ICanvas } from "./actors/Canvas/Canvas"
-import Boid from "./actors/Boid/Boid"
 
 // Stores
-import { appService, appQuery } from "./stores/app"
+import { appQuery } from "./stores/app"
 import { guiQuery } from "./stores/gui"
-import { boidsStore, boidsQuery } from "./stores/boids"
-import { uiQuery } from "./stores/ui"
 
 // Managers
 import VisibilityManager from "./managers/VisibilityManager"
@@ -17,22 +14,17 @@ import { config } from "./config"
 
 // Utils
 import { generateRandomizedBoids } from "./utils/boidHelper"
-import { stepBoids } from "./engine/utils/stepBoids"
-import Loop, { IFramePlan } from "./engine/Loop"
+import Engine from "./engine/Engine"
 
 // Interface
 import GUI from "./interface/GUI"
 import FpsMonitor from "./interface/FpsMonitor"
 
 /**
- * App coordinates physics and drawing. Each fixed physics update reads the
- * current boids as one snapshot, calculates every next state from that same
- * input, and publishes the completed collection. If several updates are due,
- * each one starts from the collection published by the previous update.
+ * App creates the canvas, boid actors, managers and interface.
  *
- * Drawing happens after those updates. The canvas is cleared, then each Boid
- * actor reads its latest state from the store and draws it. Drawing does not
- * change the physics state; the loop only decides when these phases are due.
+ * It performs no updates or rendering itself, leaving the Engine
+ * to coordinate that.
  */
 class App {
   public canvasEl: HTMLCanvasElement
@@ -40,8 +32,7 @@ class App {
   private canvas: ICanvas
   private gui: GUI
   private fpsMonitor: FpsMonitor
-  private boids: Boid[]
-  private loop: Loop
+  private engine: Engine
 
   constructor() {
     const wWidth = window.innerWidth
@@ -54,14 +45,17 @@ class App {
     this.canvas = new Canvas(this.canvasEl, this.ctx)
     this.gui = new GUI()
     this.fpsMonitor = new FpsMonitor()
-    this.boids = generateRandomizedBoids({
+
+    const boids = generateRandomizedBoids({
       ...config.boids,
       ctx: this.ctx,
       maxX: wWidth,
       maxY: wHeight,
     })
-    this.loop = new Loop({
-      onFrame: this.onFrame,
+
+    this.engine = new Engine({
+      canvas: this.canvas,
+      boids,
       maxFps: guiQuery.maxFps,
     })
   }
@@ -71,13 +65,7 @@ class App {
       throw new Error("Canvas context could not be initialised.")
     }
 
-    const boidEntities = this.boids.map((boid) => ({
-      id: boid.id,
-      traits: boid.traits,
-      state: boid.state,
-    }))
-
-    boidsStore.set(boidEntities)
+    this.engine.init()
 
     VisibilityManager.init()
     PointerManager.init()
@@ -88,47 +76,13 @@ class App {
 
     // Keep the FPS cap up to date when the GUI setting changes
     guiQuery.maxFps$.subscribe((maxFps) => {
-      this.loop.setMaxFps(maxFps)
+      this.engine.setMaxFps(maxFps)
     })
 
     // VisibilityManager updates isRunning when the tab is hidden or shown
     appQuery.isRunning$.subscribe((isRunning) => {
-      isRunning ? this.loop.start() : this.loop.stop()
+      isRunning ? this.engine.start() : this.engine.stop()
     })
-  }
-
-  private onFrame = ({
-    elapsedMs,
-    timestamp,
-    updates,
-    shouldDraw,
-  }: IFramePlan) => {
-    appService.updateElapsedTime(elapsedMs)
-
-    for (let i = 0; i < updates; i++) {
-      this.update()
-    }
-
-    if (shouldDraw) {
-      appService.updateLastDrawTime(timestamp)
-      this.draw()
-    }
-  }
-
-  private update() {
-    const snapshot = boidsQuery.all
-
-    boidsStore.set(stepBoids(snapshot, uiQuery.pointerVector))
-  }
-
-  private draw() {
-    if (this.canvas && this.canvas.state.isEnabled) {
-      this.canvas.draw()
-    }
-
-    if (this.boids && this.boids.length) {
-      this.boids.forEach((boid) => boid.draw())
-    }
   }
 }
 

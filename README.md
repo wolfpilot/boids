@@ -17,21 +17,21 @@ This Canvas experiment currently has three steering behaviours: seek the pointer
 
 ## How it works
 
-[`App`](src/scripts/App.ts) coordinates two phases: update boid state, then draw the latest state.
+[`App`](src/scripts/App.ts) creates the canvas and boids, initializes the managers and UI, and connects GUI and page visibility changes to [`Engine`](src/scripts/engine/Engine.ts). The engine coordinates two phases: update boid state, then draw the latest state.
 
 [`Loop`](src/scripts/engine/Loop.ts) uses `requestAnimationFrame` to decide how many physics updates are due and whether a draw is due. The loop handles timing; it does not calculate steering or touch the canvas.
 
 ### Update
 
-For each due physics update, `App.update()` reads the current boid entities from the store as a snapshot. [`stepBoids()`](src/scripts/engine/utils/stepBoids.ts) calculates each boid's next velocity and position from that **same input snapshot**, using the pointer target, nearby boids, steering forces, and friction.
+For each due physics update, `Engine` reads the current boid entities from the store as a snapshot. [`stepBoids()`](src/scripts/engine/utils/stepBoids.ts) calculates each boid's next velocity and position from that **same input snapshot**, using the pointer target, nearby boids, steering forces, and friction.
 
-It then returns a new collection which `App` publishes to the store in one operation.
+It then returns a new collection which `Engine` publishes to the store in one operation.
 
 A boid therefore cannot react to another boid's new position until the next physics update. If several updates are due in one browser frame, each update starts from the collection published by the previous one.
 
 ### Drawing
 
-When a draw is due, `App` clears the canvas and asks each `Boid` actor to draw.
+When a draw is due, `Engine` clears the canvas and asks each `Boid` actor to draw.
 
 The actors look up their latest entities in the store, so drawing uses the completed physics state. Drawing does not advance physics. There is no interpolation between physics states; a draw shows the latest published state.
 

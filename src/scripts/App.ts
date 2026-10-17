@@ -3,7 +3,7 @@ import Canvas, { ICanvas } from "./actors/Canvas/Canvas"
 import Boid from "./actors/Boid/Boid"
 
 // Stores
-import { appStore, appService, appQuery } from "./stores/app"
+import { appService } from "./stores/app"
 import { guiQuery } from "./stores/gui"
 import { boidsStore, boidsQuery } from "./stores/boids"
 import { uiQuery } from "./stores/ui"
@@ -18,6 +18,7 @@ import { config } from "./config"
 // Utils
 import { generateRandomizedBoids } from "./utils/boidHelper"
 import { stepBoids } from "./simulation/stepBoids"
+import FixedStepLoop from "./simulation/FixedStepLoop"
 
 // Interface
 import GUI from "./interface/GUI"
@@ -31,6 +32,7 @@ class App {
   private gui: GUI
   private fpsMonitor: FpsMonitor
   private boids: Boid[]
+  private loop: FixedStepLoop
 
   constructor() {
     const wWidth = window.innerWidth
@@ -48,6 +50,15 @@ class App {
       ctx: this.ctx,
       maxX: wWidth,
       maxY: wHeight,
+    })
+    this.loop = new FixedStepLoop({
+      step: () => this.stepSimulation(),
+      draw: (timestamp) => {
+        appService.updateLastDrawTime(timestamp)
+        this.draw()
+      },
+      getMaxFps: () => guiQuery.maxFps,
+      onFrame: (elapsedTime) => appService.updateElapsedTime(elapsedTime),
     })
   }
 
@@ -70,39 +81,7 @@ class App {
     this.canvas.init()
     this.gui.init()
     this.fpsMonitor.init()
-    this.startAnimation()
-  }
-
-  private startAnimation(): void {
-    const lastDrawTime = performance.now()
-
-    appService.updateLastDrawTime(lastDrawTime)
-
-    requestAnimationFrame(this.tick)
-  }
-
-  private tick = (timestamp: number): void => {
-    if (!appQuery.isRunning) return
-
-    requestAnimationFrame(this.tick)
-
-    const elapsedTime = timestamp - appQuery.lastDrawTime
-    const fpsInterval = 1000 / guiQuery.maxFps
-
-    appStore.update({
-      elapsedTime,
-    })
-    this.stepSimulation()
-
-    if (elapsedTime > fpsInterval) {
-      const lastDrawTime = timestamp - (elapsedTime % fpsInterval)
-
-      appStore.update({
-        lastDrawTime,
-      })
-
-      this.draw()
-    }
+    this.loop.start()
   }
 
   private stepSimulation(): void {

@@ -21,9 +21,10 @@
     "noUnusedParameters": true,
     "removeComments": false,
     "preserveConstEnums": true,
-    "experimentalDecorators": true
+    "experimentalDecorators": true,
+    "types": ["jest"]
   },
-  "exclude": [".cache", "node_modules", "**/*.spec.ts"],
+  "exclude": [".cache", "node_modules"],
   "include": ["typings/**/*.d.ts", "src/**/*.ts"],
   "compileOnSave": true
 }

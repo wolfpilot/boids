@@ -1,8 +1,8 @@
-import { config } from "../actors/Boid/config"
-import { align, seek, separate } from "../behaviours"
-import Vector from "../geometry/Vector"
-import type { IBoidEntity } from "../types/entities"
-import type { IVector } from "../types/geometry"
+import { config } from "../../actors/Boid/config"
+import { align, seek, separate } from "../../behaviours"
+import Vector from "../../geometry/Vector"
+import type { IBoidEntity } from "../../types/entities"
+import type { IVector } from "../../types/geometry"
 import {
   add,
   applyForces,
@@ -11,9 +11,9 @@ import {
   multiply,
   normalize,
   subtract,
-} from "../utils/vectorHelper"
+} from "../../utils/vectorHelper"
 
-const calculateNextBoidState = (
+const stepBoid = (
   source: IBoidEntity,
   snapshot: readonly IBoidEntity[],
   target: IVector
@@ -74,8 +74,7 @@ const calculateNextBoidState = (
   }
 }
 
-export const calculateNextBoidStates = (
+export const stepBoids = (
   snapshot: readonly IBoidEntity[],
   target: IVector
-): IBoidEntity[] =>
-  snapshot.map((boid) => calculateNextBoidState(boid, snapshot, target))
+): IBoidEntity[] => snapshot.map((boid) => stepBoid(boid, snapshot, target))

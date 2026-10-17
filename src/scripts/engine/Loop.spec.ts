@@ -1,7 +1,4 @@
-import FixedTimestepLoop, {
-  IFramePlan,
-  IFrameScheduler,
-} from "./FixedTimestepLoop"
+import Loop, { IFramePlan, IFrameScheduler } from "./Loop"
 
 const createScheduler = () => {
   let time = 0
@@ -38,11 +35,11 @@ const createScheduler = () => {
   }
 }
 
-describe("FixedTimestepLoop", () => {
-  it("schedules 60 physics updates with 120 Hz frames and renders at 30 FPS", () => {
+describe("Loop", () => {
+  it("schedules 60 updates with 120 Hz frames and renders at 30 FPS", () => {
     const frame = createScheduler()
     const plans: IFramePlan[] = []
-    const loop = new FixedTimestepLoop({
+    const loop = new Loop({
       onFrame: (plan) => {
         plans.push(plan)
       },
@@ -52,16 +49,13 @@ describe("FixedTimestepLoop", () => {
 
     loop.start()
     for (let i = 0; i < 120; i++) frame.advance(1000 / 120)
-    const totalUpdates = plans.reduce(
-      (total, plan) => total + plan.physicsUpdates,
-      0
-    )
+    const totalUpdates = plans.reduce((total, plan) => total + plan.updates, 0)
 
     expect(plans).toHaveLength(120)
     expect(plans[0]).toEqual({
       timestamp: 1000 / 120,
       elapsedMs: 1000 / 120,
-      physicsUpdates: 0,
+      updates: 0,
       shouldDraw: false,
     })
     expect(totalUpdates).toBe(60)
@@ -72,7 +66,7 @@ describe("FixedTimestepLoop", () => {
   it("limits catch-up after a long frame and resets timing on resume", () => {
     const frame = createScheduler()
     const plans: IFramePlan[] = []
-    const loop = new FixedTimestepLoop({
+    const loop = new Loop({
       onFrame: (plan) => {
         plans.push(plan)
       },
@@ -82,11 +76,11 @@ describe("FixedTimestepLoop", () => {
 
     loop.start()
     frame.advance(5000)
-    expect(plans[0].physicsUpdates).toBe(5)
+    expect(plans[0].updates).toBe(5)
     expect(plans[0].elapsedMs).toBeCloseTo(1000 / 12)
 
     frame.advance(1000 / 60)
-    expect(plans[1].physicsUpdates).toBe(1)
+    expect(plans[1].updates).toBe(1)
 
     loop.stop()
     expect(frame.pendingCount()).toBe(0)
@@ -94,14 +88,14 @@ describe("FixedTimestepLoop", () => {
     frame.elapse(5000)
     loop.start()
     frame.advance(1000 / 60)
-    expect(plans[2].physicsUpdates).toBe(1)
+    expect(plans[2].updates).toBe(1)
     expect(plans[2].elapsedMs).toBeCloseTo(1000 / 60)
   })
 
   it("retains unused render time across slightly short frames", () => {
     const frame = createScheduler()
     const plans: IFramePlan[] = []
-    const loop = new FixedTimestepLoop({
+    const loop = new Loop({
       onFrame: (plan) => {
         plans.push(plan)
       },
@@ -118,7 +112,7 @@ describe("FixedTimestepLoop", () => {
   it("applies render-rate changes without resetting the simulation clock", () => {
     const frame = createScheduler()
     const plans: IFramePlan[] = []
-    const loop = new FixedTimestepLoop({
+    const loop = new Loop({
       onFrame: (plan) => {
         plans.push(plan)
       },
@@ -132,10 +126,7 @@ describe("FixedTimestepLoop", () => {
 
     loop.setMaxFps(60)
     for (let i = 0; i < 60; i++) frame.advance(1000 / 60)
-    const totalUpdates = plans.reduce(
-      (total, plan) => total + plan.physicsUpdates,
-      0
-    )
+    const totalUpdates = plans.reduce((total, plan) => total + plan.updates, 0)
 
     expect(plans.filter((plan) => plan.shouldDraw)).toHaveLength(90)
     expect(totalUpdates).toBe(120)

@@ -17,8 +17,8 @@ import { config } from "./config"
 
 // Utils
 import { generateRandomizedBoids } from "./utils/boidHelper"
-import { calculateNextBoidStates } from "./simulation/calculateNextBoidStates"
-import FixedTimestepLoop, { IFramePlan } from "./simulation/FixedTimestepLoop"
+import { stepBoids } from "./engine/utils/stepBoids"
+import Loop, { IFramePlan } from "./engine/Loop"
 
 // Interface
 import GUI from "./interface/GUI"
@@ -41,7 +41,7 @@ class App {
   private gui: GUI
   private fpsMonitor: FpsMonitor
   private boids: Boid[]
-  private loop: FixedTimestepLoop
+  private loop: Loop
 
   constructor() {
     const wWidth = window.innerWidth
@@ -60,8 +60,8 @@ class App {
       maxX: wWidth,
       maxY: wHeight,
     })
-    this.loop = new FixedTimestepLoop({
-      onFrame: this.applyFramePlan,
+    this.loop = new Loop({
+      onFrame: this.onFrame,
       maxFps: guiQuery.maxFps,
     })
   }
@@ -97,16 +97,16 @@ class App {
     })
   }
 
-  private applyFramePlan = ({
-    timestamp,
+  private onFrame = ({
     elapsedMs,
-    physicsUpdates,
+    timestamp,
+    updates,
     shouldDraw,
   }: IFramePlan) => {
     appService.updateElapsedTime(elapsedMs)
 
-    for (let i = 0; i < physicsUpdates; i++) {
-      this.advanceBoidPhysics()
+    for (let i = 0; i < updates; i++) {
+      this.update()
     }
 
     if (shouldDraw) {
@@ -115,10 +115,10 @@ class App {
     }
   }
 
-  private advanceBoidPhysics() {
+  private update() {
     const snapshot = boidsQuery.all
 
-    boidsStore.set(calculateNextBoidStates(snapshot, uiQuery.pointerVector))
+    boidsStore.set(stepBoids(snapshot, uiQuery.pointerVector))
   }
 
   private draw() {

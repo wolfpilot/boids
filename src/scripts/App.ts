@@ -3,7 +3,7 @@ import Canvas, { ICanvas } from "./actors/Canvas/Canvas"
 import Boid from "./actors/Boid/Boid"
 
 // Stores
-import { appService } from "./stores/app"
+import { appService, appQuery } from "./stores/app"
 import { guiQuery } from "./stores/gui"
 import { boidsStore, boidsQuery } from "./stores/boids"
 import { uiQuery } from "./stores/ui"
@@ -81,7 +81,10 @@ class App {
     this.canvas.init()
     this.gui.init()
     this.fpsMonitor.init()
-    this.loop.start()
+    appQuery.isRunning$.subscribe((isRunning) => {
+      if (isRunning) this.loop.start()
+      else this.loop.stop()
+    })
   }
 
   private stepSimulation(): void {

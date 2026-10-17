@@ -8,6 +8,7 @@ class VisibilityManager {
       this.handleVisibilityToggle,
       false
     )
+    this.handleVisibilityToggle()
   }
 
   private handleVisibilityToggle = (): void => {

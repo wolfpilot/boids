@@ -24,7 +24,7 @@ interface IOptions {
 }
 
 export const seek = ({ target, source }: IOptions): Vector => {
-  let desiredVelocity = new Vector(0, 0)
+  let desiredVelocity: IVector
 
   const targetVector = subtract(target, source.state.location)
   const targetDistance = mag(targetVector)

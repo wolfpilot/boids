@@ -15,6 +15,7 @@ node_modules
 
 # Cache
 .cache
+.parcel-cache
 
 # Logs
 logs

@@ -11,7 +11,7 @@ class VisibilityManager {
     this.handleVisibilityToggle()
   }
 
-  private handleVisibilityToggle = (): void => {
+  private handleVisibilityToggle = () => {
     const isVisible = document.visibilityState === "visible"
 
     appService.updateIsRunning(isVisible)

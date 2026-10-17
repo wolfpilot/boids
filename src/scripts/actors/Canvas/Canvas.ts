@@ -29,16 +29,16 @@ class Canvas implements ICanvas {
     }
   }
 
-  public init(): void {
+  public init() {
     this.resize()
   }
 
-  public draw(): void {
+  public draw() {
     this.ctx.fillStyle = this.state.fill
     this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height)
   }
 
-  private resize(): void {
+  private resize() {
     const dpi = window.devicePixelRatio
 
     const wWidth = window.innerWidth

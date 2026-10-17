@@ -43,11 +43,11 @@ export default class FixedStepLoop {
     this.scheduler = scheduler
   }
 
-  public setMaxFps(maxFps: number): void {
+  public setMaxFps(maxFps: number) {
     this.maxFps = maxFps
   }
 
-  public start(): void {
+  public start() {
     if (this.running) return
 
     this.running = true
@@ -57,7 +57,7 @@ export default class FixedStepLoop {
     this.frameId = this.scheduler.requestFrame(this.tick)
   }
 
-  public stop(): void {
+  public stop() {
     if (!this.running) return
 
     this.running = false
@@ -66,7 +66,7 @@ export default class FixedStepLoop {
     this.accumulator = 0
   }
 
-  private tick = (timestamp: number): void => {
+  private tick = (timestamp: number) => {
     this.frameId = null
     if (!this.running) return
 

@@ -3,35 +3,35 @@ import { GuiStore } from "./gui.store"
 export class GuiService {
   constructor(private guiStore: GuiStore) {}
 
-  updateMaxFps(val: number): void {
+  updateMaxFps(val: number) {
     this.guiStore.update({ maxFps: val })
   }
 
-  updateLogFps(val: boolean): void {
+  updateLogFps(val: boolean) {
     this.guiStore.update({ logFps: val })
   }
 
-  updateShowTargetVector(val: boolean): void {
+  updateShowTargetVector(val: boolean) {
     this.guiStore.update({ showTargetVector: val })
   }
 
-  updateShowNormalizedTargetVector(val: boolean): void {
+  updateShowNormalizedTargetVector(val: boolean) {
     this.guiStore.update({ showNormalizedTargetVector: val })
   }
 
-  updateShowVelocityVector(val: boolean): void {
+  updateShowVelocityVector(val: boolean) {
     this.guiStore.update({ showVelocityVector: val })
   }
 
-  updateShowAwarenessArea(val: boolean): void {
+  updateShowAwarenessArea(val: boolean) {
     this.guiStore.update({ showAwarenessArea: val })
   }
 
-  updateShowSeparationArea(val: boolean): void {
+  updateShowSeparationArea(val: boolean) {
     this.guiStore.update({ showSeparationArea: val })
   }
 
-  updateShowStoppingArea(val: boolean): void {
+  updateShowStoppingArea(val: boolean) {
     this.guiStore.update({ showStoppingArea: val })
   }
 }

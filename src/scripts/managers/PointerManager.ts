@@ -6,11 +6,11 @@ class PointerManager {
     document.addEventListener("pointermove", this.handlePointerMove)
   }
 
-  private handlePointerMove = (e: PointerEvent): void => {
+  private handlePointerMove = (e: PointerEvent) => {
     requestAnimationFrame(() => this.updatePointer(e))
   }
 
-  private updatePointer = (e: PointerEvent): void => {
+  private updatePointer = (e: PointerEvent) => {
     uiService.updatePointerVector({
       x: e.x,
       y: e.y,

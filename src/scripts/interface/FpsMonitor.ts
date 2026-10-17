@@ -28,11 +28,11 @@ class FpsMonitor {
     this.renderInterval = null
   }
 
-  public init(): void {
+  public init() {
     guiQuery.logFps$.subscribe(this.handleLogFps)
   }
 
-  private handleLogFps = (logFps: boolean): void => {
+  private handleLogFps = (logFps: boolean) => {
     if (logFps) {
       this.lastDrawTimeSub = appQuery.lastDrawTime$.subscribe(this.tick)
       this.renderInterval = setInterval(this.render, 1000)
@@ -42,14 +42,14 @@ class FpsMonitor {
     }
   }
 
-  private tick = (): void => {
+  private tick = () => {
     this.state = {
       ...this.state,
       count: this.state.count + 1,
     }
   }
 
-  private render = (): void => {
+  private render = () => {
     if (!this.state.count) return
 
     const now = performance.now()

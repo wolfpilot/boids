@@ -57,7 +57,7 @@ class App {
     })
   }
 
-  public init(): void {
+  public init() {
     if (!this.ctx) {
       throw new Error("Canvas context could not be initialised.")
     }
@@ -88,7 +88,7 @@ class App {
     elapsedTime,
     simulationSteps,
     shouldDraw,
-  }: ILoopTick): void => {
+  }: ILoopTick) => {
     appService.updateElapsedTime(elapsedTime)
 
     for (let i = 0; i < simulationSteps; i++) this.stepSimulation()
@@ -99,12 +99,13 @@ class App {
     }
   }
 
-  private stepSimulation(): void {
+  private stepSimulation() {
     const snapshot = boidsQuery.all
+
     boidsStore.set(stepBoids(snapshot, uiQuery.pointerVector))
   }
 
-  private draw(): void {
+  private draw() {
     if (this.canvas && this.canvas.state.isEnabled) {
       this.canvas.draw()
     }

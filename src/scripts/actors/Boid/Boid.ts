@@ -106,7 +106,7 @@ class Boid implements IBoid {
     }
   }
 
-  public draw(): void {
+  public draw() {
     // !: throw? complete on die?
 
     const boidEntity = boidsQuery.getBoid(this.id)
@@ -149,7 +149,7 @@ class Boid implements IBoid {
   }
 
   // Draw area in which the boid can be affected by external forces
-  private drawAwarenessArea(state: IBoidState): void {
+  private drawAwarenessArea(state: IBoidState) {
     this.ctx.beginPath()
     this.ctx.arc(
       state.location.x,
@@ -164,7 +164,7 @@ class Boid implements IBoid {
   }
 
   // Draw area in which the boid wants to push itself away from others
-  private drawSeparationArea(state: IBoidState): void {
+  private drawSeparationArea(state: IBoidState) {
     this.ctx.save()
     this.ctx.globalAlpha = 0.35
 
@@ -187,7 +187,7 @@ class Boid implements IBoid {
   }
 
   // Draw area in which the boid deccelerates near the target
-  private drawStoppingArea(state: IBoidState): void {
+  private drawStoppingArea(state: IBoidState) {
     this.ctx.save()
     this.ctx.globalAlpha = 0.05
 
@@ -210,7 +210,7 @@ class Boid implements IBoid {
   }
 
   // Draw the shape
-  private drawShape(state: IBoidState): void {
+  private drawShape(state: IBoidState) {
     this.ctx.beginPath()
     this.ctx.moveTo(
       state.location.x - this.traits.size / 2,
@@ -228,7 +228,7 @@ class Boid implements IBoid {
   }
 
   // Draw vector to target
-  private drawTargetVector(state: IBoidState): void {
+  private drawTargetVector(state: IBoidState) {
     this.ctx.beginPath()
     this.ctx.moveTo(state.location.x, state.location.y)
     this.ctx.lineWidth = 1
@@ -238,7 +238,7 @@ class Boid implements IBoid {
   }
 
   // Draw normalized direction vector
-  private drawDirectionVector(state: IBoidState): void {
+  private drawDirectionVector(state: IBoidState) {
     const normalizedDirectionVector = multiply(
       state.normTargetVector,
       this.traits.size
@@ -256,7 +256,7 @@ class Boid implements IBoid {
   }
 
   // Draw the resulting force vector
-  private drawVelocityVector(state: IBoidState): void {
+  private drawVelocityVector(state: IBoidState) {
     const upscaledVelocityVector = multiply(state.velocity, 5)
 
     this.ctx.beginPath()

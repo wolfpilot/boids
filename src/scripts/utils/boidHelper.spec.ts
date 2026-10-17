@@ -57,9 +57,8 @@ describe("actorHelper", () => {
       expect(boid.traits.size).toBeGreaterThanOrEqual(options.minSize)
       expect(boid.traits.size).toBeLessThanOrEqual(options.maxSize)
 
-      const spyInit = jest.spyOn(Boid.prototype, "init")
-      boid.init()
-      expect(spyInit).toHaveBeenCalled()
+      expect(boid.state.location.x).toBeGreaterThanOrEqual(0)
+      expect(boid.state.location.x).toBeLessThanOrEqual(options.maxX)
     })
   })
 })

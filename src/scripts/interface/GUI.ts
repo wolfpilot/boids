@@ -7,7 +7,7 @@ import { guiService, guiQuery } from "../stores/gui"
 const defaults = { ...guiQuery.allValues }
 
 class GUI {
-  public init(): void {
+  public init() {
     this.setupGUI()
   }
 

@@ -1,11 +1,9 @@
 // Actors
 import Canvas, { ICanvas } from "./actors/Canvas/Canvas"
-import Boid from "./actors/Boid/Boid"
 
 // Stores
-import { appStore, appService, appQuery } from "./stores/app"
+import { appQuery } from "./stores/app"
 import { guiQuery } from "./stores/gui"
-import { boidsStore } from "./stores/boids"
 
 // Managers
 import VisibilityManager from "./managers/VisibilityManager"
@@ -16,26 +14,17 @@ import { config } from "./config"
 
 // Utils
 import { generateRandomizedBoids } from "./utils/boidHelper"
+import Engine from "./engine/Engine"
 
 // Interface
 import GUI from "./interface/GUI"
 import FpsMonitor from "./interface/FpsMonitor"
 
 /**
- * The "game" engine.
+ * App creates the canvas, boid actors, managers and interface.
  *
- * Responsible for two main tasks:
- * 1. Run the update loop which keeps track of internal timestamps.
- *
- *    Actors can subscribe to either the elapsed or last draw time
- *    to keep renders in sync. Essentially, this simply calculates
- *    the next state to be drawn.
- *
- * 2. Call individual actors to draw at the specified FPS interval.
- *
- *    Actors should NOT draw on each state update since there is no
- *    guarantee that they will end up in sync. Instead, call each
- *    actor's draw method in a logical stacking order.
+ * It performs no updates or rendering itself, leaving the Engine
+ * to coordinate that.
  */
 class App {
   public canvasEl: HTMLCanvasElement
@@ -43,7 +32,7 @@ class App {
   private canvas: ICanvas
   private gui: GUI
   private fpsMonitor: FpsMonitor
-  private boids: Boid[]
+  private engine: Engine
 
   constructor() {
     const wWidth = window.innerWidth
@@ -56,26 +45,27 @@ class App {
     this.canvas = new Canvas(this.canvasEl, this.ctx)
     this.gui = new GUI()
     this.fpsMonitor = new FpsMonitor()
-    this.boids = generateRandomizedBoids({
+
+    const boids = generateRandomizedBoids({
       ...config.boids,
       ctx: this.ctx,
       maxX: wWidth,
       maxY: wHeight,
     })
+
+    this.engine = new Engine({
+      canvas: this.canvas,
+      boids,
+      maxFps: guiQuery.maxFps,
+    })
   }
 
-  public init(): void {
+  public init() {
     if (!this.ctx) {
       throw new Error("Canvas context could not be initialised.")
     }
 
-    const boidEntities = this.boids.map((boid) => ({
-      id: boid.id,
-      traits: boid.traits,
-      state: boid.state,
-    }))
-
-    boidsStore.set(boidEntities)
+    this.engine.init()
 
     VisibilityManager.init()
     PointerManager.init()
@@ -83,50 +73,16 @@ class App {
     this.canvas.init()
     this.gui.init()
     this.fpsMonitor.init()
-    this.boids.forEach((boid) => boid.init())
 
-    this.startAnimation()
-  }
-
-  private startAnimation(): void {
-    const lastDrawTime = performance.now()
-
-    appService.updateLastDrawTime(lastDrawTime)
-
-    requestAnimationFrame(this.tick)
-  }
-
-  private tick = (timestamp: number): void => {
-    if (!appQuery.isRunning) return
-
-    requestAnimationFrame(this.tick)
-
-    const elapsedTime = timestamp - appQuery.lastDrawTime
-    const fpsInterval = 1000 / guiQuery.maxFps
-
-    appStore.update({
-      elapsedTime,
+    // Keep the FPS cap up to date when the GUI setting changes
+    guiQuery.maxFps$.subscribe((maxFps) => {
+      this.engine.setMaxFps(maxFps)
     })
 
-    if (elapsedTime > fpsInterval) {
-      const lastDrawTime = timestamp - (elapsedTime % fpsInterval)
-
-      appStore.update({
-        lastDrawTime,
-      })
-
-      this.draw()
-    }
-  }
-
-  private draw(): void {
-    if (this.canvas && this.canvas.state.isEnabled) {
-      this.canvas.draw()
-    }
-
-    if (this.boids && this.boids.length) {
-      this.boids.forEach((boid) => boid.draw())
-    }
+    // VisibilityManager updates isRunning when the tab is hidden or shown
+    appQuery.isRunning$.subscribe((isRunning) => {
+      isRunning ? this.engine.start() : this.engine.stop()
+    })
   }
 }
 

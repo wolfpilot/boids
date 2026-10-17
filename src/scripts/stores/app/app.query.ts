@@ -5,6 +5,7 @@ import { IAppStoreState, AppStore } from "./app.store"
 
 export class AppQuery extends Query<IAppStoreState> {
   allState$ = this.select()
+  isRunning$ = this.select("isRunning")
   elapsedTime$ = this.select("elapsedTime")
   lastDrawTime$ = this.select("lastDrawTime")
 

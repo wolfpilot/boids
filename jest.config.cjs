@@ -1,7 +1,13 @@
-import type { Config } from "@jest/types"
-
-const config: Config.InitialOptions = {
-  preset: "ts-jest",
+module.exports = {
+  transform: {
+    "^.+\\.[jt]sx?$": [
+      "ts-jest",
+      { diagnostics: false, tsconfig: { allowJs: true } },
+    ],
+  },
+  transformIgnorePatterns: [
+    "[\\\\/]node_modules[\\\\/](?!.*@datorama(?:\\+|[\\\\/])akita)",
+  ],
   testEnvironment: "jsdom",
   testMatch: ["<rootDir>/src/**/*.spec.ts"],
   testPathIgnorePatterns: ["/node_modules/"],
@@ -12,13 +18,5 @@ const config: Config.InitialOptions = {
     "src/test",
     "src/types",
   ],
-  globals: {
-    "ts-jest": {
-      diagnostics: false,
-    },
-  },
   setupFiles: ["jest-canvas-mock"],
-  transform: {},
 }
-
-export default config

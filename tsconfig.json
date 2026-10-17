@@ -3,14 +3,10 @@
     "target": "es6",
     "module": "commonjs",
     "moduleResolution": "node",
-    "lib": [
-      "dom",
-      "esnext",
-      "dom.iterable",
-      "scripthost"
-    ],
-    "baseUrl": "./",
+    "ignoreDeprecations": "6.0",
+    "lib": ["dom", "esnext", "dom.iterable", "scripthost"],
     "outDir": "./dist/",
+    "rootDir": ".",
     "strict": true,
     "sourceMap": true,
     "skipLibCheck": true,
@@ -25,19 +21,9 @@
     "noUnusedParameters": true,
     "removeComments": false,
     "preserveConstEnums": true,
-    "experimentalDecorators": true,
-    "paths": {
-      "*": ["typings/*",],
-    }
+    "experimentalDecorators": true
   },
-  "exclude": [
-    ".cache",
-    "node_modules",
-    "**/*.spec.ts"
-  ],
-  "include": [
-    "typings/**/*.d.ts",
-    "src/**/*.ts"
-  ],
-  "compileOnSave": true,
+  "exclude": [".cache", "node_modules", "**/*.spec.ts"],
+  "include": ["typings/**/*.d.ts", "src/**/*.ts"],
+  "compileOnSave": true
 }

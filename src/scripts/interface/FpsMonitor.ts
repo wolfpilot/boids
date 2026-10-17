@@ -17,7 +17,7 @@ const initialState: IFpsMonitorState = {
 class FpsMonitor {
   public state: IFpsMonitorState
   private lastDrawTimeSub: Subscription | null
-  private renderInterval: NodeJS.Timeout | null
+  private renderInterval: number | null
 
   constructor() {
     this.state = {

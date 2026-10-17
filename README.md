@@ -22,28 +22,29 @@ This is a short study into coding artificial life using Math, Physics and code. 
 
 ### Requirements
 
-- [Yarn](https://yarnpkg.com/) (built on v1.22.22)
+- Node.js 24
+- [pnpm](https://pnpm.io/) 12
 
 ### Installation
 
 ```bash
 $ git clone https://github.com/wolfpilot/boids.git
 $ cd boids
-$ yarn
+$ pnpm install
 ```
 
 ### How to run
 
 ```bash
 # Run a local server instance
-$ yarn start
+$ pnpm start
 ```
 
 ### How to deploy
 
 ```bash
-# Run the NPM Github Pages deploy script
-$ yarn deploy
+# Build and deploy to GitHub Pages with pnpm
+$ pnpm deploy
 ```
 
 ## Resources

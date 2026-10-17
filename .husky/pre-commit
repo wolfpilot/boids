@@ -1,4 +1,1 @@
-#!/bin/sh
-. "$(dirname "$0")/_/husky.sh"
-
-yarn format && yarn lint && yarn validate && yarn test
+pnpm format && pnpm lint && pnpm validate && pnpm test

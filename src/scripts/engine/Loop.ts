@@ -75,21 +75,38 @@ export default class Loop {
 
     if (!this.isRunning) return
 
-    const elapsedMs = Math.max(
-      0,
-      Math.min(
-        timestamp - this.lastFrameTime,
-        UPDATE_INTERVAL_MS * MAX_UPDATES_PER_FRAME
-      )
-    )
+    const elapsedMs = this.recordElapsedTime(timestamp)
+    const updates = this.consumeDueUpdates(elapsedMs)
+    const shouldDraw = this.advanceDrawClock(timestamp)
+
+    this.onFrame({ timestamp, elapsedMs, updates, shouldDraw })
+
+    if (this.isRunning) {
+      this.frameId = this.scheduler.requestFrame(this.handleAnimationFrame)
+    }
+  }
+
+  private recordElapsedTime(timestamp: number): number {
+    // Discard time beyond the catch-up limit after a slow or suspended frame.
+    const timeSinceLastFrameMs = timestamp - this.lastFrameTime
+    const maxCatchUpMs = UPDATE_INTERVAL_MS * MAX_UPDATES_PER_FRAME
+
+    const elapsedMs = Math.max(0, Math.min(timeSinceLastFrameMs, maxCatchUpMs))
 
     this.lastFrameTime = timestamp
+    return elapsedMs
+  }
+
+  private consumeDueUpdates(elapsedMs: number): number {
     this.unprocessedTimeMs += elapsedMs
 
     let updates = 0
 
+    // The tolerance prevents floating-point rounding from delaying a full update.
     while (
+      // Check if has time for update
       this.unprocessedTimeMs + TIME_TOLERANCE_MS >= UPDATE_INTERVAL_MS &&
+      // and has not exceeded max updates per frame
       updates < MAX_UPDATES_PER_FRAME
     ) {
       this.unprocessedTimeMs -= UPDATE_INTERVAL_MS
@@ -97,26 +114,27 @@ export default class Loop {
     }
 
     this.unprocessedTimeMs = Math.max(0, this.unprocessedTimeMs)
+    return updates
+  }
+
+  private advanceDrawClock(timestamp: number): boolean {
+    const elapsedSinceDrawMs = timestamp - this.lastDrawTime
+    const elapsedWithToleranceMs = elapsedSinceDrawMs + TIME_TOLERANCE_MS
 
     const renderIntervalMs = 1000 / Math.max(1, this.maxFps)
-    const elapsedSinceDrawMs = timestamp - this.lastDrawTime
     const elapsedRenderIntervals = Math.floor(
-      (elapsedSinceDrawMs + TIME_TOLERANCE_MS) / renderIntervalMs
+      elapsedWithToleranceMs / renderIntervalMs
     )
 
     const shouldDraw = elapsedRenderIntervals > 0
 
     if (shouldDraw) {
-      this.lastDrawTime = Math.min(
-        timestamp,
+      // Advance by whole intervals so fractional render time carries forward.
+      const nextDrawTime =
         this.lastDrawTime + elapsedRenderIntervals * renderIntervalMs
-      )
+      this.lastDrawTime = Math.min(timestamp, nextDrawTime)
     }
 
-    this.onFrame({ timestamp, elapsedMs, updates, shouldDraw })
-
-    if (this.isRunning) {
-      this.frameId = this.scheduler.requestFrame(this.handleAnimationFrame)
-    }
+    return shouldDraw
   }
 }

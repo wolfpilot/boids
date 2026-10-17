@@ -19,7 +19,7 @@
     "lint": "eslint -f stylish '**/*.ts'",
     "prebuild": "rimraf dist",
     "build:parcel": "parcel build ./src/index.html --no-source-maps --public-url ./",
-    "build": "yarn validate && yarn cleanup && yarn build:parcel",
+    "build": "pnpm validate && pnpm cleanup && pnpm build:parcel",
     "predeploy": "npm run build",
     "deploy": "gh-pages -d dist"
   },

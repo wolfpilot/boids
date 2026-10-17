@@ -1,0 +1,4 @@
+allowBuilds:
+  core-js: false
+  deasync: true
+  parcel-bundler: false

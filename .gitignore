@@ -8,18 +8,18 @@ Thumbs.db
 
 # NPM
 node_modules
-package-lock.json
 
-# Yarn
-.yarn-integrity
+# pnpm
+.pnpm/
+.pnpm-store/
 
 # Cache
 .cache
-.npm
 
 # Logs
 logs
 *.log
+pnpm-debug.log*
 
 # Env files
 .env.local

@@ -28,6 +28,7 @@ describe("Engine", () => {
       state: { isEnabled: true, fill: "#fff" },
       init: jest.fn(),
       draw: jest.fn(() => publishedDuringDraw.push(setBoids.mock.calls.length)),
+      getBounds: () => ({ width: 100, height: 80 }),
     }
     const boid: Boid = {
       ...createBoidEntity({ id: 1 }),

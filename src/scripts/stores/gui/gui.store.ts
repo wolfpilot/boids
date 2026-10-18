@@ -6,9 +6,9 @@ const initialState: GuiStoreState = {
   logFps: true,
   showTargetVector: false,
   showNormalizedTargetVector: false,
-  showVelocityVector: false,
-  showAlignmentArea: true,
-  showSeekingArea: true,
+  showVelocityVector: true,
+  showAlignmentArea: false,
+  showSeekingArea: false,
   showSeparationArea: true,
   showStoppingArea: false,
 }

@@ -22,6 +22,8 @@ export class BoidsQuery extends QueryEntity<IBoidsStoreState> {
   }
 
   public getOtherBoids(id: number): IBoidEntity[] {
-    return this.getAll().filter((boid) => boid.id !== id)
+    return this.getAll({
+      filterBy: (entity) => entity.id !== id,
+    })
   }
 }

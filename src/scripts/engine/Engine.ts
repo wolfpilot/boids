@@ -80,9 +80,7 @@ export default class Engine {
   }
 
   private update() {
-    const snapshot = boidsQuery.all
-
-    boidsStore.set(stepBoids(snapshot, uiQuery.pointerVector))
+    boidsStore.set(stepBoids(boidsQuery.all, uiQuery.pointerVector))
   }
 
   private draw() {

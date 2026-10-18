@@ -18,8 +18,8 @@ export const add = (v1: Vector, v2: Vector): Vector =>
 export const subtract = (v1: Vector, v2: Vector): Vector =>
   new VectorImpl(v1.x - v2.x, v1.y - v2.y)
 
-export const multiply = (vector: Vector, factor: number): Vector => {
-  const { x, y } = vector
+export const multiply = (v: Vector, factor: number): Vector => {
+  const { x, y } = v
 
   const newX = x * factor
   const newY = y * factor
@@ -58,14 +58,18 @@ export const limitMagnitude = (v: Vector, max: number): Vector => {
 
     return multiply(normV, max)
   } else {
-    return v
+    return new VectorImpl(v.x, v.y)
   }
 }
 
 export const setMagnitude = (v: Vector, factor: number): Vector => {
   const normV = normalize(v)
+  const multV = multiply(normV, factor)
 
-  return multiply(normV, factor)
+  v.x = multV.x
+  v.y = multV.y
+
+  return v
 }
 
 export const setAngle = (v: Vector, radians: number) => {

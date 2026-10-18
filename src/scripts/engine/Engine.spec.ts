@@ -1,5 +1,5 @@
-import type { Boid } from "../actors/Boid/Boid"
-import type { Canvas } from "../actors/Canvas/Canvas"
+import type { Boid } from "../actors/Boid/types"
+import type { Canvas } from "../actors/Canvas/types"
 import { boidsQuery, boidsStore } from "../stores/boids"
 import { createBoidEntity } from "../utils/testHelpers"
 import Engine from "./Engine"

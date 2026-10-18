@@ -1,12 +1,5 @@
 import { Store, StoreConfig } from "@datorama/akita"
-
-// Types
-import { Vector } from "../../types/geometry"
-
-export interface UiStoreState {
-  pointerVector: Vector
-  isPointerPresent: boolean
-}
+import { UiStoreState } from "./ui.types"
 
 const initialState: UiStoreState = {
   pointerVector: {

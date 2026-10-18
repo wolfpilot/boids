@@ -1,10 +1,5 @@
 import { Store, StoreConfig } from "@datorama/akita"
-
-export interface AppStoreState {
-  isRunning: boolean
-  elapsedTime: number
-  lastDrawTime: number
-}
+import { AppStoreState } from "./app.types"
 
 const initialState: AppStoreState = {
   isRunning: true,

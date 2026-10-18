@@ -1,16 +1,5 @@
 import { Store, StoreConfig } from "@datorama/akita"
-
-export interface GuiStoreState {
-  maxFps: number
-  logFps: boolean
-  showTargetVector: boolean
-  showNormalizedTargetVector: boolean
-  showVelocityVector: boolean
-  showAlignmentArea: boolean
-  showSeekingArea: boolean
-  showSeparationArea: boolean
-  showStoppingArea: boolean
-}
+import { GuiStoreState } from "./gui.types"
 
 const initialState: GuiStoreState = {
   maxFps: 60,
@@ -18,9 +7,9 @@ const initialState: GuiStoreState = {
   showTargetVector: false,
   showNormalizedTargetVector: false,
   showVelocityVector: false,
-  showAlignmentArea: false,
-  showSeekingArea: false,
-  showSeparationArea: false,
+  showAlignmentArea: true,
+  showSeekingArea: true,
+  showSeparationArea: true,
   showStoppingArea: false,
 }
 

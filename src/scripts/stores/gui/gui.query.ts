@@ -1,7 +1,10 @@
 import { Query } from "@datorama/akita"
 
+// Types
+import { GuiStoreState } from "./gui.types"
+
 // Store
-import { GuiStoreState, GuiStore } from "./gui.store"
+import { GuiStore } from "./gui.store"
 
 export class GuiQuery extends Query<GuiStoreState> {
   allState$ = this.select()

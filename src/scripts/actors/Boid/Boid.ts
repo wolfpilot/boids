@@ -1,6 +1,3 @@
-// Types
-import { Vector } from "../../types/geometry"
-
 // Config
 import { config } from "./config"
 
@@ -15,49 +12,7 @@ import { isEntityOffscreen } from "../../utils/entityHelper"
 
 // Geometry
 import VectorImpl from "../../geometry/Vector"
-
-export interface BoidTraits {
-  size: number
-  maxSpeed: number
-  frictionFactor: number
-  brakingDistance: number
-  alignmentAreaSize: number
-  seekingAreaSize: number
-  separationAreaSize: number
-  color: string
-}
-
-export interface BoidState {
-  location: Vector
-  acceleration: Vector
-  velocity: Vector
-  friction: Vector
-  targetVector: Vector
-  normTargetVector: Vector
-  wanderAngle: number
-}
-
-export interface Boid {
-  id: number
-  traits: BoidTraits
-  state: BoidState
-  draw: () => void
-}
-
-interface Options {
-  id: number
-  ctx: CanvasRenderingContext2D
-  x: number
-  y: number
-  size: number
-  maxSpeedMultiplier: number
-  frictionMultiplier: number
-  brakingMultiplier: number
-  alignmentMultiplier: number
-  seekingMultiplier: number
-  separationMultiplier: number
-  color: string
-}
+import { Boid, BoidState, BoidTraits, Options } from "./types"
 
 // Setup
 const initialState: BoidState = {

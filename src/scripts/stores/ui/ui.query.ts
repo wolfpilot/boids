@@ -2,9 +2,10 @@ import { Query } from "@datorama/akita"
 
 // Types
 import { Vector } from "../../types/geometry"
+import { UiStoreState } from "./ui.types"
 
 // Store
-import { UiStoreState, UiStore } from "./ui.store"
+import { UiStore } from "./ui.store"
 
 export class UiQuery extends Query<UiStoreState> {
   allState$ = this.select()

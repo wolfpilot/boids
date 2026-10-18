@@ -1,4 +1,4 @@
-import type { BoidState, BoidTraits } from "../actors/Boid/Boid"
+import type { BoidState, BoidTraits } from "../actors/Boid/types"
 import type { BoidEntity } from "../types/entities"
 import VectorImpl from "../geometry/Vector"
 

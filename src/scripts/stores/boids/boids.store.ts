@@ -1,14 +1,10 @@
-import { EntityState, EntityStore, StoreConfig } from "@datorama/akita"
+import { EntityStore, StoreConfig } from "@datorama/akita"
 
 // Types
-import { BoidEntity } from "../../types/entities"
+import { BoidsStoreState } from "./boids.types"
 
 const initialState: BoidsStoreState = {
   boids: [],
-}
-
-export interface BoidsStoreState extends EntityState<BoidEntity, number> {
-  boids: BoidEntity[]
 }
 
 @StoreConfig({ name: "boids" })

@@ -1,5 +1,5 @@
-import { separate } from "./separateBehaviour"
-import { createBoidEntity } from "../utils/testHelpers"
+import { separate } from "./separate"
+import { createBoidEntity } from "../../utils/testHelpers"
 
 const boid = (x: number) =>
   createBoidEntity({

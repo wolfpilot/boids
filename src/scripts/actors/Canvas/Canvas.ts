@@ -1,13 +1,5 @@
-export interface CanvasState {
-  isEnabled: boolean
-  fill: string
-}
-
-export interface Canvas {
-  state: CanvasState
-  init: () => void
-  draw: () => void
-}
+import type { Bounds } from "../../types/geometry"
+import { Canvas, CanvasState } from "./types"
 
 // Setup
 const initialState: CanvasState = {
@@ -19,6 +11,7 @@ class CanvasImpl implements Canvas {
   public state: CanvasState
   private canvas: HTMLCanvasElement
   private ctx: CanvasRenderingContext2D
+  private bounds: Bounds = { width: 0, height: 0 }
 
   constructor(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D) {
     this.canvas = canvas
@@ -31,6 +24,11 @@ class CanvasImpl implements Canvas {
 
   public init() {
     this.resize()
+    window.addEventListener("resize", this.resize)
+  }
+
+  public getBounds(): Bounds {
+    return { ...this.bounds }
   }
 
   public draw() {
@@ -38,11 +36,13 @@ class CanvasImpl implements Canvas {
     this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height)
   }
 
-  private resize() {
+  private resize = () => {
     const dpi = window.devicePixelRatio
 
     const wWidth = window.innerWidth
     const wHeight = window.innerHeight
+
+    this.bounds = { width: wWidth, height: wHeight }
 
     this.canvas.width = wWidth * dpi
     this.canvas.height = wHeight * dpi

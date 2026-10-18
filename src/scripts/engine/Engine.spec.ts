@@ -1,5 +1,5 @@
-import type { Boid } from "../actors/Boid/Boid"
-import type { Canvas } from "../actors/Canvas/Canvas"
+import type { Boid } from "../actors/Boid/types"
+import type { Canvas } from "../actors/Canvas/types"
 import { boidsQuery, boidsStore } from "../stores/boids"
 import { createBoidEntity } from "../utils/testHelpers"
 import Engine from "./Engine"
@@ -28,6 +28,7 @@ describe("Engine", () => {
       state: { isEnabled: true, fill: "#fff" },
       init: jest.fn(),
       draw: jest.fn(() => publishedDuringDraw.push(setBoids.mock.calls.length)),
+      getBounds: () => ({ width: 100, height: 80 }),
     }
     const boid: Boid = {
       ...createBoidEntity({ id: 1 }),

@@ -1,7 +1,10 @@
 import { Query } from "@datorama/akita"
 
+// Types
+import { GuiStoreState } from "./gui.types"
+
 // Store
-import { GuiStoreState, GuiStore } from "./gui.store"
+import { GuiStore } from "./gui.store"
 
 export class GuiQuery extends Query<GuiStoreState> {
   allState$ = this.select()
@@ -36,8 +39,12 @@ export class GuiQuery extends Query<GuiStoreState> {
     return this.getValue().showVelocityVector
   }
 
-  get showAwarenessArea(): boolean {
-    return this.getValue().showAwarenessArea
+  get showAlignmentArea(): boolean {
+    return this.getValue().showAlignmentArea
+  }
+
+  get showSeekingArea(): boolean {
+    return this.getValue().showSeekingArea
   }
 
   get showSeparationArea(): boolean {

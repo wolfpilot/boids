@@ -1,9 +1,8 @@
 // Types
-import { BoidEntity } from "../types/entities"
-import { Vector } from "../types/geometry"
+import { Vector } from "../../types/geometry"
 
 // Config
-import { config as boidConfig } from "../actors/Boid/config"
+import { config as boidConfig } from "../../actors/Boid/config"
 
 // Utils
 import {
@@ -11,17 +10,18 @@ import {
   mag,
   setMagnitude,
   limitMagnitude,
-} from "../utils/vectorHelper"
+} from "../../utils/vectorHelper"
+import { isInSeekingArea } from "./helpers"
 
 // Geometry
-import VectorImpl from "../geometry/Vector"
-
-interface Options {
-  target: Vector
-  source: BoidEntity
-}
+import VectorImpl from "../../geometry/Vector"
+import { Options } from "./types"
 
 export const seek = ({ target, source }: Options): Vector => {
+  if (!isInSeekingArea(source, target)) {
+    return new VectorImpl(0, 0)
+  }
+
   let desiredVelocity: Vector
 
   const targetVector = subtract(target, source.state.location)

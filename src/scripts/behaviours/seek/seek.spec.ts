@@ -1,5 +1,5 @@
-import { seek } from "./seekBehaviour"
-import { createBoidEntity } from "../utils/testHelpers"
+import { seek } from "./seek"
+import { createBoidEntity } from "../../utils/testHelpers"
 
 const source = (brakingDistance: number, velocityX = 0) =>
   createBoidEntity({
@@ -8,6 +8,24 @@ const source = (brakingDistance: number, velocityX = 0) =>
   })
 
 describe("seek", () => {
+  it("steers only when the target is inside the seeking area", () => {
+    const boid = createBoidEntity({
+      traits: { seekingAreaSize: 8, brakingDistance: 20 },
+    })
+
+    expect(seek({ target: { x: 7.9, y: 0 }, source: boid }).x).toBeGreaterThan(
+      0
+    )
+    expect(seek({ target: { x: 8, y: 0 }, source: boid })).toEqual({
+      x: 0,
+      y: 0,
+    })
+    expect(seek({ target: { x: 9, y: 0 }, source: boid })).toEqual({
+      x: 0,
+      y: 0,
+    })
+  })
+
   it("uses the boid's braking distance to set desired speed", () => {
     const target = { x: 2, y: 0 }
 

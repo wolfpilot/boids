@@ -1,6 +1,6 @@
 // Actors
-import { Canvas } from "../actors/Canvas/Canvas"
-import { Boid } from "../actors/Boid/Boid"
+import { Canvas } from "../actors/Canvas/types"
+import { Boid } from "../actors/Boid/types"
 
 // Stores
 import { appService } from "../stores/app"
@@ -8,15 +8,9 @@ import { boidsStore, boidsQuery } from "../stores/boids"
 import { uiQuery } from "../stores/ui"
 
 // Engine
-import Loop, { FramePlan, FrameScheduler } from "./Loop"
+import Loop, { FramePlan } from "./Loop"
 import { stepBoids } from "./utils/stepBoids"
-
-interface Options {
-  canvas: Canvas
-  boids: readonly Boid[]
-  maxFps: number
-  scheduler?: FrameScheduler
-}
+import { Options } from "./types"
 
 /**
  * Engine runs two loops in sequence:
@@ -80,7 +74,15 @@ export default class Engine {
   }
 
   private update() {
-    boidsStore.set(stepBoids(boidsQuery.all, uiQuery.pointerVector))
+    const { isPointerPresent, pointerVector } = uiQuery.allValues
+
+    const updatedBoids = stepBoids({
+      snapshot: boidsQuery.all,
+      target: isPointerPresent ? pointerVector : undefined,
+      bounds: this.canvas.getBounds(),
+    })
+
+    boidsStore.set(updatedBoids)
   }
 
   private draw() {

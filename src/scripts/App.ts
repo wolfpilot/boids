@@ -1,5 +1,8 @@
+// Types
+import { Canvas } from "./actors/Canvas/types"
+
 // Actors
-import CanvasImpl, { Canvas } from "./actors/Canvas/Canvas"
+import CanvasImpl from "./actors/Canvas/Canvas"
 
 // Stores
 import { appQuery } from "./stores/app"

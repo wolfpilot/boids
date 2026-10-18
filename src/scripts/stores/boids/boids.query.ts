@@ -2,9 +2,10 @@ import { QueryEntity } from "@datorama/akita"
 
 // Types
 import { BoidEntity } from "../../types/entities"
+import { BoidsStoreState } from "./boids.types"
 
 // Store
-import { BoidsStoreState, BoidsStore } from "./boids.store"
+import { BoidsStore } from "./boids.store"
 
 export class BoidsQuery extends QueryEntity<BoidsStoreState> {
   allState$ = this.select()

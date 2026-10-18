@@ -1,7 +1,10 @@
 import { Query } from "@datorama/akita"
 
+// Types
+import { AppStoreState } from "./app.types"
+
 // Store
-import { AppStoreState, AppStore } from "./app.store"
+import { AppStore } from "./app.store"
 
 export class AppQuery extends Query<AppStoreState> {
   allState$ = this.select()

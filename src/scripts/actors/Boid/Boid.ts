@@ -1,6 +1,3 @@
-// Types
-import { Vector } from "../../types/geometry"
-
 // Config
 import { config } from "./config"
 
@@ -15,46 +12,7 @@ import { isEntityOffscreen } from "../../utils/entityHelper"
 
 // Geometry
 import VectorImpl from "../../geometry/Vector"
-
-export interface BoidTraits {
-  size: number
-  maxSpeed: number
-  frictionFactor: number
-  brakingDistance: number
-  awarenessAreaSize: number
-  separationAreaSize: number
-  color: string
-}
-
-export interface BoidState {
-  location: Vector
-  acceleration: Vector
-  velocity: Vector
-  friction: Vector
-  targetVector: Vector
-  normTargetVector: Vector
-}
-
-export interface Boid {
-  id: number
-  traits: BoidTraits
-  state: BoidState
-  draw: () => void
-}
-
-interface Options {
-  id: number
-  ctx: CanvasRenderingContext2D
-  x: number
-  y: number
-  size: number
-  maxSpeedMultiplier: number
-  frictionMultiplier: number
-  brakingMultiplier: number
-  awarenessMultiplier: number
-  separationMultiplier: number
-  color: string
-}
+import { Boid, BoidState, BoidTraits, Options } from "./types"
 
 // Setup
 const initialState: BoidState = {
@@ -64,6 +22,7 @@ const initialState: BoidState = {
   friction: new VectorImpl(0, 0),
   targetVector: new VectorImpl(0, 0),
   normTargetVector: new VectorImpl(0, 0),
+  wanderAngle: 0,
 }
 
 // Setup
@@ -82,7 +41,8 @@ class BoidImpl implements Boid {
     maxSpeedMultiplier,
     frictionMultiplier,
     brakingMultiplier,
-    awarenessMultiplier,
+    alignmentMultiplier,
+    seekingMultiplier,
     separationMultiplier,
     color,
   }: Options) {
@@ -95,7 +55,8 @@ class BoidImpl implements Boid {
       maxSpeed: size * maxSpeedMultiplier,
       frictionFactor: size * size * size * frictionMultiplier,
       brakingDistance: size * size * brakingMultiplier,
-      awarenessAreaSize: size * awarenessMultiplier,
+      alignmentAreaSize: size * alignmentMultiplier,
+      seekingAreaSize: size * seekingMultiplier,
       separationAreaSize: size * separationMultiplier,
       color,
     }
@@ -103,6 +64,7 @@ class BoidImpl implements Boid {
     this.state = {
       ...initialState,
       location: new VectorImpl(x, y),
+      wanderAngle: Math.random() * Math.PI * 2,
     }
   }
 
@@ -118,8 +80,12 @@ class BoidImpl implements Boid {
       radius: boidEntity.traits.size,
     })
 
-    if (guiQuery.allValues.showAwarenessArea) {
-      this.drawAwarenessArea(boidEntity.state)
+    if (guiQuery.allValues.showAlignmentArea) {
+      this.drawAlignmentArea(boidEntity.state)
+    }
+
+    if (guiQuery.allValues.showSeekingArea) {
+      this.drawSeekingArea(boidEntity.state)
     }
 
     if (guiQuery.allValues.showSeparationArea) {
@@ -149,17 +115,31 @@ class BoidImpl implements Boid {
   }
 
   // Draw area in which the boid can be affected by external forces
-  private drawAwarenessArea(state: BoidState) {
+  private drawAlignmentArea(state: BoidState) {
     this.ctx.beginPath()
     this.ctx.arc(
       state.location.x,
       state.location.y,
-      this.traits.awarenessAreaSize,
+      this.traits.alignmentAreaSize,
       0,
       2 * Math.PI
     )
     this.ctx.lineWidth = 1
     this.ctx.strokeStyle = this.traits.color
+    this.ctx.stroke()
+  }
+
+  private drawSeekingArea(state: BoidState) {
+    this.ctx.beginPath()
+    this.ctx.arc(
+      state.location.x,
+      state.location.y,
+      this.traits.seekingAreaSize,
+      0,
+      2 * Math.PI
+    )
+    this.ctx.lineWidth = 1
+    this.ctx.strokeStyle = config.seekingArea.color
     this.ctx.stroke()
   }
 

@@ -1,4 +1,4 @@
-import type { BoidState, BoidTraits } from "../actors/Boid/Boid"
+import type { BoidState, BoidTraits } from "../actors/Boid/types"
 import type { BoidEntity } from "../types/entities"
 import VectorImpl from "../geometry/Vector"
 
@@ -19,7 +19,8 @@ export const createBoidEntity = ({
     maxSpeed: 1,
     frictionFactor: 0,
     brakingDistance: 100,
-    awarenessAreaSize: 100,
+    alignmentAreaSize: 100,
+    seekingAreaSize: 80,
     separationAreaSize: 10,
     color: "#000000",
     ...traits,
@@ -31,6 +32,7 @@ export const createBoidEntity = ({
     friction: new VectorImpl(0, 0),
     targetVector: new VectorImpl(0, 0),
     normTargetVector: new VectorImpl(0, 0),
+    wanderAngle: 0,
     ...state,
   },
 })

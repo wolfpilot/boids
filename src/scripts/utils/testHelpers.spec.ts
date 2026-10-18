@@ -12,7 +12,8 @@ describe("createBoidEntity", () => {
         maxSpeed: 1,
         frictionFactor: 0,
         brakingDistance: 100,
-        awarenessAreaSize: 100,
+        alignmentAreaSize: 100,
+        seekingAreaSize: 80,
         separationAreaSize: 10,
         color: "#000000",
       },
@@ -23,6 +24,7 @@ describe("createBoidEntity", () => {
         friction: { x: 0, y: 0 },
         targetVector: { x: 0, y: 0 },
         normTargetVector: { x: 0, y: 0 },
+        wanderAngle: 0,
       },
     })
     expect(first.state.location).not.toBe(second.state.location)

@@ -1,9 +1,8 @@
 // Types
-import { BoidEntity } from "../types/entities"
-import { Vector } from "../types/geometry"
+import { Vector } from "../../types/geometry"
 
 // Config
-import { config as boidConfig } from "../actors/Boid/config"
+import { config as boidConfig } from "../../actors/Boid/config"
 
 // Utils
 import {
@@ -13,26 +12,12 @@ import {
   normalize,
   mag,
   limitMagnitude,
-} from "../utils/vectorHelper"
+} from "../../utils/vectorHelper"
+import { isInRange } from "./helpers"
 
 // Geometry
-import VectorImpl from "../geometry/Vector"
-
-interface Options {
-  boids: BoidEntity[]
-  source: BoidEntity
-}
-
-// Utils
-const isInRange = (target: BoidEntity, source: BoidEntity): boolean => {
-  const nLocation = subtract(target.state.location, source.state.location)
-  const nDistance = mag(nLocation)
-
-  return (
-    nDistance > 0 &&
-    nDistance < source.traits.separationAreaSize + target.traits.size
-  )
-}
+import VectorImpl from "../../geometry/Vector"
+import { Options } from "./types"
 
 // Keep a distance from neighbouring boids
 export const separate = ({ boids, source }: Options): Vector => {

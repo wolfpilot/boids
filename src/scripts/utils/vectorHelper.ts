@@ -7,6 +7,9 @@ import { sum } from "./mathHelper"
 // Geometry
 import VectorImpl from "../geometry/Vector"
 
+// Returns a new copy of the supplied vector
+export const clone = (v: Vector): Vector => new VectorImpl(v.x, v.y)
+
 // Returns a new vector that adds v2 to v1
 export const add = (v1: Vector, v2: Vector): Vector =>
   new VectorImpl(v1.x + v2.x, v1.y + v2.y)
@@ -15,8 +18,8 @@ export const add = (v1: Vector, v2: Vector): Vector =>
 export const subtract = (v1: Vector, v2: Vector): Vector =>
   new VectorImpl(v1.x - v2.x, v1.y - v2.y)
 
-export const multiply = (vector: Vector, factor: number): Vector => {
-  const { x, y } = vector
+export const multiply = (v: Vector, factor: number): Vector => {
+  const { x, y } = v
 
   const newX = x * factor
   const newY = y * factor
@@ -36,8 +39,6 @@ export const divide = (vector: Vector, factor: number): Vector => {
 // Calculate the magnitude (length) of a vector
 export const mag = (v: Vector): number => Math.sqrt(v.x * v.x + v.y * v.y)
 
-export const magSq = (v: Vector): number => v.x * v.x + v.y * v.y
-
 export const normalize = (v: Vector): Vector => {
   const magnitude = mag(v)
 
@@ -55,14 +56,27 @@ export const limitMagnitude = (v: Vector, max: number): Vector => {
 
     return multiply(normV, max)
   } else {
-    return v
+    return new VectorImpl(v.x, v.y)
   }
 }
 
 export const setMagnitude = (v: Vector, factor: number): Vector => {
   const normV = normalize(v)
+  const multV = multiply(normV, factor)
 
-  return multiply(normV, factor)
+  v.x = multV.x
+  v.y = multV.y
+
+  return v
+}
+
+export const setAngle = (v: Vector, radians: number) => {
+  const len: number = mag(v)
+
+  v.x = Math.cos(radians) * len
+  v.y = Math.sin(radians) * len
+
+  return v
 }
 
 // Return the combination of all forces applied to an initial force vector

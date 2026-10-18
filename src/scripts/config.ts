@@ -9,6 +9,7 @@ export const config = {
     maxSpeedMultiplier: 0.1,
     brakingMultiplier: 0.15,
     alignmentMultiplier: 8,
+    seekingMultiplier: 4,
     separationMultiplier: 1.25,
     frictionMultiplier: 0.00000333,
     colors: BOID_COLORS,

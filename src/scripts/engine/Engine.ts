@@ -76,9 +76,13 @@ export default class Engine {
   private update() {
     const { isPointerPresent, pointerVector } = uiQuery.allValues
 
-    const target = isPointerPresent ? pointerVector : undefined
+    const updatedBoids = stepBoids({
+      snapshot: boidsQuery.all,
+      target: isPointerPresent ? pointerVector : undefined,
+      bounds: this.canvas.getBounds(),
+    })
 
-    boidsStore.set(stepBoids(boidsQuery.all, target))
+    boidsStore.set(updatedBoids)
   }
 
   private draw() {

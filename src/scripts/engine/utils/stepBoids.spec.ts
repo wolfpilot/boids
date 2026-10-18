@@ -1,6 +1,8 @@
 import { stepBoids } from "./stepBoids"
 import { createBoidEntity } from "../../utils/testHelpers"
 
+const bounds = { width: 1000, height: 1000 }
+
 describe("stepBoids", () => {
   it("uses one snapshot regardless of boid update order", () => {
     const first = createBoidEntity({
@@ -13,8 +15,16 @@ describe("stepBoids", () => {
     })
     const target = { x: 20, y: 0 }
 
-    const forward = stepBoids([first, second], target)
-    const reverse = stepBoids([second, first], target)
+    const forward = stepBoids({
+      snapshot: [first, second],
+      target,
+      bounds,
+    })
+    const reverse = stepBoids({
+      snapshot: [second, first],
+      target,
+      bounds,
+    })
 
     expect(forward).toEqual(reverse.reverse())
     expect(first.state.location).toEqual({ x: 0, y: 0 })
@@ -33,7 +43,11 @@ describe("stepBoids", () => {
     })
 
     const target = { x: 0, y: 0 }
-    const [updated] = stepBoids([source, neighbour], target)
+    const [updated] = stepBoids({
+      snapshot: [source, neighbour],
+      target,
+      bounds,
+    })
 
     expect(updated.state.location.x).toBeLessThan(0)
     expect(updated.state.velocity.x).toBeLessThan(0)
@@ -48,7 +62,11 @@ describe("stepBoids", () => {
       },
     })
 
-    const [updated] = stepBoids([source], { x: 11, y: 20 })
+    const [updated] = stepBoids({
+      snapshot: [source],
+      target: { x: 11, y: 20 },
+      bounds,
+    })
 
     expect(updated.state.location).toEqual({ x: 10, y: 20 })
     expect(updated.state.targetVector).toEqual({ x: 1, y: 0 })
@@ -68,7 +86,11 @@ describe("stepBoids", () => {
       },
     })
 
-    const [updated] = stepBoids([source], { x: 110, y: 20 })
+    const [updated] = stepBoids({
+      snapshot: [source],
+      target: { x: 110, y: 20 },
+      bounds,
+    })
 
     expect(updated.state.velocity.x).toBeCloseTo(0.6)
     expect(updated.state.location.x).toBeCloseTo(10.6)
@@ -86,9 +108,20 @@ describe("stepBoids", () => {
     const random = jest.spyOn(Math, "random").mockReturnValue(0.5)
 
     try {
-      const [seeking] = stepBoids([source], { x: 20, y: 0 })
-      const [wandering] = stepBoids([source], { x: 30, y: 0 })
-      const [absent] = stepBoids([source])
+      const [seeking] = stepBoids({
+        snapshot: [source],
+        target: { x: 20, y: 0 },
+        bounds,
+      })
+      const [wandering] = stepBoids({
+        snapshot: [source],
+        target: { x: 30, y: 0 },
+        bounds,
+      })
+      const [absent] = stepBoids({
+        snapshot: [source],
+        bounds,
+      })
 
       expect(seeking.state.location.x).toBeGreaterThan(0)
       expect(seeking.state.location.y).toBe(0)
@@ -113,8 +146,15 @@ describe("stepBoids", () => {
     const random = jest.spyOn(Math, "random").mockReturnValue(0.5)
 
     try {
-      const [seeking] = stepBoids([source], { x: 0, y: 0 })
-      const [wandering] = stepBoids([source])
+      const [seeking] = stepBoids({
+        snapshot: [source],
+        target: { x: 0, y: 0 },
+        bounds,
+      })
+      const [wandering] = stepBoids({
+        snapshot: [source],
+        bounds,
+      })
 
       expect(seeking.state.location).toEqual({ x: 0, y: 0 })
       expect(seeking.state.velocity).toEqual({ x: 0, y: 0 })
@@ -138,12 +178,56 @@ describe("stepBoids", () => {
     const random = jest.spyOn(Math, "random").mockReturnValue(0.5)
 
     try {
-      const [updated] = stepBoids([source, neighbour])
+      const [updated] = stepBoids({
+        snapshot: [source, neighbour],
+        bounds,
+      })
 
       expect(updated.state.location.x).toBeLessThan(0)
       expect(updated.state.location.y).toBeGreaterThan(0)
     } finally {
       random.mockRestore()
     }
+  })
+
+  it("wraps a moving boid after it fully exits without changing the snapshot", () => {
+    const source = createBoidEntity({
+      traits: { size: 10 },
+      state: {
+        location: { x: 110, y: 40 },
+        velocity: { x: 0.2, y: 0 },
+        wanderAngle: 0,
+      },
+    })
+    const random = jest.spyOn(Math, "random").mockReturnValue(0.5)
+
+    try {
+      const [updated] = stepBoids({
+        snapshot: [source],
+        bounds: { width: 100, height: 80 },
+      })
+
+      expect(updated.state.location).toEqual({ x: -10, y: 40 })
+      expect(updated.state.velocity.x).toBeGreaterThan(0)
+      expect(source.state.location).toEqual({ x: 110, y: 40 })
+      expect(source.state.velocity).toEqual({ x: 0.2, y: 0 })
+    } finally {
+      random.mockRestore()
+    }
+  })
+
+  it("wraps a stopped boid that becomes fully outside after resize", () => {
+    const source = createBoidEntity({
+      state: { location: { x: 75, y: 20 } },
+    })
+    const [updated] = stepBoids({
+      snapshot: [source],
+      target: { x: 75, y: 20 },
+      bounds: { width: 60, height: 40 },
+    })
+
+    expect(updated.state.location).toEqual({ x: -10, y: 20 })
+    expect(updated.state.velocity).toEqual({ x: 0, y: 0 })
+    expect(source.state.location).toEqual({ x: 75, y: 20 })
   })
 })

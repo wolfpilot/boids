@@ -8,7 +8,7 @@ import {
 } from "../../behaviours"
 import VectorImpl from "../../geometry/Vector"
 import type { BoidEntity } from "../../types/entities"
-import type { Vector } from "../../types/geometry"
+import type { Bounds, Vector } from "../../types/geometry"
 import {
   add,
   applyForces,
@@ -18,6 +18,13 @@ import {
   normalize,
   subtract,
 } from "../../utils/vectorHelper"
+import { wrapLocation } from "./wrapLocation"
+
+interface StepBoidsOptions {
+  snapshot: readonly BoidEntity[]
+  bounds: Bounds
+  target?: Vector
+}
 
 const shouldStop = (
   source: BoidEntity,
@@ -108,7 +115,19 @@ const stepBoid = (
     : advanceBoid(boid, add(neighbourSteering, seek({ target, source })))
 }
 
-export const stepBoids = (
-  snapshot: readonly BoidEntity[],
-  target?: Vector
-): BoidEntity[] => snapshot.map((boid) => stepBoid(boid, snapshot, target))
+export const stepBoids = ({
+  snapshot,
+  bounds,
+  target,
+}: StepBoidsOptions): BoidEntity[] =>
+  snapshot.map((source) => {
+    const boid = stepBoid(source, snapshot, target)
+
+    return {
+      ...boid,
+      state: {
+        ...boid.state,
+        location: wrapLocation(boid.state.location, boid.traits.size, bounds),
+      },
+    }
+  })

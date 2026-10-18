@@ -23,6 +23,7 @@ describe("createBoidEntity", () => {
         friction: { x: 0, y: 0 },
         targetVector: { x: 0, y: 0 },
         normTargetVector: { x: 0, y: 0 },
+        wanderAngle: 0,
       },
     })
     expect(first.state.location).not.toBe(second.state.location)

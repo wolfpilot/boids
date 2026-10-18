@@ -33,6 +33,7 @@ export interface BoidState {
   friction: Vector
   targetVector: Vector
   normTargetVector: Vector
+  wanderAngle: number
 }
 
 export interface Boid {
@@ -64,6 +65,7 @@ const initialState: BoidState = {
   friction: new VectorImpl(0, 0),
   targetVector: new VectorImpl(0, 0),
   normTargetVector: new VectorImpl(0, 0),
+  wanderAngle: 0,
 }
 
 // Setup
@@ -103,6 +105,7 @@ class BoidImpl implements Boid {
     this.state = {
       ...initialState,
       location: new VectorImpl(x, y),
+      wanderAngle: Math.random() * Math.PI * 2,
     }
   }
 

@@ -31,6 +31,7 @@ export const createBoidEntity = ({
     friction: new VectorImpl(0, 0),
     targetVector: new VectorImpl(0, 0),
     normTargetVector: new VectorImpl(0, 0),
+    wanderAngle: 0,
     ...state,
   },
 })

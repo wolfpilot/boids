@@ -1,5 +1,5 @@
 import { config } from "../../actors/Boid/config"
-import { align, seek, separate } from "../../behaviours"
+import { align, seek, separate, wander } from "../../behaviours"
 import VectorImpl from "../../geometry/Vector"
 import type { BoidEntity } from "../../types/entities"
 import type { Vector } from "../../types/geometry"
@@ -31,12 +31,7 @@ const stopBoid = (source: BoidEntity): BoidEntity => ({
   },
 })
 
-const advanceBoid = (
-  source: BoidEntity,
-  target: Vector,
-  neighbourSteering: Vector
-): BoidEntity => {
-  const steering = add(neighbourSteering, seek({ target, source }))
+const advanceBoid = (source: BoidEntity, steering: Vector): BoidEntity => {
   const friction = multiply(
     normalize(source.state.velocity),
     -source.traits.frictionFactor
@@ -67,27 +62,45 @@ const stepBoid = (
   snapshot: readonly BoidEntity[],
   target: Vector
 ): BoidEntity => {
-  const targetVector = subtract(target, source.state.location)
-  const normTargetVector = normalize(targetVector)
-
-  const boid = {
-    ...source,
-    state: {
-      ...source.state,
-      targetVector,
-      normTargetVector,
-    },
-  }
-
   const neighbours = snapshot.filter((boid) => boid.id !== source.id)
   const neighbourSteering = add(
     align({ boids: neighbours, source }),
     separate({ boids: neighbours, source })
   )
 
+  // TODO: Detect if mouse in awareness area. If not, wander. Otherwise, seek.
+  if (!target) {
+    const { force, nextAngle } = wander({
+      source,
+      randomValue: Math.random(),
+    })
+
+    const boid = {
+      ...source,
+      state: {
+        ...source.state,
+        wanderAngle: nextAngle,
+        targetVector: new VectorImpl(0, 0),
+        normTargetVector: new VectorImpl(0, 0),
+      },
+    }
+
+    return advanceBoid(boid, add(neighbourSteering, force))
+  }
+
+  const targetVector = subtract(target, source.state.location)
+  const boid = {
+    ...source,
+    state: {
+      ...source.state,
+      targetVector,
+      normTargetVector: normalize(targetVector),
+    },
+  }
+
   return shouldStop(source, targetVector, neighbourSteering)
     ? stopBoid(boid)
-    : advanceBoid(boid, target, neighbourSteering)
+    : advanceBoid(boid, add(neighbourSteering, seek({ target, source })))
 }
 
 export const stepBoids = (

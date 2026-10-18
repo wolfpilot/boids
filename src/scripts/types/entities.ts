@@ -1,8 +1,8 @@
 // Types
-import { IBoidTraits, IBoidState } from "../actors/Boid/Boid"
+import { BoidTraits, BoidState } from "../actors/Boid/Boid"
 
-export interface IBoidEntity {
+export interface BoidEntity {
   id: number
-  traits: IBoidTraits
-  state: IBoidState
+  traits: BoidTraits
+  state: BoidState
 }

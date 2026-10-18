@@ -1,18 +1,18 @@
-import type { IBoidState, IBoidTraits } from "../actors/Boid/Boid"
-import type { IBoidEntity } from "../types/entities"
-import Vector from "../geometry/Vector"
+import type { BoidState, BoidTraits } from "../actors/Boid/Boid"
+import type { BoidEntity } from "../types/entities"
+import VectorImpl from "../geometry/Vector"
 
-interface IBoidEntityOverrides {
+interface BoidEntityOverrides {
   id?: number
-  traits?: Partial<IBoidTraits>
-  state?: Partial<IBoidState>
+  traits?: Partial<BoidTraits>
+  state?: Partial<BoidState>
 }
 
 export const createBoidEntity = ({
   id = 0,
   traits = {},
   state = {},
-}: IBoidEntityOverrides = {}): IBoidEntity => ({
+}: BoidEntityOverrides = {}): BoidEntity => ({
   id,
   traits: {
     size: 10,
@@ -25,12 +25,12 @@ export const createBoidEntity = ({
     ...traits,
   },
   state: {
-    location: new Vector(0, 0),
-    acceleration: new Vector(0, 0),
-    velocity: new Vector(0, 0),
-    friction: new Vector(0, 0),
-    targetVector: new Vector(0, 0),
-    normTargetVector: new Vector(0, 0),
+    location: new VectorImpl(0, 0),
+    acceleration: new VectorImpl(0, 0),
+    velocity: new VectorImpl(0, 0),
+    friction: new VectorImpl(0, 0),
+    targetVector: new VectorImpl(0, 0),
+    normTargetVector: new VectorImpl(0, 0),
     ...state,
   },
 })

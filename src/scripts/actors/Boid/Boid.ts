@@ -1,5 +1,5 @@
 // Types
-import { IVector } from "../../types/geometry"
+import { Vector } from "../../types/geometry"
 
 // Config
 import { config } from "./config"
@@ -14,9 +14,9 @@ import { multiply } from "../../utils/vectorHelper"
 import { isEntityOffscreen } from "../../utils/entityHelper"
 
 // Geometry
-import Vector from "../../geometry/Vector"
+import VectorImpl from "../../geometry/Vector"
 
-export interface IBoidTraits {
+export interface BoidTraits {
   size: number
   maxSpeed: number
   frictionFactor: number
@@ -26,23 +26,23 @@ export interface IBoidTraits {
   color: string
 }
 
-export interface IBoidState {
-  location: IVector
-  acceleration: IVector
-  velocity: IVector
-  friction: IVector
-  targetVector: IVector
-  normTargetVector: IVector
+export interface BoidState {
+  location: Vector
+  acceleration: Vector
+  velocity: Vector
+  friction: Vector
+  targetVector: Vector
+  normTargetVector: Vector
 }
 
-export interface IBoid {
+export interface Boid {
   id: number
-  traits: IBoidTraits
-  state: IBoidState
+  traits: BoidTraits
+  state: BoidState
   draw: () => void
 }
 
-interface IOptions {
+interface Options {
   id: number
   ctx: CanvasRenderingContext2D
   x: number
@@ -57,20 +57,20 @@ interface IOptions {
 }
 
 // Setup
-const initialState: IBoidState = {
-  location: new Vector(0, 0),
-  acceleration: new Vector(0, 0),
-  velocity: new Vector(0, 0),
-  friction: new Vector(0, 0),
-  targetVector: new Vector(0, 0),
-  normTargetVector: new Vector(0, 0),
+const initialState: BoidState = {
+  location: new VectorImpl(0, 0),
+  acceleration: new VectorImpl(0, 0),
+  velocity: new VectorImpl(0, 0),
+  friction: new VectorImpl(0, 0),
+  targetVector: new VectorImpl(0, 0),
+  normTargetVector: new VectorImpl(0, 0),
 }
 
 // Setup
-class Boid implements IBoid {
+class BoidImpl implements Boid {
   public readonly id: number
-  public readonly traits: IBoidTraits
-  public state: IBoidState
+  public readonly traits: BoidTraits
+  public state: BoidState
   private ctx: CanvasRenderingContext2D
 
   constructor({
@@ -85,7 +85,7 @@ class Boid implements IBoid {
     awarenessMultiplier,
     separationMultiplier,
     color,
-  }: IOptions) {
+  }: Options) {
     this.id = id
     this.ctx = ctx
 
@@ -102,7 +102,7 @@ class Boid implements IBoid {
 
     this.state = {
       ...initialState,
-      location: new Vector(x, y),
+      location: new VectorImpl(x, y),
     }
   }
 
@@ -149,7 +149,7 @@ class Boid implements IBoid {
   }
 
   // Draw area in which the boid can be affected by external forces
-  private drawAwarenessArea(state: IBoidState) {
+  private drawAwarenessArea(state: BoidState) {
     this.ctx.beginPath()
     this.ctx.arc(
       state.location.x,
@@ -164,7 +164,7 @@ class Boid implements IBoid {
   }
 
   // Draw area in which the boid wants to push itself away from others
-  private drawSeparationArea(state: IBoidState) {
+  private drawSeparationArea(state: BoidState) {
     this.ctx.save()
     this.ctx.globalAlpha = 0.35
 
@@ -187,7 +187,7 @@ class Boid implements IBoid {
   }
 
   // Draw area in which the boid deccelerates near the target
-  private drawStoppingArea(state: IBoidState) {
+  private drawStoppingArea(state: BoidState) {
     this.ctx.save()
     this.ctx.globalAlpha = 0.05
 
@@ -210,7 +210,7 @@ class Boid implements IBoid {
   }
 
   // Draw the shape
-  private drawShape(state: IBoidState) {
+  private drawShape(state: BoidState) {
     this.ctx.beginPath()
     this.ctx.moveTo(
       state.location.x - this.traits.size / 2,
@@ -228,7 +228,7 @@ class Boid implements IBoid {
   }
 
   // Draw vector to target
-  private drawTargetVector(state: IBoidState) {
+  private drawTargetVector(state: BoidState) {
     this.ctx.beginPath()
     this.ctx.moveTo(state.location.x, state.location.y)
     this.ctx.lineWidth = 1
@@ -238,7 +238,7 @@ class Boid implements IBoid {
   }
 
   // Draw normalized direction vector
-  private drawDirectionVector(state: IBoidState) {
+  private drawDirectionVector(state: BoidState) {
     const normalizedDirectionVector = multiply(
       state.normTargetVector,
       this.traits.size
@@ -256,7 +256,7 @@ class Boid implements IBoid {
   }
 
   // Draw the resulting force vector
-  private drawVelocityVector(state: IBoidState) {
+  private drawVelocityVector(state: BoidState) {
     const upscaledVelocityVector = multiply(state.velocity, 5)
 
     this.ctx.beginPath()
@@ -271,4 +271,4 @@ class Boid implements IBoid {
   }
 }
 
-export default Boid
+export default BoidImpl

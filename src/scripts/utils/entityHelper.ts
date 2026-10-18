@@ -1,8 +1,8 @@
 // Types
-import { IVector } from "../types/geometry"
+import { Vector } from "../types/geometry"
 
-interface IIsEntityOutsideOptions {
-  v: IVector
+interface IsEntityOutsideOptions {
+  v: Vector
   radius: number
   minX: number
   minY: number
@@ -10,8 +10,8 @@ interface IIsEntityOutsideOptions {
   maxY: number
 }
 
-interface IIsEntityOffscreenOptions {
-  v: IVector
+interface IsEntityOffscreenOptions {
+  v: Vector
   radius: number
 }
 
@@ -22,7 +22,7 @@ export const isEntityOutside = ({
   minY,
   maxX,
   maxY,
-}: IIsEntityOutsideOptions): boolean =>
+}: IsEntityOutsideOptions): boolean =>
   v.y < minY - radius || // Top
   v.x > maxX + radius || // Right
   v.y > maxY + radius || // Bottom
@@ -31,7 +31,7 @@ export const isEntityOutside = ({
 export const isEntityOffscreen = ({
   v,
   radius,
-}: IIsEntityOffscreenOptions): boolean =>
+}: IsEntityOffscreenOptions): boolean =>
   isEntityOutside({
     v,
     radius,

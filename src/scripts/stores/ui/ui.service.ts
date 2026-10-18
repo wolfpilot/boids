@@ -1,12 +1,12 @@
 import { UiStore } from "./ui.store"
 
 // Types
-import { IVector } from "../../types/geometry"
+import { Vector } from "../../types/geometry"
 
 export class UiService {
   constructor(private uiStore: UiStore) {}
 
-  updatePointerVector(val: IVector) {
+  updatePointerVector(val: Vector) {
     this.uiStore.update({
       pointerVector: val,
     })

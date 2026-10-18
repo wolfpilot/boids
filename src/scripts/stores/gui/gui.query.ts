@@ -1,9 +1,9 @@
 import { Query } from "@datorama/akita"
 
 // Store
-import { IGuiStoreState, GuiStore } from "./gui.store"
+import { GuiStoreState, GuiStore } from "./gui.store"
 
-export class GuiQuery extends Query<IGuiStoreState> {
+export class GuiQuery extends Query<GuiStoreState> {
   allState$ = this.select()
   logFps$ = this.select("logFps")
   maxFps$ = this.select("maxFps")
@@ -12,7 +12,7 @@ export class GuiQuery extends Query<IGuiStoreState> {
     super(store)
   }
 
-  get allValues(): IGuiStoreState {
+  get allValues(): GuiStoreState {
     return this.getValue()
   }
 

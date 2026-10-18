@@ -1,6 +1,6 @@
 import { Store, StoreConfig } from "@datorama/akita"
 
-export interface IGuiStoreState {
+export interface GuiStoreState {
   maxFps: number
   logFps: boolean
   showTargetVector: boolean
@@ -11,7 +11,7 @@ export interface IGuiStoreState {
   showStoppingArea: boolean
 }
 
-const initialState: IGuiStoreState = {
+const initialState: GuiStoreState = {
   maxFps: 60,
   logFps: true,
   showTargetVector: false,
@@ -23,7 +23,7 @@ const initialState: IGuiStoreState = {
 }
 
 @StoreConfig({ name: "gui" })
-export class GuiStore extends Store<IGuiStoreState> {
+export class GuiStore extends Store<GuiStoreState> {
   constructor() {
     super(initialState)
   }

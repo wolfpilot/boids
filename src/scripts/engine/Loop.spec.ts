@@ -1,10 +1,10 @@
-import Loop, { IFramePlan, IFrameScheduler } from "./Loop"
+import Loop, { FramePlan, FrameScheduler } from "./Loop"
 
 const createScheduler = () => {
   let time = 0
   let nextId = 0
   const callbacks = new Map<number, FrameRequestCallback>()
-  const scheduler: IFrameScheduler = {
+  const scheduler: FrameScheduler = {
     now: () => time,
     requestFrame: (callback) => {
       const id = ++nextId
@@ -38,7 +38,7 @@ const createScheduler = () => {
 describe("Loop", () => {
   it("schedules 60 updates with 120 Hz frames and renders at 30 FPS", () => {
     const frame = createScheduler()
-    const plans: IFramePlan[] = []
+    const plans: FramePlan[] = []
     const loop = new Loop({
       onFrame: (plan) => {
         plans.push(plan)
@@ -65,7 +65,7 @@ describe("Loop", () => {
 
   it("limits catch-up after a long frame and resets timing on resume", () => {
     const frame = createScheduler()
-    const plans: IFramePlan[] = []
+    const plans: FramePlan[] = []
     const loop = new Loop({
       onFrame: (plan) => {
         plans.push(plan)
@@ -94,7 +94,7 @@ describe("Loop", () => {
 
   it("retains unused render time across slightly short frames", () => {
     const frame = createScheduler()
-    const plans: IFramePlan[] = []
+    const plans: FramePlan[] = []
     const loop = new Loop({
       onFrame: (plan) => {
         plans.push(plan)
@@ -111,7 +111,7 @@ describe("Loop", () => {
 
   it("applies render-rate changes without resetting the simulation clock", () => {
     const frame = createScheduler()
-    const plans: IFramePlan[] = []
+    const plans: FramePlan[] = []
     const loop = new Loop({
       onFrame: (plan) => {
         plans.push(plan)

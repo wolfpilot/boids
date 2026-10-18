@@ -1,12 +1,12 @@
 import { Query } from "@datorama/akita"
 
 // Types
-import { IVector } from "../../types/geometry"
+import { Vector } from "../../types/geometry"
 
 // Store
-import { IUiStoreState, UiStore } from "./ui.store"
+import { UiStoreState, UiStore } from "./ui.store"
 
-export class UiQuery extends Query<IUiStoreState> {
+export class UiQuery extends Query<UiStoreState> {
   allState$ = this.select()
   pointerVector$ = this.select("pointerVector")
 
@@ -14,11 +14,11 @@ export class UiQuery extends Query<IUiStoreState> {
     super(store)
   }
 
-  get allValues(): IUiStoreState {
+  get allValues(): UiStoreState {
     return this.getValue()
   }
 
-  get pointerVector(): IVector {
+  get pointerVector(): Vector {
     return this.getValue().pointerVector
   }
 }

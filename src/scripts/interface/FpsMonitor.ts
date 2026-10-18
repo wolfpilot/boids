@@ -4,18 +4,18 @@ import { Subscription } from "rxjs"
 import { appQuery } from "../stores/app"
 import { guiQuery } from "../stores/gui"
 
-export interface IFpsMonitorState {
+export interface FpsMonitorState {
   count: number
   lastRenderTime: number
 }
 
-const initialState: IFpsMonitorState = {
+const initialState: FpsMonitorState = {
   count: 0,
   lastRenderTime: 0,
 }
 
 class FpsMonitor {
-  public state: IFpsMonitorState
+  public state: FpsMonitorState
   private lastDrawTimeSub: Subscription | null
   private renderInterval: number | null
 

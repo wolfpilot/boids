@@ -2,9 +2,9 @@
 import { getRandomNumber } from "./mathHelper"
 
 // Actors
-import Boid from "../actors/Boid/Boid"
+import BoidImpl from "../actors/Boid/Boid"
 
-interface IGenerateRandomizedBoidsOptions {
+interface GenerateRandomizedBoidsOptions {
   total: number
   ctx: CanvasRenderingContext2D
   maxX: number
@@ -32,7 +32,7 @@ export const generateRandomizedBoids = ({
   awarenessMultiplier,
   separationMultiplier,
   colors,
-}: IGenerateRandomizedBoidsOptions): Boid[] => {
+}: GenerateRandomizedBoidsOptions): BoidImpl[] => {
   if (total < 1) {
     throw new Error("Total number should be a minimum of 1.")
   }
@@ -56,6 +56,6 @@ export const generateRandomizedBoids = ({
       color: colors[getRandomNumber(0, colors.length - 1)],
     }
 
-    return new Boid(options)
+    return new BoidImpl(options)
   })
 }

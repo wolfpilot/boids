@@ -1,8 +1,8 @@
 import { config } from "../../actors/Boid/config"
 import { align, seek, separate } from "../../behaviours"
-import Vector from "../../geometry/Vector"
-import type { IBoidEntity } from "../../types/entities"
-import type { IVector } from "../../types/geometry"
+import VectorImpl from "../../geometry/Vector"
+import type { BoidEntity } from "../../types/entities"
+import type { Vector } from "../../types/geometry"
 import {
   add,
   applyForces,
@@ -13,42 +13,30 @@ import {
   subtract,
 } from "../../utils/vectorHelper"
 
-const stepBoid = (
-  source: IBoidEntity,
-  snapshot: readonly IBoidEntity[],
-  target: IVector
-): IBoidEntity => {
-  const targetVector = subtract(target, source.state.location)
+const shouldStop = (
+  source: BoidEntity,
+  targetVector: Vector,
+  neighbourSteering: Vector
+): boolean =>
+  mag(targetVector) < config.stopDistanceThreshold &&
+  mag(source.state.velocity) < config.stopVelocityTreshold &&
+  mag(neighbourSteering) === 0
 
-  const neighbours = snapshot.filter((boid) => boid.id !== source.id)
-  const neighbourSteering = add(
-    align({ boids: neighbours, source }),
-    separate({ boids: neighbours, source })
-  )
-  const steering = add(seek({ target, source }), neighbourSteering)
-
-  const state = {
+const stopBoid = (source: BoidEntity): BoidEntity => ({
+  ...source,
+  state: {
     ...source.state,
-    targetVector,
-    normTargetVector: normalize(targetVector),
-  }
+    acceleration: new VectorImpl(0, 0),
+    velocity: new VectorImpl(0, 0),
+  },
+})
 
-  const shouldStop =
-    mag(targetVector) < config.stopDistanceThreshold &&
-    mag(source.state.velocity) < config.stopVelocityTreshold &&
-    mag(neighbourSteering) === 0
-
-  if (shouldStop) {
-    return {
-      ...source,
-      state: {
-        ...state,
-        acceleration: new Vector(0, 0),
-        velocity: new Vector(0, 0),
-      },
-    }
-  }
-
+const advanceBoid = (
+  source: BoidEntity,
+  target: Vector,
+  neighbourSteering: Vector
+): BoidEntity => {
+  const steering = add(neighbourSteering, seek({ target, source }))
   const friction = multiply(
     normalize(source.state.velocity),
     -source.traits.frictionFactor
@@ -66,15 +54,43 @@ const stepBoid = (
   return {
     ...source,
     state: {
-      ...state,
-      acceleration: new Vector(0, 0),
+      ...source.state,
+      acceleration: new VectorImpl(0, 0),
       velocity,
       location,
     },
   }
 }
 
+const stepBoid = (
+  source: BoidEntity,
+  snapshot: readonly BoidEntity[],
+  target: Vector
+): BoidEntity => {
+  const targetVector = subtract(target, source.state.location)
+  const normTargetVector = normalize(targetVector)
+
+  const boid = {
+    ...source,
+    state: {
+      ...source.state,
+      targetVector,
+      normTargetVector,
+    },
+  }
+
+  const neighbours = snapshot.filter((boid) => boid.id !== source.id)
+  const neighbourSteering = add(
+    align({ boids: neighbours, source }),
+    separate({ boids: neighbours, source })
+  )
+
+  return shouldStop(source, targetVector, neighbourSteering)
+    ? stopBoid(boid)
+    : advanceBoid(boid, target, neighbourSteering)
+}
+
 export const stepBoids = (
-  snapshot: readonly IBoidEntity[],
-  target: IVector
-): IBoidEntity[] => snapshot.map((boid) => stepBoid(boid, snapshot, target))
+  snapshot: readonly BoidEntity[],
+  target: Vector
+): BoidEntity[] => snapshot.map((boid) => stepBoid(boid, snapshot, target))

@@ -1,6 +1,6 @@
 // Actors
-import { ICanvas } from "../actors/Canvas/Canvas"
-import { IBoid } from "../actors/Boid/Boid"
+import { Canvas } from "../actors/Canvas/Canvas"
+import { Boid } from "../actors/Boid/Boid"
 
 // Stores
 import { appService } from "../stores/app"
@@ -8,14 +8,14 @@ import { boidsStore, boidsQuery } from "../stores/boids"
 import { uiQuery } from "../stores/ui"
 
 // Engine
-import Loop, { IFramePlan, IFrameScheduler } from "./Loop"
+import Loop, { FramePlan, FrameScheduler } from "./Loop"
 import { stepBoids } from "./utils/stepBoids"
 
-interface IOptions {
-  canvas: ICanvas
-  boids: readonly IBoid[]
+interface Options {
+  canvas: Canvas
+  boids: readonly Boid[]
   maxFps: number
-  scheduler?: IFrameScheduler
+  scheduler?: FrameScheduler
 }
 
 /**
@@ -25,11 +25,11 @@ interface IOptions {
  * 2. Draws the latest published state after all updates for the frame have finished.
  */
 export default class Engine {
-  private readonly canvas: ICanvas
-  private readonly boids: readonly IBoid[]
+  private readonly canvas: Canvas
+  private readonly boids: readonly Boid[]
   private readonly loop: Loop
 
-  constructor({ canvas, boids, maxFps, scheduler }: IOptions) {
+  constructor({ canvas, boids, maxFps, scheduler }: Options) {
     this.canvas = canvas
     this.boids = boids
     this.loop = new Loop({
@@ -66,7 +66,7 @@ export default class Engine {
     timestamp,
     updates,
     shouldDraw,
-  }: IFramePlan) => {
+  }: FramePlan) => {
     appService.updateElapsedTime(elapsedMs)
 
     for (let i = 0; i < updates; i++) {
@@ -80,9 +80,7 @@ export default class Engine {
   }
 
   private update() {
-    const snapshot = boidsQuery.all
-
-    boidsStore.set(stepBoids(snapshot, uiQuery.pointerVector))
+    boidsStore.set(stepBoids(boidsQuery.all, uiQuery.pointerVector))
   }
 
   private draw() {

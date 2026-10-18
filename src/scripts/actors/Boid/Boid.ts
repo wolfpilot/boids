@@ -22,6 +22,7 @@ export interface BoidTraits {
   frictionFactor: number
   brakingDistance: number
   alignmentAreaSize: number
+  seekingAreaSize: number
   separationAreaSize: number
   color: string
 }
@@ -53,6 +54,7 @@ interface Options {
   frictionMultiplier: number
   brakingMultiplier: number
   alignmentMultiplier: number
+  seekingMultiplier: number
   separationMultiplier: number
   color: string
 }
@@ -85,6 +87,7 @@ class BoidImpl implements Boid {
     frictionMultiplier,
     brakingMultiplier,
     alignmentMultiplier,
+    seekingMultiplier,
     separationMultiplier,
     color,
   }: Options) {
@@ -98,6 +101,7 @@ class BoidImpl implements Boid {
       frictionFactor: size * size * size * frictionMultiplier,
       brakingDistance: size * size * brakingMultiplier,
       alignmentAreaSize: size * alignmentMultiplier,
+      seekingAreaSize: size * seekingMultiplier,
       separationAreaSize: size * separationMultiplier,
       color,
     }
@@ -123,6 +127,10 @@ class BoidImpl implements Boid {
 
     if (guiQuery.allValues.showAlignmentArea) {
       this.drawAlignmentArea(boidEntity.state)
+    }
+
+    if (guiQuery.allValues.showSeekingArea) {
+      this.drawSeekingArea(boidEntity.state)
     }
 
     if (guiQuery.allValues.showSeparationArea) {
@@ -163,6 +171,20 @@ class BoidImpl implements Boid {
     )
     this.ctx.lineWidth = 1
     this.ctx.strokeStyle = this.traits.color
+    this.ctx.stroke()
+  }
+
+  private drawSeekingArea(state: BoidState) {
+    this.ctx.beginPath()
+    this.ctx.arc(
+      state.location.x,
+      state.location.y,
+      this.traits.seekingAreaSize,
+      0,
+      2 * Math.PI
+    )
+    this.ctx.lineWidth = 1
+    this.ctx.strokeStyle = config.seekingArea.color
     this.ctx.stroke()
   }
 

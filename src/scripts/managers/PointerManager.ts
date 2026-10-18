@@ -3,18 +3,35 @@ import { uiService } from "../stores/ui"
 
 class PointerManager {
   public init() {
+    document.documentElement.addEventListener(
+      "pointerenter",
+      this.handlePointerMove
+    )
     document.addEventListener("pointermove", this.handlePointerMove)
+    document.documentElement.addEventListener(
+      "pointerleave",
+      this.handlePointerLeave
+    )
+    window.addEventListener("blur", this.handleWindowBlur)
   }
 
   private handlePointerMove = (e: PointerEvent) => {
-    requestAnimationFrame(() => this.updatePointer(e))
+    if (e.pointerType !== "mouse") return
+
+    uiService.updatePointerVector({
+      x: e.clientX,
+      y: e.clientY,
+    })
   }
 
-  private updatePointer = (e: PointerEvent) => {
-    uiService.updatePointerVector({
-      x: e.x,
-      y: e.y,
-    })
+  private handlePointerLeave = (e: PointerEvent) => {
+    if (e.pointerType !== "mouse") return
+
+    uiService.clearPointerPresence()
+  }
+
+  private handleWindowBlur = () => {
+    uiService.clearPointerPresence()
   }
 }
 

@@ -9,6 +9,13 @@ export class UiService {
   updatePointerVector(val: Vector) {
     this.uiStore.update({
       pointerVector: val,
+      isPointerPresent: true,
+    })
+  }
+
+  clearPointerPresence() {
+    this.uiStore.update({
+      isPointerPresent: false,
     })
   }
 }

@@ -1,5 +1,5 @@
 // Actors
-import Canvas, { ICanvas } from "./actors/Canvas/Canvas"
+import CanvasImpl, { Canvas } from "./actors/Canvas/Canvas"
 
 // Stores
 import { appQuery } from "./stores/app"
@@ -29,7 +29,7 @@ import FpsMonitor from "./interface/FpsMonitor"
 class App {
   public canvasEl: HTMLCanvasElement
   public ctx: CanvasRenderingContext2D
-  private canvas: ICanvas
+  private canvas: Canvas
   private gui: GUI
   private fpsMonitor: FpsMonitor
   private engine: Engine
@@ -42,7 +42,7 @@ class App {
     this.ctx = <CanvasRenderingContext2D>(
       this.canvasEl.getContext("2d", { alpha: false })
     )
-    this.canvas = new Canvas(this.canvasEl, this.ctx)
+    this.canvas = new CanvasImpl(this.canvasEl, this.ctx)
     this.gui = new GUI()
     this.fpsMonitor = new FpsMonitor()
 

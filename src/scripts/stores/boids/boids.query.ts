@@ -1,27 +1,27 @@
 import { QueryEntity } from "@datorama/akita"
 
 // Types
-import { IBoidEntity } from "../../types/entities"
+import { BoidEntity } from "../../types/entities"
 
 // Store
-import { IBoidsStoreState, BoidsStore } from "./boids.store"
+import { BoidsStoreState, BoidsStore } from "./boids.store"
 
-export class BoidsQuery extends QueryEntity<IBoidsStoreState> {
+export class BoidsQuery extends QueryEntity<BoidsStoreState> {
   allState$ = this.select()
 
   constructor(protected store: BoidsStore) {
     super(store)
   }
 
-  get all(): IBoidEntity[] {
+  get all(): BoidEntity[] {
     return this.getAll()
   }
 
-  public getBoid(id: number): IBoidEntity | undefined {
+  public getBoid(id: number): BoidEntity | undefined {
     return this.getEntity(id)
   }
 
-  public getOtherBoids(id: number): IBoidEntity[] {
+  public getOtherBoids(id: number): BoidEntity[] {
     return this.getAll({
       filterBy: (entity) => entity.id !== id,
     })

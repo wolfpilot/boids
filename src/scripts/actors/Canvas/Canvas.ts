@@ -1,22 +1,22 @@
-export interface IState {
+export interface CanvasState {
   isEnabled: boolean
   fill: string
 }
 
-export interface ICanvas {
-  state: IState
+export interface Canvas {
+  state: CanvasState
   init: () => void
   draw: () => void
 }
 
 // Setup
-const initialState: IState = {
+const initialState: CanvasState = {
   isEnabled: true,
   fill: "#fff",
 }
 
-class Canvas implements ICanvas {
-  public state: IState
+class CanvasImpl implements Canvas {
+  public state: CanvasState
   private canvas: HTMLCanvasElement
   private ctx: CanvasRenderingContext2D
 
@@ -59,4 +59,4 @@ class Canvas implements ICanvas {
   }
 }
 
-export default Canvas
+export default CanvasImpl

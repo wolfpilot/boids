@@ -1,7 +1,7 @@
 // Types
-import { IVector } from "../types/geometry"
+import { Vector } from "../types/geometry"
 
-class Vector implements IVector {
+class VectorImpl implements Vector {
   public x: number
   public y: number
 
@@ -11,4 +11,4 @@ class Vector implements IVector {
   }
 }
 
-export default Vector
+export default VectorImpl

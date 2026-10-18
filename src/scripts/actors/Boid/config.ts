@@ -1,4 +1,4 @@
-export interface IBoidConfig {
+export interface BoidConfig {
   maxSteeringForce: number
   alignmentFactor: number
   stopDistanceThreshold: number
@@ -17,7 +17,7 @@ export interface IBoidConfig {
   }
 }
 
-export const config: IBoidConfig = {
+export const config: BoidConfig = {
   maxSteeringForce: 0.5,
   alignmentFactor: 0.025,
   stopDistanceThreshold: 2.5,

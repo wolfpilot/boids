@@ -1,9 +1,9 @@
 import { Query } from "@datorama/akita"
 
 // Store
-import { IAppStoreState, AppStore } from "./app.store"
+import { AppStoreState, AppStore } from "./app.store"
 
-export class AppQuery extends Query<IAppStoreState> {
+export class AppQuery extends Query<AppStoreState> {
   allState$ = this.select()
   isRunning$ = this.select("isRunning")
   elapsedTime$ = this.select("elapsedTime")
@@ -13,7 +13,7 @@ export class AppQuery extends Query<IAppStoreState> {
     super(store)
   }
 
-  get allValues(): IAppStoreState {
+  get allValues(): AppStoreState {
     return this.getValue()
   }
 

@@ -1,9 +1,9 @@
-import type { IBoid } from "../actors/Boid/Boid"
-import type { ICanvas } from "../actors/Canvas/Canvas"
+import type { Boid } from "../actors/Boid/Boid"
+import type { Canvas } from "../actors/Canvas/Canvas"
 import { boidsQuery, boidsStore } from "../stores/boids"
 import { createBoidEntity } from "../utils/testHelpers"
 import Engine from "./Engine"
-import type { IFrameScheduler } from "./Loop"
+import type { FrameScheduler } from "./Loop"
 
 describe("Engine", () => {
   afterEach(() => {
@@ -13,7 +13,7 @@ describe("Engine", () => {
 
   it("publishes initial boids and finishes updates before drawing", () => {
     let frameCallback: FrameRequestCallback | undefined
-    const scheduler: IFrameScheduler = {
+    const scheduler: FrameScheduler = {
       now: () => 0,
       requestFrame: (callback) => {
         frameCallback = callback
@@ -24,12 +24,12 @@ describe("Engine", () => {
 
     const publishedDuringDraw: number[] = []
     const setBoids = jest.spyOn(boidsStore, "set")
-    const canvas: ICanvas = {
+    const canvas: Canvas = {
       state: { isEnabled: true, fill: "#fff" },
       init: jest.fn(),
       draw: jest.fn(() => publishedDuringDraw.push(setBoids.mock.calls.length)),
     }
-    const boid: IBoid = {
+    const boid: Boid = {
       ...createBoidEntity({ id: 1 }),
       draw: jest.fn(() => publishedDuringDraw.push(setBoids.mock.calls.length)),
     }

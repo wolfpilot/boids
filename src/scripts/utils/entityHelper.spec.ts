@@ -4,7 +4,7 @@ import "jest-canvas-mock"
 import { isEntityOutside, isEntityOffscreen } from "./entityHelper"
 
 // Geometry
-import Vector from "../geometry/Vector"
+import VectorImpl from "../geometry/Vector"
 
 describe("actorHelper", () => {
   it("should determine if the entity is found outside the area", () => {
@@ -17,7 +17,7 @@ describe("actorHelper", () => {
 
     // Entity 1
     const entity1 = {
-      v: new Vector(250, 600),
+      v: new VectorImpl(250, 600),
       radius: 50,
     }
 
@@ -30,7 +30,7 @@ describe("actorHelper", () => {
 
     // Entity 2
     const entity2 = {
-      v: new Vector(100, -300),
+      v: new VectorImpl(100, -300),
       radius: 50,
     }
 
@@ -43,7 +43,7 @@ describe("actorHelper", () => {
 
     // Entity 3
     const entity3 = {
-      v: new Vector(49, -300),
+      v: new VectorImpl(49, -300),
       radius: 50,
     }
 
@@ -57,7 +57,7 @@ describe("actorHelper", () => {
 
   it("should determine if the entity is found outside the screen", () => {
     const entity1 = {
-      v: new Vector(250, 600),
+      v: new VectorImpl(250, 600),
       radius: 50,
     }
 

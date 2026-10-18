@@ -1,8 +1,8 @@
 import { config } from "../../actors/Boid/config"
 import { align, seek, separate } from "../../behaviours"
-import Vector from "../../geometry/Vector"
-import type { IBoidEntity } from "../../types/entities"
-import type { IVector } from "../../types/geometry"
+import VectorImpl from "../../geometry/Vector"
+import type { BoidEntity } from "../../types/entities"
+import type { Vector } from "../../types/geometry"
 import {
   add,
   applyForces,
@@ -14,28 +14,28 @@ import {
 } from "../../utils/vectorHelper"
 
 const shouldStop = (
-  source: IBoidEntity,
-  targetVector: IVector,
-  neighbourSteering: IVector
+  source: BoidEntity,
+  targetVector: Vector,
+  neighbourSteering: Vector
 ): boolean =>
   mag(targetVector) < config.stopDistanceThreshold &&
   mag(source.state.velocity) < config.stopVelocityTreshold &&
   mag(neighbourSteering) === 0
 
-const stopBoid = (source: IBoidEntity): IBoidEntity => ({
+const stopBoid = (source: BoidEntity): BoidEntity => ({
   ...source,
   state: {
     ...source.state,
-    acceleration: new Vector(0, 0),
-    velocity: new Vector(0, 0),
+    acceleration: new VectorImpl(0, 0),
+    velocity: new VectorImpl(0, 0),
   },
 })
 
 const advanceBoid = (
-  source: IBoidEntity,
-  target: IVector,
-  neighbourSteering: IVector
-): IBoidEntity => {
+  source: BoidEntity,
+  target: Vector,
+  neighbourSteering: Vector
+): BoidEntity => {
   const steering = add(neighbourSteering, seek({ target, source }))
   const friction = multiply(
     normalize(source.state.velocity),
@@ -55,7 +55,7 @@ const advanceBoid = (
     ...source,
     state: {
       ...source.state,
-      acceleration: new Vector(0, 0),
+      acceleration: new VectorImpl(0, 0),
       velocity,
       location,
     },
@@ -63,10 +63,10 @@ const advanceBoid = (
 }
 
 const stepBoid = (
-  source: IBoidEntity,
-  snapshot: readonly IBoidEntity[],
-  target: IVector
-): IBoidEntity => {
+  source: BoidEntity,
+  snapshot: readonly BoidEntity[],
+  target: Vector
+): BoidEntity => {
   const targetVector = subtract(target, source.state.location)
   const normTargetVector = normalize(targetVector)
 
@@ -91,6 +91,6 @@ const stepBoid = (
 }
 
 export const stepBoids = (
-  snapshot: readonly IBoidEntity[],
-  target: IVector
-): IBoidEntity[] => snapshot.map((boid) => stepBoid(boid, snapshot, target))
+  snapshot: readonly BoidEntity[],
+  target: Vector
+): BoidEntity[] => snapshot.map((boid) => stepBoid(boid, snapshot, target))

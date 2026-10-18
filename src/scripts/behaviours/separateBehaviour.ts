@@ -1,5 +1,6 @@
 // Types
-import { IBoidEntity } from "../types/entities"
+import { BoidEntity } from "../types/entities"
+import { Vector } from "../types/geometry"
 
 // Config
 import { config as boidConfig } from "../actors/Boid/config"
@@ -15,15 +16,15 @@ import {
 } from "../utils/vectorHelper"
 
 // Geometry
-import Vector from "../geometry/Vector"
+import VectorImpl from "../geometry/Vector"
 
-interface IOptions {
-  boids: IBoidEntity[]
-  source: IBoidEntity
+interface Options {
+  boids: BoidEntity[]
+  source: BoidEntity
 }
 
 // Utils
-const isInRange = (target: IBoidEntity, source: IBoidEntity): boolean => {
+const isInRange = (target: BoidEntity, source: BoidEntity): boolean => {
   const nLocation = subtract(target.state.location, source.state.location)
   const nDistance = mag(nLocation)
 
@@ -34,8 +35,8 @@ const isInRange = (target: IBoidEntity, source: IBoidEntity): boolean => {
 }
 
 // Keep a distance from neighbouring boids
-export const separate = ({ boids, source }: IOptions): Vector => {
-  let separate = new Vector(0, 0)
+export const separate = ({ boids, source }: Options): Vector => {
+  let separate = new VectorImpl(0, 0)
 
   const neighbours = boids.filter((boid) => isInRange(boid, source))
 

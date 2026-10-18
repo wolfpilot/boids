@@ -1,35 +1,35 @@
-export interface IFrameScheduler {
+export interface FrameScheduler {
   now: () => number
   requestFrame: (callback: FrameRequestCallback) => number
   cancelFrame: (id: number) => void
 }
 
-export interface IFramePlan {
+export interface FramePlan {
   timestamp: number
   elapsedMs: number
   updates: number
   shouldDraw: boolean
 }
 
-interface IOptions {
-  onFrame: (plan: IFramePlan) => void
+interface Options {
+  onFrame: (plan: FramePlan) => void
   maxFps: number
-  scheduler?: IFrameScheduler
+  scheduler?: FrameScheduler
 }
 
 const UPDATE_INTERVAL_MS = 1000 / 60
 const MAX_UPDATES_PER_FRAME = 5
 const TIME_TOLERANCE_MS = 1e-8
 
-const browserScheduler: IFrameScheduler = {
+const browserScheduler: FrameScheduler = {
   now: () => performance.now(),
   requestFrame: (callback) => requestAnimationFrame(callback),
   cancelFrame: (id) => cancelAnimationFrame(id),
 }
 
 export default class Loop {
-  private readonly onFrame: (plan: IFramePlan) => void
-  private readonly scheduler: IFrameScheduler
+  private readonly onFrame: (plan: FramePlan) => void
+  private readonly scheduler: FrameScheduler
   private isRunning = false
   private maxFps: number
   private frameId: number | null = null
@@ -37,7 +37,7 @@ export default class Loop {
   private lastDrawTime = 0
   private unprocessedTimeMs = 0
 
-  constructor({ onFrame, maxFps, scheduler = browserScheduler }: IOptions) {
+  constructor({ onFrame, maxFps, scheduler = browserScheduler }: Options) {
     this.onFrame = onFrame
     this.maxFps = maxFps
     this.scheduler = scheduler

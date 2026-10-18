@@ -1,13 +1,13 @@
 import { Store, StoreConfig } from "@datorama/akita"
 
 // Types
-import { IVector } from "../../types/geometry"
+import { Vector } from "../../types/geometry"
 
-export interface IUiStoreState {
-  pointerVector: IVector
+export interface UiStoreState {
+  pointerVector: Vector
 }
 
-const initialState: IUiStoreState = {
+const initialState: UiStoreState = {
   pointerVector: {
     x: window.innerWidth / 2,
     y: window.innerHeight / 2,
@@ -15,7 +15,7 @@ const initialState: IUiStoreState = {
 }
 
 @StoreConfig({ name: "ui" })
-export class UiStore extends Store<IUiStoreState> {
+export class UiStore extends Store<UiStoreState> {
   constructor() {
     super(initialState)
   }

@@ -1,5 +1,11 @@
 import { config } from "../../actors/Boid/config"
-import { align, seek, separate, wander } from "../../behaviours"
+import {
+  align,
+  seek,
+  separate,
+  wander,
+  isInSeekingArea,
+} from "../../behaviours"
 import VectorImpl from "../../geometry/Vector"
 import type { BoidEntity } from "../../types/entities"
 import type { Vector } from "../../types/geometry"
@@ -60,7 +66,7 @@ const advanceBoid = (source: BoidEntity, steering: Vector): BoidEntity => {
 const stepBoid = (
   source: BoidEntity,
   snapshot: readonly BoidEntity[],
-  target: Vector
+  target?: Vector
 ): BoidEntity => {
   const neighbours = snapshot.filter((boid) => boid.id !== source.id)
   const neighbourSteering = add(
@@ -68,8 +74,7 @@ const stepBoid = (
     separate({ boids: neighbours, source })
   )
 
-  // TODO: Detect if mouse in seeking area. If not, wander. Otherwise, seek.
-  if (!target) {
+  if (!target || !isInSeekingArea(source, target)) {
     const { force, nextAngle } = wander({
       source,
       randomValue: Math.random(),
@@ -105,5 +110,5 @@ const stepBoid = (
 
 export const stepBoids = (
   snapshot: readonly BoidEntity[],
-  target: Vector
+  target?: Vector
 ): BoidEntity[] => snapshot.map((boid) => stepBoid(boid, snapshot, target))

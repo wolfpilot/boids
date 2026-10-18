@@ -21,7 +21,14 @@ interface Options {
   source: BoidEntity
 }
 
+export const isInSeekingArea = (source: BoidEntity, target: Vector): boolean =>
+  mag(subtract(target, source.state.location)) < source.traits.seekingAreaSize
+
 export const seek = ({ target, source }: Options): Vector => {
+  if (!isInSeekingArea(source, target)) {
+    return new VectorImpl(0, 0)
+  }
+
   let desiredVelocity: Vector
 
   const targetVector = subtract(target, source.state.location)

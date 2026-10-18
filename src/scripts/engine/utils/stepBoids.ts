@@ -19,19 +19,19 @@ const stepBoid = (
   target: IVector
 ): IBoidEntity => {
   const targetVector = subtract(target, source.state.location)
+  const normTargetVector = normalize(targetVector)
+
+  const state = {
+    ...source.state,
+    targetVector,
+    normTargetVector,
+  }
 
   const neighbours = snapshot.filter((boid) => boid.id !== source.id)
   const neighbourSteering = add(
     align({ boids: neighbours, source }),
     separate({ boids: neighbours, source })
   )
-  const steering = add(seek({ target, source }), neighbourSteering)
-
-  const state = {
-    ...source.state,
-    targetVector,
-    normTargetVector: normalize(targetVector),
-  }
 
   const shouldStop =
     mag(targetVector) < config.stopDistanceThreshold &&
@@ -49,6 +49,7 @@ const stepBoid = (
     }
   }
 
+  const steering = add(neighbourSteering, seek({ target, source }))
   const friction = multiply(
     normalize(source.state.velocity),
     -source.traits.frictionFactor

@@ -40,6 +40,10 @@ export class GuiQuery extends Query<GuiStoreState> {
     return this.getValue().showAlignmentArea
   }
 
+  get showSeekingArea(): boolean {
+    return this.getValue().showSeekingArea
+  }
+
   get showSeparationArea(): boolean {
     return this.getValue().showSeparationArea
   }

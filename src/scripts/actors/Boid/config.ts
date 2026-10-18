@@ -15,6 +15,9 @@ export interface BoidConfig {
   brakingArea: {
     color: string
   }
+  seekingArea: {
+    color: string
+  }
 }
 
 export const config: BoidConfig = {
@@ -33,5 +36,8 @@ export const config: BoidConfig = {
   },
   brakingArea: {
     color: "#ff0000",
+  },
+  seekingArea: {
+    color: "#2ea8ff",
   },
 }

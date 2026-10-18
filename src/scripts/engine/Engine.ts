@@ -80,7 +80,11 @@ export default class Engine {
   }
 
   private update() {
-    boidsStore.set(stepBoids(boidsQuery.all, uiQuery.pointerVector))
+    const { isPointerPresent, pointerVector } = uiQuery.allValues
+
+    const target = isPointerPresent ? pointerVector : undefined
+
+    boidsStore.set(stepBoids(boidsQuery.all, target))
   }
 
   private draw() {

@@ -7,6 +7,7 @@ export interface GuiStoreState {
   showNormalizedTargetVector: boolean
   showVelocityVector: boolean
   showAlignmentArea: boolean
+  showSeekingArea: boolean
   showSeparationArea: boolean
   showStoppingArea: boolean
 }
@@ -18,7 +19,8 @@ const initialState: GuiStoreState = {
   showNormalizedTargetVector: false,
   showVelocityVector: false,
   showAlignmentArea: false,
-  showSeparationArea: true,
+  showSeekingArea: false,
+  showSeparationArea: false,
   showStoppingArea: false,
 }
 

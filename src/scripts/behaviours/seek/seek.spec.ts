@@ -1,5 +1,5 @@
-import { seek } from "./seekBehaviour"
-import { createBoidEntity } from "../utils/testHelpers"
+import { seek } from "./seek"
+import { createBoidEntity } from "../../utils/testHelpers"
 
 const source = (brakingDistance: number, velocityX = 0) =>
   createBoidEntity({

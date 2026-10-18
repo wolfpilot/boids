@@ -1,7 +1,7 @@
-import { config } from "../actors/Boid/config"
-import { createBoidEntity } from "../utils/testHelpers"
-import { mag } from "../utils/vectorHelper"
-import { wander } from "./wanderBehaviour"
+import { config } from "../../actors/Boid/config"
+import { createBoidEntity } from "../../utils/testHelpers"
+import { mag } from "../../utils/vectorHelper"
+import { wander } from "./wander"
 
 describe("wander", () => {
   it("aims at a point on the circle ahead of a moving boid", () => {

@@ -1,7 +1,10 @@
-import { config } from "../actors/Boid/config"
-import VectorImpl from "../geometry/Vector"
-import type { BoidEntity } from "../types/entities"
-import type { Vector } from "../types/geometry"
+// Types
+import { Options, WanderResult } from "./types"
+
+// Config
+import { config } from "../../actors/Boid/config"
+
+// Helpers
 import {
   add,
   limitMagnitude,
@@ -9,17 +12,10 @@ import {
   normalize,
   setAngle,
   setMagnitude,
-} from "../utils/vectorHelper"
+} from "../../utils/vectorHelper"
 
-interface Options {
-  source: BoidEntity
-  randomValue: number
-}
-
-interface WanderResult {
-  force: Vector
-  nextAngle: number
-}
+// Geometry
+import VectorImpl from "../../geometry/Vector"
 
 const LOOK_AHEAD_MULTIPLIER = 2
 const CIRCLE_RADIUS_MULTIPLIER = 0.5

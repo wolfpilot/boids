@@ -1,28 +1,16 @@
 // Types
-import { BoidEntity } from "../types/entities"
-import { Vector } from "../types/geometry"
+import { Vector } from "../../types/geometry"
 
 // Config
-import { config as boidConfig } from "../actors/Boid/config"
+import { config as boidConfig } from "../../actors/Boid/config"
 
 // Utils
-import { add, subtract, multiply, divide, mag } from "../utils/vectorHelper"
+import { add, subtract, multiply, divide } from "../../utils/vectorHelper"
+import { isInRange } from "./helpers"
 
 // Geometry
-import VectorImpl from "../geometry/Vector"
-
-interface Options {
-  boids: BoidEntity[]
-  source: BoidEntity
-}
-
-// Utils
-const isInRange = (target: BoidEntity, source: BoidEntity): boolean => {
-  const nLocation = subtract(target.state.location, source.state.location)
-  const nDistance = mag(nLocation)
-
-  return nDistance > 0 && nDistance < source.traits.alignmentAreaSize
-}
+import VectorImpl from "../../geometry/Vector"
+import { Options } from "./types"
 
 // Find the average steering vector that will align with the rest of the "pack"
 export const align = ({ boids, source }: Options): Vector => {

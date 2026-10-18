@@ -39,8 +39,6 @@ export const divide = (vector: Vector, factor: number): Vector => {
 // Calculate the magnitude (length) of a vector
 export const mag = (v: Vector): number => Math.sqrt(v.x * v.x + v.y * v.y)
 
-export const magSq = (v: Vector): number => v.x * v.x + v.y * v.y
-
 export const normalize = (v: Vector): Vector => {
   const magnitude = mag(v)
 

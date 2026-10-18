@@ -62,15 +62,6 @@ describe("vectorHelper", () => {
     expect(result).toBe(expected)
   })
 
-  it("should calculate the squared magnitude of a vector", () => {
-    const v = new VectorImpl(0, 5)
-
-    const result = vectorHelper.magSq(v)
-    const expected = 25
-
-    expect(result).toBe(expected)
-  })
-
   it("should normalize a 0 length vector", () => {
     const v = new VectorImpl(0, 0)
 

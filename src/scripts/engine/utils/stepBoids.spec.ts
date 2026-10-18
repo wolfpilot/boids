@@ -39,12 +39,42 @@ describe("stepBoids", () => {
     expect(updated.state.velocity.x).toBeLessThan(0)
   })
 
-  it("stops a stationary agent at its target without neighbour steering", () => {
-    const source = createBoidEntity()
+  it("stops a slow boid near its target without neighbour steering", () => {
+    const source = createBoidEntity({
+      state: {
+        location: { x: 10, y: 20 },
+        velocity: { x: 0.05, y: 0 },
+        acceleration: { x: 1, y: 2 },
+      },
+    })
 
-    const [updated] = stepBoids([source], { x: 0, y: 0 })
+    const [updated] = stepBoids([source], { x: 11, y: 20 })
 
-    expect(updated.state.location).toEqual({ x: 0, y: 0 })
+    expect(updated.state.location).toEqual({ x: 10, y: 20 })
+    expect(updated.state.targetVector).toEqual({ x: 1, y: 0 })
+    expect(updated.state.normTargetVector).toEqual({ x: 1, y: 0 })
+    expect(updated.state.acceleration).toEqual({ x: 0, y: 0 })
     expect(updated.state.velocity).toEqual({ x: 0, y: 0 })
+    expect(source.state.velocity).toEqual({ x: 0.05, y: 0 })
+  })
+
+  it("integrates steering and friction when advancing a boid", () => {
+    const source = createBoidEntity({
+      traits: { frictionFactor: 0.2 },
+      state: {
+        location: { x: 10, y: 20 },
+        velocity: { x: 0.2, y: 0 },
+        acceleration: { x: 0.1, y: 0 },
+      },
+    })
+
+    const [updated] = stepBoids([source], { x: 110, y: 20 })
+
+    expect(updated.state.velocity.x).toBeCloseTo(0.6)
+    expect(updated.state.location.x).toBeCloseTo(10.6)
+    expect(updated.state.location.y).toBe(20)
+    expect(updated.state.acceleration).toEqual({ x: 0, y: 0 })
+    expect(updated.state.targetVector).toEqual({ x: 100, y: 0 })
+    expect(source.state.location).toEqual({ x: 10, y: 20 })
   })
 })

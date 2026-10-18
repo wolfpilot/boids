@@ -21,7 +21,7 @@ const options = {
   maxSize: 15,
   maxSpeedMultiplier: 0.2,
   brakingMultiplier: 15,
-  awarenessMultiplier: 8,
+  alignmentMultiplier: 8,
   separationMultiplier: 1.25,
   frictionMultiplier: 0.00000333,
   colors: BOID_COLORS,

@@ -68,7 +68,7 @@ const stepBoid = (
     separate({ boids: neighbours, source })
   )
 
-  // TODO: Detect if mouse in awareness area. If not, wander. Otherwise, seek.
+  // TODO: Detect if mouse in seeking area. If not, wander. Otherwise, seek.
   if (!target) {
     const { force, nextAngle } = wander({
       source,

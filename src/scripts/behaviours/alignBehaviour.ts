@@ -21,7 +21,7 @@ const isInRange = (target: BoidEntity, source: BoidEntity): boolean => {
   const nLocation = subtract(target.state.location, source.state.location)
   const nDistance = mag(nLocation)
 
-  return nDistance > 0 && nDistance < source.traits.awarenessAreaSize
+  return nDistance > 0 && nDistance < source.traits.alignmentAreaSize
 }
 
 // Find the average steering vector that will align with the rest of the "pack"

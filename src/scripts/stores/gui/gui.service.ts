@@ -23,8 +23,8 @@ export class GuiService {
     this.guiStore.update({ showVelocityVector: val })
   }
 
-  updateShowAwarenessArea(val: boolean) {
-    this.guiStore.update({ showAwarenessArea: val })
+  updateShowAlignmentArea(val: boolean) {
+    this.guiStore.update({ showAlignmentArea: val })
   }
 
   updateShowSeparationArea(val: boolean) {

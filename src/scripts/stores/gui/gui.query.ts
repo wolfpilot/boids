@@ -36,8 +36,8 @@ export class GuiQuery extends Query<GuiStoreState> {
     return this.getValue().showVelocityVector
   }
 
-  get showAwarenessArea(): boolean {
-    return this.getValue().showAwarenessArea
+  get showAlignmentArea(): boolean {
+    return this.getValue().showAlignmentArea
   }
 
   get showSeparationArea(): boolean {

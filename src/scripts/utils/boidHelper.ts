@@ -13,7 +13,7 @@ interface GenerateRandomizedBoidsOptions {
   maxSize: number
   maxSpeedMultiplier: number
   brakingMultiplier: number
-  awarenessMultiplier: number
+  alignmentMultiplier: number
   separationMultiplier: number
   frictionMultiplier: number
   colors: string[]
@@ -29,7 +29,7 @@ export const generateRandomizedBoids = ({
   maxSpeedMultiplier,
   frictionMultiplier,
   brakingMultiplier,
-  awarenessMultiplier,
+  alignmentMultiplier,
   separationMultiplier,
   colors,
 }: GenerateRandomizedBoidsOptions): BoidImpl[] => {
@@ -51,7 +51,7 @@ export const generateRandomizedBoids = ({
       maxSpeedMultiplier,
       frictionMultiplier,
       brakingMultiplier,
-      awarenessMultiplier,
+      alignmentMultiplier,
       separationMultiplier,
       color: colors[getRandomNumber(0, colors.length - 1)],
     }

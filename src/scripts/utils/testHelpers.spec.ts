@@ -12,7 +12,7 @@ describe("createBoidEntity", () => {
         maxSpeed: 1,
         frictionFactor: 0,
         brakingDistance: 100,
-        awarenessAreaSize: 100,
+        alignmentAreaSize: 100,
         separationAreaSize: 10,
         color: "#000000",
       },

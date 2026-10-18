@@ -21,7 +21,7 @@ export interface BoidTraits {
   maxSpeed: number
   frictionFactor: number
   brakingDistance: number
-  awarenessAreaSize: number
+  alignmentAreaSize: number
   separationAreaSize: number
   color: string
 }
@@ -52,7 +52,7 @@ interface Options {
   maxSpeedMultiplier: number
   frictionMultiplier: number
   brakingMultiplier: number
-  awarenessMultiplier: number
+  alignmentMultiplier: number
   separationMultiplier: number
   color: string
 }
@@ -84,7 +84,7 @@ class BoidImpl implements Boid {
     maxSpeedMultiplier,
     frictionMultiplier,
     brakingMultiplier,
-    awarenessMultiplier,
+    alignmentMultiplier,
     separationMultiplier,
     color,
   }: Options) {
@@ -97,7 +97,7 @@ class BoidImpl implements Boid {
       maxSpeed: size * maxSpeedMultiplier,
       frictionFactor: size * size * size * frictionMultiplier,
       brakingDistance: size * size * brakingMultiplier,
-      awarenessAreaSize: size * awarenessMultiplier,
+      alignmentAreaSize: size * alignmentMultiplier,
       separationAreaSize: size * separationMultiplier,
       color,
     }
@@ -121,8 +121,8 @@ class BoidImpl implements Boid {
       radius: boidEntity.traits.size,
     })
 
-    if (guiQuery.allValues.showAwarenessArea) {
-      this.drawAwarenessArea(boidEntity.state)
+    if (guiQuery.allValues.showAlignmentArea) {
+      this.drawAlignmentArea(boidEntity.state)
     }
 
     if (guiQuery.allValues.showSeparationArea) {
@@ -152,12 +152,12 @@ class BoidImpl implements Boid {
   }
 
   // Draw area in which the boid can be affected by external forces
-  private drawAwarenessArea(state: BoidState) {
+  private drawAlignmentArea(state: BoidState) {
     this.ctx.beginPath()
     this.ctx.arc(
       state.location.x,
       state.location.y,
-      this.traits.awarenessAreaSize,
+      this.traits.alignmentAreaSize,
       0,
       2 * Math.PI
     )

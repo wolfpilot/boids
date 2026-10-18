@@ -3,7 +3,7 @@ import { createBoidEntity } from "../utils/testHelpers"
 
 const boid = (x: number, velocityX: number) =>
   createBoidEntity({
-    traits: { awarenessAreaSize: 10 },
+    traits: { alignmentAreaSize: 10 },
     state: {
       location: { x, y: 0 },
       velocity: { x: velocityX, y: 0 },

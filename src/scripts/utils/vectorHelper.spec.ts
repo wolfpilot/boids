@@ -4,6 +4,15 @@ import * as vectorHelper from "./vectorHelper"
 import VectorImpl from "../geometry/Vector"
 
 describe("vectorHelper", () => {
+  it("should clone a vector correctly", () => {
+    const v = new VectorImpl(0, 5)
+
+    const result = vectorHelper.clone(v)
+    const expected = new VectorImpl(0, 5)
+
+    expect(result).toStrictEqual(expected)
+  })
+
   it("should add two vectors correctly", () => {
     const v1 = new VectorImpl(0, 5)
     const v2 = new VectorImpl(-10, 25)
@@ -109,6 +118,17 @@ describe("vectorHelper", () => {
     expect(vectorHelper.setMagnitude(new VectorImpl(0, 0), 3)).toStrictEqual(
       new VectorImpl(0, 0)
     )
+  })
+
+  it("should set a vector's angle without changing its length", () => {
+    const v = new VectorImpl(5, 10)
+
+    const originalAngle = Math.atan2(v.y, v.x)
+    const result = vectorHelper.setAngle(v, originalAngle + 2 * Math.PI)
+
+    expect(result).toBe(v)
+    expect(result.x).toBeCloseTo(v.x)
+    expect(result.y).toBeCloseTo(v.y)
   })
 
   it("should apply forces to the vector", () => {

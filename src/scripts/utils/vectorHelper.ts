@@ -7,6 +7,9 @@ import { sum } from "./mathHelper"
 // Geometry
 import VectorImpl from "../geometry/Vector"
 
+// Returns a new copy of the supplied vector
+export const clone = (v: Vector): Vector => new VectorImpl(v.x, v.y)
+
 // Returns a new vector that adds v2 to v1
 export const add = (v1: Vector, v2: Vector): Vector =>
   new VectorImpl(v1.x + v2.x, v1.y + v2.y)
@@ -63,6 +66,15 @@ export const setMagnitude = (v: Vector, factor: number): Vector => {
   const normV = normalize(v)
 
   return multiply(normV, factor)
+}
+
+export const setAngle = (v: Vector, radians: number) => {
+  const len: number = mag(v)
+
+  v.x = Math.cos(radians) * len
+  v.y = Math.sin(radians) * len
+
+  return v
 }
 
 // Return the combination of all forces applied to an initial force vector

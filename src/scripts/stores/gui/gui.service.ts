@@ -27,6 +27,10 @@ export class GuiService {
     this.guiStore.update({ showAlignmentArea: val })
   }
 
+  updateShowSeekingArea(val: boolean) {
+    this.guiStore.update({ showSeekingArea: val })
+  }
+
   updateShowSeparationArea(val: boolean) {
     this.guiStore.update({ showSeparationArea: val })
   }

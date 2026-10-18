@@ -28,6 +28,7 @@ class GUI {
     const velocityVectorCtrl = boidFolder.add(defaults, "showVelocityVector")
 
     const alignmentAreaCtrl = boidFolder.add(defaults, "showAlignmentArea")
+    const seekingAreaCtrl = boidFolder.add(defaults, "showSeekingArea")
     const separationAreaCtrl = boidFolder.add(defaults, "showSeparationArea")
     const stoppingAreaCtrl = boidFolder.add(defaults, "showStoppingArea")
 
@@ -56,6 +57,10 @@ class GUI {
 
     alignmentAreaCtrl.onChange((value: boolean) => {
       guiService.updateShowAlignmentArea(value)
+    })
+
+    seekingAreaCtrl.onChange((value: boolean) => {
+      guiService.updateShowSeekingArea(value)
     })
 
     separationAreaCtrl.onChange((value: boolean) => {

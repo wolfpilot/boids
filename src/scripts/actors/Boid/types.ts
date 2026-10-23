@@ -6,6 +6,7 @@ export interface BoidTraits {
   frictionFactor: number
   brakingDistance: number
   alignmentAreaSize: number
+  cohesionAreaSize: number
   seekingAreaSize: number
   separationAreaSize: number
   color: string

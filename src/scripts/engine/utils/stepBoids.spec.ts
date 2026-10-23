@@ -34,7 +34,7 @@ describe("stepBoids", () => {
   it("allows a nearby boid to move an agent at its target", () => {
     const source = createBoidEntity({
       id: 1,
-      traits: { size: 1, separationAreaSize: 9 },
+      traits: { size: 1, separationAreaSize: 9, cohesionAreaSize: 0 },
     })
     const neighbour = createBoidEntity({
       id: 2,
@@ -167,7 +167,7 @@ describe("stepBoids", () => {
   it("retains neighbour steering while wandering", () => {
     const source = createBoidEntity({
       id: 1,
-      traits: { size: 1, separationAreaSize: 9 },
+      traits: { size: 1, separationAreaSize: 9, cohesionAreaSize: 0 },
       state: { wanderAngle: Math.PI / 2 },
     })
     const neighbour = createBoidEntity({
@@ -188,6 +188,61 @@ describe("stepBoids", () => {
     } finally {
       random.mockRestore()
     }
+  })
+
+  it("combines cohesion with wandering and seeking", () => {
+    const source = createBoidEntity({
+      id: 1,
+      traits: {
+        alignmentAreaSize: 0,
+        separationAreaSize: 0,
+        cohesionAreaSize: 100,
+      },
+      state: { location: { x: 100, y: 100 }, wanderAngle: Math.PI / 2 },
+    })
+    const neighbour = createBoidEntity({
+      id: 2,
+      state: { location: { x: 140, y: 100 } },
+    })
+    const random = jest.spyOn(Math, "random").mockReturnValue(0.5)
+
+    try {
+      const [wandering] = stepBoids({ snapshot: [source, neighbour], bounds })
+      const [seeking] = stepBoids({
+        snapshot: [source, neighbour],
+        target: { x: 100, y: 140 },
+        bounds,
+      })
+
+      expect(wandering.state.location.x).toBeGreaterThan(100)
+      expect(wandering.state.location.y).toBeGreaterThan(100)
+      expect(seeking.state.location.x).toBeGreaterThan(100)
+      expect(seeking.state.location.y).toBeGreaterThan(100)
+      expect(source.state.location).toEqual({ x: 100, y: 100 })
+    } finally {
+      random.mockRestore()
+    }
+  })
+
+  it("computes cohesion from the same snapshot in either order", () => {
+    const first = createBoidEntity({
+      id: 1,
+      traits: { alignmentAreaSize: 0, separationAreaSize: 0 },
+      state: { location: { x: 100, y: 100 } },
+    })
+    const second = createBoidEntity({
+      id: 2,
+      traits: { alignmentAreaSize: 0, separationAreaSize: 0 },
+      state: { location: { x: 140, y: 100 } },
+    })
+    const target = { x: 100, y: 140 }
+
+    const forward = stepBoids({ snapshot: [first, second], target, bounds })
+    const reverse = stepBoids({ snapshot: [second, first], target, bounds })
+
+    expect(forward).toEqual(reverse.reverse())
+    expect(first.state.location).toEqual({ x: 100, y: 100 })
+    expect(second.state.location).toEqual({ x: 140, y: 100 })
   })
 
   it("wraps a moving boid after it fully exits without changing the snapshot", () => {

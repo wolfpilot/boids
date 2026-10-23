@@ -22,6 +22,7 @@ const options = {
   maxSpeedMultiplier: 0.2,
   brakingMultiplier: 15,
   alignmentMultiplier: 8,
+  cohesionMultiplier: 12,
   seekingMultiplier: 6,
   separationMultiplier: 1.25,
   frictionMultiplier: 0.00000333,
@@ -61,6 +62,7 @@ describe("actorHelper", () => {
       expect(boid.state.location.x).toBeGreaterThanOrEqual(0)
       expect(boid.state.location.x).toBeLessThanOrEqual(options.maxX)
       expect(boid.traits.alignmentAreaSize).toBe(boid.traits.size * 8)
+      expect(boid.traits.cohesionAreaSize).toBe(boid.traits.size * 12)
       expect(boid.traits.seekingAreaSize).toBe(boid.traits.size * 6)
     })
   })

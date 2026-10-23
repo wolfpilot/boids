@@ -8,7 +8,7 @@
   "license": "MIT",
   "scripts": {
     "prepare": "husky",
-    "start": "parcel --port 3000 ./src/index.html",
+    "start": "parcel serve ./src/index.html --port 3000 --dist-dir dist-dev --cache-dir .parcel-cache-dev",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",

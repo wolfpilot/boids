@@ -16,6 +16,7 @@ node_modules
 # Cache
 .cache
 .parcel-cache
+.parcel-cache-dev
 
 # Logs
 logs
@@ -28,4 +29,5 @@ pnpm-debug.log*
 
 # Output
 /dist
+/dist-dev
 /coverage

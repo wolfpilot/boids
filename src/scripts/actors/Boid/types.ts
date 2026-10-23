@@ -39,6 +39,7 @@ export interface Options {
   frictionMultiplier: number
   brakingMultiplier: number
   alignmentMultiplier: number
+  cohesionMultiplier: number
   seekingMultiplier: number
   separationMultiplier: number
   color: string

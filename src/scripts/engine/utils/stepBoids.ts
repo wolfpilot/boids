@@ -1,6 +1,7 @@
 import { config } from "../../actors/Boid/config"
 import {
   align,
+  cohere,
   seek,
   separate,
   wander,
@@ -76,10 +77,11 @@ const stepBoid = (
   target?: Vector
 ): BoidEntity => {
   const neighbours = snapshot.filter((boid) => boid.id !== source.id)
-  const neighbourSteering = add(
+  const neighbourSteering = applyForces(new VectorImpl(0, 0), [
     align({ boids: neighbours, source }),
-    separate({ boids: neighbours, source })
-  )
+    cohere({ boids: neighbours, source }),
+    separate({ boids: neighbours, source }),
+  ])
 
   if (!target || !isInSeekingArea(source, target)) {
     const { force, nextAngle } = wander({

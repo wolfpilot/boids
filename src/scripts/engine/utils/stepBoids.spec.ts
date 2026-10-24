@@ -92,8 +92,8 @@ describe("stepBoids", () => {
       bounds,
     })
 
-    expect(updated.state.velocity.x).toBeCloseTo(0.6)
-    expect(updated.state.location.x).toBeCloseTo(10.6)
+    expect(updated.state.velocity.x).toBeCloseTo(0.76)
+    expect(updated.state.location.x).toBeCloseTo(10.76)
     expect(updated.state.location.y).toBe(20)
     expect(updated.state.acceleration).toEqual({ x: 0, y: 0 })
     expect(updated.state.targetVector).toEqual({ x: 100, y: 0 })
@@ -218,6 +218,8 @@ describe("stepBoids", () => {
       expect(wandering.state.location.y).toBeGreaterThan(100)
       expect(seeking.state.location.x).toBeGreaterThan(100)
       expect(seeking.state.location.y).toBeGreaterThan(100)
+      expect(wandering.state.velocity.x).toBeCloseTo(0.06)
+      expect(seeking.state.velocity.x).toBeCloseTo(0.06)
       expect(source.state.location).toEqual({ x: 100, y: 100 })
     } finally {
       random.mockRestore()
@@ -243,6 +245,47 @@ describe("stepBoids", () => {
     expect(forward).toEqual(reverse.reverse())
     expect(first.state.location).toEqual({ x: 100, y: 100 })
     expect(second.state.location).toEqual({ x: 140, y: 100 })
+  })
+
+  it("keeps large boids moving apart when wandering opposes cohesion", () => {
+    const traits = {
+      size: 60,
+      maxSpeed: 6,
+      frictionFactor: 0.72,
+      alignmentAreaSize: 0,
+      separationAreaSize: 0,
+      cohesionAreaSize: 720,
+    }
+    const first = createBoidEntity({
+      id: 1,
+      traits,
+      state: { location: { x: 500, y: 500 }, wanderAngle: Math.PI },
+    })
+    const second = createBoidEntity({
+      id: 2,
+      traits,
+      state: { location: { x: 700, y: 500 }, wanderAngle: 0 },
+    })
+    const random = jest.spyOn(Math, "random").mockReturnValue(0.5)
+
+    try {
+      let snapshot = [first, second]
+
+      for (let update = 0; update < 120; update++) {
+        snapshot = stepBoids({
+          snapshot,
+          bounds: { width: 5000, height: 2000 },
+        })
+      }
+
+      expect(
+        snapshot[1].state.location.x - snapshot[0].state.location.x
+      ).toBeGreaterThan(500)
+      expect(snapshot[0].state.velocity.x).toBeLessThan(-1)
+      expect(snapshot[1].state.velocity.x).toBeGreaterThan(1)
+    } finally {
+      random.mockRestore()
+    }
   })
 
   it("wraps a moving boid after it fully exits without changing the snapshot", () => {

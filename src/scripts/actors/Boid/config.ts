@@ -1,6 +1,7 @@
 export interface BoidConfig {
   maxSteeringForce: number
   alignmentFactor: number
+  cohesionFactor: number
   stopDistanceThreshold: number
   stopVelocityTreshold: number
   targetVector: {
@@ -26,6 +27,7 @@ export interface BoidConfig {
 export const config: BoidConfig = {
   maxSteeringForce: 0.5,
   alignmentFactor: 0.025,
+  cohesionFactor: 0.3,
   stopDistanceThreshold: 2.5,
   stopVelocityTreshold: 0.1,
   targetVector: {

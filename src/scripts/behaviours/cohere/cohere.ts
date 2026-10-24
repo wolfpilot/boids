@@ -25,10 +25,15 @@ export const cohere = ({ boids, source }: Options): Vector => {
   const center = divide(totalLocation, neighbours.length)
   const direction = subtract(center, source.state.location)
 
-  if (mag(direction) === 0) return new VectorImpl(0, 0)
+  const distance = mag(direction)
+
+  if (distance === 0) return new VectorImpl(0, 0)
 
   const desiredVelocity = multiply(normalize(direction), source.traits.maxSpeed)
   const steering = subtract(desiredVelocity, source.state.velocity)
 
-  return limitMagnitude(steering, config.maxSteeringForce)
+  return multiply(
+    limitMagnitude(steering, config.maxSteeringForce),
+    distance / source.traits.cohesionAreaSize
+  )
 }

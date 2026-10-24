@@ -15,8 +15,8 @@ describe("cohere", () => {
 
     const force = cohere({ boids, source })
 
-    expect(force.x).toBeCloseTo(0.1 / Math.sqrt(5))
-    expect(force.y).toBeCloseTo(0.2 / Math.sqrt(5))
+    expect(force.x).toBeCloseTo(0.01)
+    expect(force.y).toBeCloseTo(0.02)
   })
 
   it("uses neighbours strictly inside the cohesion radius", () => {
@@ -30,11 +30,21 @@ describe("cohere", () => {
       state: { location: { x: 0, y: 10 } },
     })
 
-    expect(cohere({ boids: [inside, boundary], source })).toEqual({
-      x: 0.2,
-      y: 0,
-    })
+    const force = cohere({ boids: [inside, boundary], source })
+    expect(force.x).toBeCloseTo(0.18)
+    expect(force.y).toBe(0)
     expect(cohere({ boids: [boundary], source })).toEqual({ x: 0, y: 0 })
+  })
+
+  it("pulls less strongly near the centroid", () => {
+    const source = createBoidEntity({
+      traits: { cohesionAreaSize: 10 },
+    })
+    const near = createBoidEntity({ state: { location: { x: 2, y: 0 } } })
+    const far = createBoidEntity({ state: { location: { x: 9, y: 0 } } })
+
+    expect(cohere({ boids: [near], source }).x).toBeCloseTo(0.1)
+    expect(cohere({ boids: [far], source }).x).toBeCloseTo(0.45)
   })
 
   it("returns zero without neighbours or a direction to the centroid", () => {
@@ -56,7 +66,7 @@ describe("cohere", () => {
 
   it("subtracts velocity, caps force, and leaves input state unchanged", () => {
     const source = createBoidEntity({
-      traits: { maxSpeed: 0.8 },
+      traits: { maxSpeed: 0.8, cohesionAreaSize: 5.1 },
       state: { velocity: { x: 0.3, y: 0 } },
     })
     const neighbour = createBoidEntity({
@@ -66,9 +76,9 @@ describe("cohere", () => {
 
     const force = cohere({ boids: [neighbour], source })
 
-    expect(force.x).toBeCloseTo((-0.3 / Math.sqrt(0.73)) * 0.5)
-    expect(force.y).toBeCloseTo((0.8 / Math.sqrt(0.73)) * 0.5)
-    expect(mag(force)).toBeCloseTo(0.5)
+    expect(force.x).toBeCloseTo((-0.3 / Math.sqrt(0.73)) * 0.5 * (5 / 5.1))
+    expect(force.y).toBeCloseTo((0.8 / Math.sqrt(0.73)) * 0.5 * (5 / 5.1))
+    expect(mag(force)).toBeCloseTo(0.5 * (5 / 5.1))
     expect(JSON.stringify([source, neighbour])).toBe(before)
   })
 })

@@ -46,10 +46,13 @@ const stopBoid = (source: BoidEntity): BoidEntity => ({
 })
 
 const advanceBoid = (source: BoidEntity, steering: Vector): BoidEntity => {
-  const friction = multiply(
-    normalize(source.state.velocity),
-    -source.traits.frictionFactor
-  )
+  const friction =
+    source.traits.maxSpeed === 0
+      ? new VectorImpl(0, 0)
+      : multiply(
+          source.state.velocity,
+          -source.traits.frictionFactor / source.traits.maxSpeed
+        )
   const acceleration = applyForces(source.state.acceleration, [
     steering,
     friction,
@@ -79,7 +82,7 @@ const stepBoid = (
   const neighbours = snapshot.filter((boid) => boid.id !== source.id)
   const neighbourSteering = applyForces(new VectorImpl(0, 0), [
     align({ boids: neighbours, source }),
-    cohere({ boids: neighbours, source }),
+    multiply(cohere({ boids: neighbours, source }), config.cohesionFactor),
     separate({ boids: neighbours, source }),
   ])
 

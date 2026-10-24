@@ -27,7 +27,7 @@ export interface BoidConfig {
 export const config: BoidConfig = {
   maxSteeringForce: 0.5,
   alignmentFactor: 0.025,
-  cohesionFactor: 0.3,
+  cohesionFactor: 0.6,
   stopDistanceThreshold: 2.5,
   stopVelocityTreshold: 0.1,
   targetVector: {

@@ -218,8 +218,8 @@ describe("stepBoids", () => {
       expect(wandering.state.location.y).toBeGreaterThan(100)
       expect(seeking.state.location.x).toBeGreaterThan(100)
       expect(seeking.state.location.y).toBeGreaterThan(100)
-      expect(wandering.state.velocity.x).toBeCloseTo(0.06)
-      expect(seeking.state.velocity.x).toBeCloseTo(0.06)
+      expect(wandering.state.velocity.x).toBeCloseTo(0.12)
+      expect(seeking.state.velocity.x).toBeCloseTo(0.12)
       expect(source.state.location).toEqual({ x: 100, y: 100 })
     } finally {
       random.mockRestore()
@@ -254,7 +254,7 @@ describe("stepBoids", () => {
       frictionFactor: 0.72,
       alignmentAreaSize: 0,
       separationAreaSize: 0,
-      cohesionAreaSize: 720,
+      cohesionAreaSize: 360,
     }
     const first = createBoidEntity({
       id: 1,

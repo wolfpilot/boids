@@ -27,6 +27,10 @@ export class GuiService {
     this.guiStore.update({ showAlignmentArea: val })
   }
 
+  updateShowCohesionArea(val: boolean) {
+    this.guiStore.update({ showCohesionArea: val })
+  }
+
   updateShowSeekingArea(val: boolean) {
     this.guiStore.update({ showSeekingArea: val })
   }

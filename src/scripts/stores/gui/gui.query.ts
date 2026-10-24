@@ -43,6 +43,10 @@ export class GuiQuery extends Query<GuiStoreState> {
     return this.getValue().showAlignmentArea
   }
 
+  get showCohesionArea(): boolean {
+    return this.getValue().showCohesionArea
+  }
+
   get showSeekingArea(): boolean {
     return this.getValue().showSeekingArea
   }

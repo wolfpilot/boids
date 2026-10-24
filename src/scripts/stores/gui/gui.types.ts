@@ -5,6 +5,7 @@ export interface GuiStoreState {
   showNormalizedTargetVector: boolean
   showVelocityVector: boolean
   showAlignmentArea: boolean
+  showCohesionArea: boolean
   showSeekingArea: boolean
   showSeparationArea: boolean
   showStoppingArea: boolean

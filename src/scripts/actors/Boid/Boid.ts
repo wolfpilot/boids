@@ -86,6 +86,10 @@ class BoidImpl implements Boid {
       this.drawAlignmentArea(boidEntity.state)
     }
 
+    if (guiQuery.allValues.showCohesionArea) {
+      this.drawCohesionArea(boidEntity.state)
+    }
+
     if (guiQuery.allValues.showSeekingArea) {
       this.drawSeekingArea(boidEntity.state)
     }
@@ -142,6 +146,20 @@ class BoidImpl implements Boid {
     )
     this.ctx.lineWidth = 1
     this.ctx.strokeStyle = config.seekingArea.color
+    this.ctx.stroke()
+  }
+
+  private drawCohesionArea(state: BoidState) {
+    this.ctx.beginPath()
+    this.ctx.arc(
+      state.location.x,
+      state.location.y,
+      this.traits.cohesionAreaSize,
+      0,
+      2 * Math.PI
+    )
+    this.ctx.lineWidth = 1
+    this.ctx.strokeStyle = config.cohesionArea.color
     this.ctx.stroke()
   }
 

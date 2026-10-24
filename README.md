@@ -13,7 +13,7 @@ Just a fun little project exploring Boid simulations in JS Canvas.
 
 ## Intro
 
-This Canvas experiment currently has three steering behaviours: seek the pointer, align with nearby boids, and separate from boids that get too close.
+This Canvas experiment combines wandering, alignment, cohesion, and separation. A boid seeks the pointer when it comes within range.
 
 ## How it works
 
@@ -28,6 +28,8 @@ For each due physics update, `Engine` reads the current boid entities from the s
 It then returns a new collection which `Engine` publishes to the store in one operation.
 
 A boid therefore cannot react to another boid's new position until the next physics update. If several updates are due in one browser frame, each update starts from the collection published by the previous one.
+
+Cohesion draws boids toward nearby neighbours, with a lighter pull when they are already near the group's centre. Drag grows with speed, so a slow boid can still accelerate away from a cluster.
 
 ### Drawing
 

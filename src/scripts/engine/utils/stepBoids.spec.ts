@@ -247,6 +247,45 @@ describe("stepBoids", () => {
     expect(second.state.location).toEqual({ x: 140, y: 100 })
   })
 
+  it("draws nearby pairs together without attracting distant groups", () => {
+    const traits = {
+      alignmentAreaSize: 0,
+      separationAreaSize: 0,
+      cohesionAreaSize: 60,
+    }
+    const snapshot = [100, 140, 500, 540].map((x, id) =>
+      createBoidEntity({
+        id,
+        traits,
+        state: { location: { x, y: 100 }, wanderAngle: Math.PI / 2 },
+      })
+    )
+    const random = jest.spyOn(Math, "random").mockReturnValue(0.5)
+
+    try {
+      const updated = stepBoids({ snapshot, bounds })
+      const reversed = stepBoids({ snapshot: [...snapshot].reverse(), bounds })
+
+      expect(updated).toEqual(reversed.reverse())
+      expect(updated[0].state.velocity.x).toBeCloseTo(0.2)
+      expect(updated[1].state.velocity.x).toBeCloseTo(-0.2)
+      expect(updated[2].state.velocity.x).toBeCloseTo(0.2)
+      expect(updated[3].state.velocity.x).toBeCloseTo(-0.2)
+      expect(
+        updated[1].state.location.x - updated[0].state.location.x
+      ).toBeLessThan(40)
+      expect(
+        updated[3].state.location.x - updated[2].state.location.x
+      ).toBeLessThan(40)
+      expect(updated[2].state.location.x - updated[0].state.location.x).toBe(
+        400
+      )
+      expect(snapshot[0].state.location.x).toBe(100)
+    } finally {
+      random.mockRestore()
+    }
+  })
+
   it("keeps large boids moving apart when wandering opposes cohesion", () => {
     const traits = {
       size: 60,

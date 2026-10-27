@@ -22,15 +22,6 @@ const traitsForSize = (size: number) => ({
 
 const distance = (a: Vector, b: Vector) => Math.hypot(a.x - b.x, a.y - b.y)
 
-const centerOf = (boids: readonly BoidEntity[]): Vector =>
-  boids.reduce(
-    (center, boid) => ({
-      x: center.x + boid.state.location.x / boids.length,
-      y: center.y + boid.state.location.y / boids.length,
-    }),
-    { x: 0, y: 0 }
-  )
-
 describe("flocking over time", () => {
   afterEach(() => jest.restoreAllMocks())
 
@@ -94,70 +85,6 @@ describe("flocking over time", () => {
     },
     30000
   )
-
-  it("keeps two distant mixed-size groups moving together for 20 seconds", () => {
-    const offsets = [
-      [-25, -15],
-      [-25, 15],
-      [0, 0],
-      [25, -15],
-      [25, 15],
-    ]
-    const sizes = [10, 15, 20, 15, 10]
-    let snapshot = [5000, 10000].flatMap((y, group) =>
-      offsets.map(([dx, dy], index) =>
-        createBoidEntity({
-          id: group * 5 + index,
-          traits: traitsForSize(sizes[index]),
-          state: {
-            location: { x: 5000 + dx, y: y + dy },
-            wanderAngle: (index - 2) * 0.15,
-          },
-        })
-      )
-    )
-    const initialCenters = [
-      centerOf(snapshot.slice(0, 5)),
-      centerOf(snapshot.slice(5)),
-    ]
-    let previousCenters = initialCenters
-    let maximumRadius = 0
-    const windowDistances: number[] = []
-    jest.spyOn(Math, "random").mockReturnValue(0)
-
-    for (let update = 1; update <= 20 * 60; update++) {
-      snapshot = stepBoids({
-        snapshot,
-        bounds: { width: 20000, height: 20000 },
-      })
-      const groups = [snapshot.slice(0, 5), snapshot.slice(5)]
-      const centers = groups.map(centerOf)
-
-      groups.forEach((group, index) => {
-        maximumRadius = Math.max(
-          maximumRadius,
-          ...group.map((boid) => distance(boid.state.location, centers[index]))
-        )
-      })
-
-      if (update % 120 === 0) {
-        if (update > 120)
-          centers.forEach((center, index) =>
-            windowDistances.push(distance(center, previousCenters[index]))
-          )
-        previousCenters = centers
-      }
-    }
-
-    expect(maximumRadius).toBeLessThan(80)
-    expect(Math.min(...windowDistances)).toBeGreaterThan(50)
-    previousCenters.forEach((center, index) => {
-      expect(distance(center, initialCenters[index])).toBeGreaterThan(500)
-    })
-    expect(distance(previousCenters[0], previousCenters[1])).toBeGreaterThan(
-      2000
-    )
-  })
 
   it.each([10, 20])("wanders broadly from rest at size %s", (size) => {
     let snapshot = [

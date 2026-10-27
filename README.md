@@ -37,14 +37,16 @@ The flocking behaviours follow [Craig Reynolds' steering model](https://www.red3
 - **Cohesion** returns the offset from the boid to the neighbours' average position. The pull naturally becomes smaller near that position.
 - **Separation** sums directions away from neighbours, with each unit direction divided by distance. Closer neighbours produce stronger pushes. Coincident positions are ignored to avoid dividing by zero.
 
+Alignment and cohesion use a `fieldOfViewDegrees` setting of `300`, measured around the velocity direction. Boids directly behind fall outside that field, allowing leading boids to take different paths. At rest, a boid considers neighbours in every direction. Separation always checks every direction so neighbours approaching from behind still cause a push away.
+
 The behaviours return unweighted vectors. [`combineSteering()`](src/scripts/engine/utils/combineSteering.ts) applies the weights from [`Boid/config.ts`](src/scripts/actors/Boid/config.ts), adds any existing acceleration, and limits the result to `maxSteeringForce` before movement is calculated.
 
 | Behaviour  | Weight |
 | ---------- | -----: |
 | Alignment  |    0.5 |
 | Cohesion   |  0.005 |
-| Separation |      8 |
-| Wander     |   0.05 |
+| Separation |     32 |
+| Wander     |    0.1 |
 | Seek       |      1 |
 
 These are settings for this project. Each weight scales a vector with a different natural magnitude: cohesion starts with a position offset, for example, while separation uses inverse distance. The final combined force is capped at `0.5` per fixed update.
@@ -53,7 +55,7 @@ Speed-based drag is added after steering. The resulting acceleration changes vel
 
 Alignment, cohesion, separation, and wander run together by default. When the mouse is present and inside a boid's seeking radius, seek replaces wander for that boid. Its wander angle is retained until wandering resumes. A boid can stop near the pointer only when it is already moving slowly and its combined neighbour steering is zero.
 
-Groups form, merge, and split through these local interactions. Each boid uses its own speed limit. Boids wrap after their whole body leaves the canvas, using logical canvas bounds updated on resize. Neighbour distances are measured directly between their current positions.
+Groups form, merge, and split through these local interactions. Stronger separation maintains space within a flock, while limited perception and persistent wander allow members to take different paths. Soft steering can still permit brief overlaps during crossings. Each boid uses its own speed limit. Boids wrap after their whole body leaves the canvas, using logical canvas bounds updated on resize. Neighbour distances are measured directly between their current positions.
 
 ### Wander
 
@@ -63,7 +65,7 @@ Each boid stores a `wanderAngle`, representing a point on a unit circle. Each wa
 
 The circle centre lies `√2` units along the boid's velocity direction. The circle point, scaled by `wander.strength`, is added to that centre to produce the steering vector. These are steering-vector units. With the default strength of `1`, the circle stays ahead of a moving boid. At rest, the remembered circle point supplies the initial direction.
 
-`wander.rate` defaults to `0.1` and controls how quickly the point changes. `wander.strength` controls how far it sits from the circle centre, while the wander weight controls its contribution alongside the flocking forces. Wander keeps contributing while neighbours are present. Random offsets come from `Math.random()`, so paths vary between runs.
+`wander.rate` defaults to `0.15` and controls how quickly the point changes. `wander.strength` controls how far it sits from the circle centre, while the wander weight controls its contribution alongside the flocking forces. Wander keeps contributing while neighbours are present. Random offsets come from `Math.random()`, so paths vary between runs.
 
 ### Drawing
 

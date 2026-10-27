@@ -345,7 +345,7 @@ describe("stepBoids", () => {
 
     try {
       const updated = stepBoids({ snapshot: [source, neighbour], bounds })
-      expect(updated[0].state.wanderAngle).toBeCloseTo(Math.atan(0.1))
+      expect(updated[0].state.wanderAngle).toBeCloseTo(Math.atan(0.15))
       expect(updated[0].state.velocity.y).toBeGreaterThan(0)
 
       const continued = stepBoids({ snapshot: updated, bounds })

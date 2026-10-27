@@ -54,8 +54,8 @@ describe("cohere", () => {
       state: { location: { x: 10, y: 10 } },
     })
     const opposite = [
-      createBoidEntity({ state: { location: { x: 5, y: 10 } } }),
-      createBoidEntity({ state: { location: { x: 15, y: 10 } } }),
+      createBoidEntity({ state: { location: { x: 10, y: 5 } } }),
+      createBoidEntity({ state: { location: { x: 10, y: 15 } } }),
     ]
 
     expect(cohere({ boids: [], source })).toEqual({ x: 0, y: 0 })
@@ -86,5 +86,12 @@ describe("cohere", () => {
       })
     ).toEqual(force)
     expect(JSON.stringify([source, neighbour])).toBe(before)
+  })
+
+  it("ignores neighbours directly behind a moving boid", () => {
+    const source = createBoidEntity({ state: { velocity: { x: 1, y: 0 } } })
+    const behind = createBoidEntity({ state: { location: { x: -5, y: 0 } } })
+
+    expect(cohere({ source, boids: [behind] })).toEqual({ x: 0, y: 0 })
   })
 })

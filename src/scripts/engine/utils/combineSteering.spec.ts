@@ -6,15 +6,15 @@ describe("combineSteering", () => {
     const forces = {
       alignment: Object.freeze({ x: 0.2, y: 0.4 }),
       cohesion: Object.freeze({ x: 10, y: -10 }),
-      separation: Object.freeze({ x: 0.01, y: 0 }),
-      wander: Object.freeze({ x: 0.2, y: 0.4 }),
+      separation: Object.freeze({ x: 0.001, y: 0 }),
+      wander: Object.freeze({ x: 0.1, y: 0.2 }),
       seek: Object.freeze({ x: 0.1, y: -0.1 }),
     }
 
     const acceleration = Object.freeze({ x: 0.01, y: 0.02 })
     const result = combineSteering(forces, acceleration)
 
-    expect(result.x).toBeCloseTo(0.35)
+    expect(result.x).toBeCloseTo(0.302)
     expect(result.y).toBeCloseTo(0.09)
   })
 

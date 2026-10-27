@@ -38,4 +38,13 @@ describe("separate", () => {
     expect(separate({ boids, source })).toEqual({ x: 0, y: 0 })
     expect(JSON.stringify([source, ...boids])).toBe(before)
   })
+
+  it("still avoids crowding from directly behind", () => {
+    const source = createBoidEntity({
+      ...boid(0),
+      state: { velocity: { x: 1, y: 0 } },
+    })
+
+    expect(separate({ source, boids: [boid(-5)] }).x).toBeCloseTo(1 / 5)
+  })
 })

@@ -3,6 +3,7 @@ import { SteeringWeights } from "../../behaviours/types"
 export interface BoidConfig {
   maxSteeringForce: number
   steeringWeights: SteeringWeights
+  fieldOfViewDegrees: number
   wander: {
     strength: number
     rate: number
@@ -31,16 +32,17 @@ export interface BoidConfig {
 
 export const config: BoidConfig = {
   maxSteeringForce: 0.5,
+  fieldOfViewDegrees: 300,
   steeringWeights: {
     alignment: 0.5,
     cohesion: 0.005,
-    separation: 8,
-    wander: 0.05,
+    separation: 32,
+    wander: 0.1,
     seek: 1,
   },
   wander: {
     strength: 1,
-    rate: 0.1,
+    rate: 0.15,
   },
   stopDistanceThreshold: 2.5,
   stopVelocityTreshold: 0.1,

@@ -26,9 +26,9 @@ describe("wander", () => {
     const before = JSON.stringify([source, randomOffset])
     const { force, nextAngle } = wander({ source, randomOffset })
 
-    expect(nextAngle).toBeCloseTo(Math.atan(0.1))
-    expect(force.x).toBeCloseTo(1 / Math.hypot(1, 0.1))
-    expect(force.y).toBeCloseTo(0.1 / Math.hypot(1, 0.1))
+    expect(nextAngle).toBeCloseTo(Math.atan(0.15))
+    expect(force.x).toBeCloseTo(1 / Math.hypot(1, 0.15))
+    expect(force.y).toBeCloseTo(0.15 / Math.hypot(1, 0.15))
     expect(mag(force)).toBeCloseTo(1)
     expect(JSON.stringify([source, randomOffset])).toBe(before)
 
@@ -70,6 +70,6 @@ describe("wander", () => {
     expect(
       wander({ source: createBoidEntity(), randomOffset: { x: 0, y: -1 } })
         .nextAngle
-    ).toBeGreaterThan(Math.PI * 2 - 0.1)
+    ).toBeGreaterThan(Math.PI * 2 - 0.2)
   })
 })

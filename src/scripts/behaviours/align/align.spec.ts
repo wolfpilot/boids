@@ -25,6 +25,13 @@ describe("align", () => {
     })
   })
 
+  it("ignores neighbours directly behind a moving boid", () => {
+    expect(align({ source: boid(0, 1), boids: [boid(-5, 4)] })).toEqual({
+      x: 0,
+      y: 0,
+    })
+  })
+
   it("excludes the boundary and coincident positions", () => {
     expect(
       align({ boids: [boid(10, 4), boid(0, 3)], source: boid(0, 1) })

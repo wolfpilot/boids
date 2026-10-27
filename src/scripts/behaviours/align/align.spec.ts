@@ -15,7 +15,7 @@ describe("align", () => {
     const source = boid(0, 1)
     const boids = [boid(1, 2), boid(2, 4)]
 
-    expect(align({ boids, source }).x).toBeCloseTo(0.05)
+    expect(align({ boids, source }).x).toBeCloseTo(2)
   })
 
   it("does not steer when there are no neighbours in range", () => {

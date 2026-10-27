@@ -1,13 +1,9 @@
 // Types
 import { Options, WanderResult } from "./types"
 
-// Config
-import { config } from "../../actors/Boid/config"
-
 // Helpers
 import {
   add,
-  limitMagnitude,
   multiply,
   normalize,
   setAngle,
@@ -34,10 +30,7 @@ export const wander = ({ source, randomValue }: Options): WanderResult => {
   setAngle(displacement, wanderAngle)
   setMagnitude(displacement, size * 20 * CIRCLE_RADIUS_MULTIPLIER)
 
-  const force = limitMagnitude(
-    add(circleCenter, displacement),
-    config.maxSteeringForce
-  )
+  const force = add(circleCenter, displacement)
   const nextAngle =
     (wanderAngle + (randomValue - 0.5) * ANGLE_CHANGE + FULL_TURN) % FULL_TURN
 

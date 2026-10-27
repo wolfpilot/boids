@@ -1,9 +1,6 @@
 // Types
 import { Vector } from "../../types/geometry"
 
-// Config
-import { config as boidConfig } from "../../actors/Boid/config"
-
 // Utils
 import {
   add,
@@ -11,7 +8,6 @@ import {
   multiply,
   normalize,
   mag,
-  limitMagnitude,
 } from "../../utils/vectorHelper"
 import { isInRange } from "./helpers"
 
@@ -25,24 +21,13 @@ export const separate = ({ boids, source }: Options): Vector => {
 
   const neighbours = boids.filter((boid) => isInRange(boid, source))
 
-  // Check if any neighbors are found within the acceptable vicinity
-  if (neighbours.length === 0) return separate
-
-  // Calculate the forces necessary to separate this from other boids
   neighbours.forEach((boid) => {
-    let desired = subtract(source.state.location, boid.state.location)
-    const distance = mag(desired)
-    const radius = source.traits.separationAreaSize + boid.traits.size
-
-    // Compute directional unit vector
-    desired = normalize(desired)
-
-    // Increase separation as the neighbour gets closer.
-    const strength = (radius - distance) / radius
-    desired = multiply(desired, source.traits.maxSpeed * strength)
+    const offset = subtract(source.state.location, boid.state.location)
+    const distance = mag(offset)
+    const desired = multiply(normalize(offset), 1 / distance)
 
     separate = add(separate, desired)
   })
 
-  return limitMagnitude(separate, boidConfig.maxSteeringForce)
+  return separate
 }

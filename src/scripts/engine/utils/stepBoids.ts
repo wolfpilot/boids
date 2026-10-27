@@ -12,7 +12,6 @@ import type { BoidEntity } from "../../types/entities"
 import type { Bounds, Vector } from "../../types/geometry"
 import {
   add,
-  applyForces,
   limitMagnitude,
   mag,
   multiply,
@@ -20,6 +19,8 @@ import {
   subtract,
 } from "../../utils/vectorHelper"
 import { wrapLocation } from "./wrapLocation"
+import { combineSteering } from "./combineSteering"
+import { SteeringForces } from "../../behaviours/types"
 
 interface StepBoidsOptions {
   snapshot: readonly BoidEntity[]
@@ -30,11 +31,11 @@ interface StepBoidsOptions {
 const shouldStop = (
   source: BoidEntity,
   targetVector: Vector,
-  neighbourSteering: Vector
+  neighbourForces: SteeringForces
 ): boolean =>
   mag(targetVector) < config.stopDistanceThreshold &&
   mag(source.state.velocity) < config.stopVelocityTreshold &&
-  mag(neighbourSteering) === 0
+  mag(combineSteering(neighbourForces)) === 0
 
 const stopBoid = (source: BoidEntity): BoidEntity => ({
   ...source,
@@ -45,7 +46,11 @@ const stopBoid = (source: BoidEntity): BoidEntity => ({
   },
 })
 
-const advanceBoid = (source: BoidEntity, steering: Vector): BoidEntity => {
+const advanceBoid = (
+  source: BoidEntity,
+  forces: SteeringForces
+): BoidEntity => {
+  const steering = combineSteering(forces, source.state.acceleration)
   const friction =
     source.traits.maxSpeed === 0
       ? new VectorImpl(0, 0)
@@ -53,10 +58,7 @@ const advanceBoid = (source: BoidEntity, steering: Vector): BoidEntity => {
           source.state.velocity,
           -source.traits.frictionFactor / source.traits.maxSpeed
         )
-  const acceleration = applyForces(source.state.acceleration, [
-    steering,
-    friction,
-  ])
+  const acceleration = add(steering, friction)
   const velocity = limitMagnitude(
     add(source.state.velocity, acceleration),
     source.traits.maxSpeed
@@ -80,11 +82,11 @@ const stepBoid = (
   target?: Vector
 ): BoidEntity => {
   const neighbours = snapshot.filter((boid) => boid.id !== source.id)
-  const neighbourSteering = applyForces(new VectorImpl(0, 0), [
-    align({ boids: neighbours, source }),
-    multiply(cohere({ boids: neighbours, source }), config.cohesionFactor),
-    separate({ boids: neighbours, source }),
-  ])
+  const neighbourForces = {
+    alignment: align({ boids: neighbours, source }),
+    cohesion: cohere({ boids: neighbours, source }),
+    separation: separate({ boids: neighbours, source }),
+  }
 
   if (!target || !isInSeekingArea(source, target)) {
     const { force, nextAngle } = wander({
@@ -102,7 +104,7 @@ const stepBoid = (
       },
     }
 
-    return advanceBoid(boid, add(neighbourSteering, force))
+    return advanceBoid(boid, { ...neighbourForces, wander: force })
   }
 
   const targetVector = subtract(target, source.state.location)
@@ -115,9 +117,9 @@ const stepBoid = (
     },
   }
 
-  return shouldStop(source, targetVector, neighbourSteering)
+  return shouldStop(source, targetVector, neighbourForces)
     ? stopBoid(boid)
-    : advanceBoid(boid, add(neighbourSteering, seek({ target, source })))
+    : advanceBoid(boid, { ...neighbourForces, seek: seek({ target, source }) })
 }
 
 export const stepBoids = ({

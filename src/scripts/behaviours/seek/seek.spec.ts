@@ -39,4 +39,16 @@ describe("seek", () => {
       y: 0,
     })
   })
+
+  it("returns the full velocity correction without changing the input", () => {
+    const boid = createBoidEntity({
+      traits: { maxSpeed: 3, brakingDistance: 20, seekingAreaSize: 200 },
+      state: { velocity: { x: -1, y: 0 } },
+    })
+    const target = { x: 100, y: 0 }
+    const before = JSON.stringify([boid, target])
+
+    expect(seek({ target, source: boid })).toEqual({ x: 4, y: 0 })
+    expect(JSON.stringify([boid, target])).toBe(before)
+  })
 })

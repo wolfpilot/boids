@@ -1,6 +1,4 @@
-import { config } from "../../actors/Boid/config"
 import { createBoidEntity } from "../../utils/testHelpers"
-import { mag } from "../../utils/vectorHelper"
 import { wander } from "./wander"
 
 describe("wander", () => {
@@ -11,11 +9,7 @@ describe("wander", () => {
     })
 
     const { force, nextAngle } = wander({ source, randomValue: 0.5 })
-    const distance = Math.hypot(112, 16)
-
-    expect(force.x).toBeCloseTo((112 / distance) * config.maxSteeringForce)
-    expect(force.y).toBeCloseTo((16 / distance) * config.maxSteeringForce)
-    expect(mag(force)).toBeCloseTo(config.maxSteeringForce)
+    expect(force).toEqual({ x: 112, y: 16 })
     expect(nextAngle).toBe(0)
     expect(source.state.velocity).toEqual({ x: 3, y: 4 })
     expect(source.state.wanderAngle).toBe(0)
@@ -29,7 +23,7 @@ describe("wander", () => {
     const { force, nextAngle } = wander({ source, randomValue: 1 })
 
     expect(force.x).toBeCloseTo(0)
-    expect(force.y).toBeCloseTo(config.maxSteeringForce)
+    expect(force.y).toBeCloseTo(100)
     expect(nextAngle).toBeCloseTo(Math.PI / 2 + 0.25)
   })
 

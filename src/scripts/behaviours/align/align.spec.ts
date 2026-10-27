@@ -24,4 +24,20 @@ describe("align", () => {
       y: 0,
     })
   })
+
+  it("excludes the boundary and coincident positions", () => {
+    expect(
+      align({ boids: [boid(10, 4), boid(0, 3)], source: boid(0, 1) })
+    ).toEqual({ x: 0, y: 0 })
+  })
+
+  it("matches stationary or cancelling velocities without changing its inputs", () => {
+    const source = boid(0, 0.4)
+    const boids = [boid(1, 2), boid(2, -2)]
+    const before = JSON.stringify([source, ...boids])
+
+    expect(align({ boids, source })).toEqual({ x: -0.4, y: 0 })
+    expect(align({ boids: [boid(1, 0)], source })).toEqual({ x: -0.4, y: 0 })
+    expect(JSON.stringify([source, ...boids])).toBe(before)
+  })
 })

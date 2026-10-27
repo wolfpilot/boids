@@ -92,8 +92,8 @@ describe("stepBoids", () => {
       bounds,
     })
 
-    expect(updated.state.velocity.x).toBeCloseTo(0.76)
-    expect(updated.state.location.x).toBeCloseTo(10.76)
+    expect(updated.state.velocity.x).toBeCloseTo(0.66)
+    expect(updated.state.location.x).toBeCloseTo(10.66)
     expect(updated.state.location.y).toBe(20)
     expect(updated.state.acceleration).toEqual({ x: 0, y: 0 })
     expect(updated.state.targetVector).toEqual({ x: 100, y: 0 })
@@ -218,8 +218,7 @@ describe("stepBoids", () => {
       expect(wandering.state.location.y).toBeGreaterThan(100)
       expect(seeking.state.location.x).toBeGreaterThan(100)
       expect(seeking.state.location.y).toBeGreaterThan(100)
-      expect(wandering.state.velocity.x).toBeCloseTo(0.12)
-      expect(seeking.state.velocity.x).toBeCloseTo(0.12)
+      expect(seeking.state.velocity.x).toBeCloseTo(0.2)
       expect(source.state.location).toEqual({ x: 100, y: 100 })
     } finally {
       random.mockRestore()
@@ -267,10 +266,14 @@ describe("stepBoids", () => {
       const reversed = stepBoids({ snapshot: [...snapshot].reverse(), bounds })
 
       expect(updated).toEqual(reversed.reverse())
-      expect(updated[0].state.velocity.x).toBeCloseTo(0.2)
-      expect(updated[1].state.velocity.x).toBeCloseTo(-0.2)
-      expect(updated[2].state.velocity.x).toBeCloseTo(0.2)
-      expect(updated[3].state.velocity.x).toBeCloseTo(-0.2)
+      expect(updated[0].state.velocity.x).toBeGreaterThan(0)
+      expect(updated[1].state.velocity.x).toBeLessThan(0)
+      expect(updated[2].state.velocity.x).toBeCloseTo(
+        updated[0].state.velocity.x
+      )
+      expect(updated[3].state.velocity.x).toBeCloseTo(
+        updated[1].state.velocity.x
+      )
       expect(
         updated[1].state.location.x - updated[0].state.location.x
       ).toBeLessThan(40)

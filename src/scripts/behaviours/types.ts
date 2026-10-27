@@ -1,0 +1,28 @@
+import { Vector } from "../types/geometry"
+
+export const behaviours = {
+  align: "align",
+  cohere: "cohere",
+  seek: "seek",
+  separate: "separate",
+  wander: "wander",
+} as const
+export type BehaviourTypes = (typeof behaviours)[keyof typeof behaviours]
+
+export interface SteeringForces {
+  alignment?: Vector
+  cohesion?: Vector
+  seek?: Vector
+  separation?: Vector
+  wander?: Vector
+}
+export type SteeringForcesTypes = keyof SteeringForces
+
+export interface SteeringWeights {
+  alignment: number
+  cohesion: number
+  separation: number
+  wander: number
+  seek: number
+}
+export type SteeringWeightsTypes = keyof SteeringWeights

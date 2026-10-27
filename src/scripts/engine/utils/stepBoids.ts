@@ -21,6 +21,7 @@ import {
 import { wrapLocation } from "./wrapLocation"
 import { combineSteering } from "./combineSteering"
 import { SteeringForces } from "../../behaviours/types"
+import { createWanderOffset } from "./createWanderOffset"
 
 interface StepBoidsOptions {
   snapshot: readonly BoidEntity[]
@@ -91,7 +92,7 @@ const stepBoid = (
   if (!target || !isInSeekingArea(source, target)) {
     const { force, nextAngle } = wander({
       source,
-      randomValue: Math.random(),
+      randomOffset: createWanderOffset(),
     })
 
     const boid = {

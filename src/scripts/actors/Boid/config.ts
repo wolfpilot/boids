@@ -3,6 +3,10 @@ import { SteeringWeights } from "../../behaviours/types"
 export interface BoidConfig {
   maxSteeringForce: number
   steeringWeights: SteeringWeights
+  wander: {
+    strength: number
+    rate: number
+  }
   stopDistanceThreshold: number
   stopVelocityTreshold: number
   targetVector: {
@@ -33,6 +37,10 @@ export const config: BoidConfig = {
     separation: 8,
     wander: 0.05,
     seek: 1,
+  },
+  wander: {
+    strength: 1,
+    rate: 0.1,
   },
   stopDistanceThreshold: 2.5,
   stopVelocityTreshold: 0.1,

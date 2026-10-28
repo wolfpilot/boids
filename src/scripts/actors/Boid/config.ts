@@ -16,9 +16,6 @@ export interface BoidConfig {
   directionVector: {
     color: string
   }
-  velocityVector: {
-    color: string
-  }
   brakingArea: {
     color: string
   }
@@ -51,9 +48,6 @@ export const config: BoidConfig = {
   },
   directionVector: {
     color: "#ff0000",
-  },
-  velocityVector: {
-    color: "#151515",
   },
   brakingArea: {
     color: "#ff0000",

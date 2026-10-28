@@ -9,6 +9,8 @@ import { boidsQuery } from "../../stores/boids"
 // Utils
 import { multiply } from "../../utils/vectorHelper"
 import { isEntityOffscreen } from "../../utils/entityHelper"
+import { darkenHexColor, saturateHexColor } from "../../utils/colorHelper"
+import { drawArrow } from "../../utils/drawingHelper"
 
 // Geometry
 import VectorImpl from "../../geometry/Vector"
@@ -255,19 +257,17 @@ class BoidImpl implements Boid {
     this.ctx.stroke()
   }
 
-  // Draw the resulting force vector
   private drawVelocityVector(state: BoidState) {
-    const upscaledVelocityVector = multiply(state.velocity, 5)
+    const upscaledVelocityVector = multiply(state.velocity, 15)
 
-    this.ctx.beginPath()
-    this.ctx.moveTo(state.location.x, state.location.y)
-    this.ctx.lineWidth = 3
-    this.ctx.lineTo(
-      state.location.x + upscaledVelocityVector.x,
-      state.location.y + upscaledVelocityVector.y
-    )
-    this.ctx.strokeStyle = config.velocityVector.color
-    this.ctx.stroke()
+    drawArrow({
+      ctx: this.ctx,
+      origin: state.location,
+      displacement: upscaledVelocityVector,
+      color: darkenHexColor(saturateHexColor(this.traits.color, 0.25), 0.05),
+      lineWidth: 3,
+      headSize: 8,
+    })
   }
 }
 

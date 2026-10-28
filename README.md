@@ -29,7 +29,43 @@ It then returns a new collection which `Engine` publishes to the store in one op
 
 A boid therefore cannot react to another boid's new position until the next physics update. If several updates are due in one browser frame, each update starts from the collection published by the previous one.
 
-Cohesion draws boids toward nearby neighbours, with a lighter pull when they are already near the group's centre. Drag grows with speed, so a slow boid can still accelerate away from a cluster.
+### Steering and flocking
+
+The flocking behaviours follow [Craig Reynolds' steering model](https://www.red3d.com/cwr/steer/gdc99/). Each boid reacts to neighbours within its own behaviour radii:
+
+- **Alignment** returns the average neighbour velocity minus the boid's velocity. This matches both heading and speed.
+- **Cohesion** returns the offset from the boid to the neighbours' average position. The pull naturally becomes smaller near that position.
+- **Separation** sums directions away from neighbours, with each unit direction divided by distance. Closer neighbours produce stronger pushes. Coincident positions are ignored to avoid dividing by zero.
+
+Alignment and cohesion use a `fieldOfViewDegrees` setting of `300`, measured around the velocity direction. Boids directly behind fall outside that field, allowing leading boids to take different paths. At rest, a boid considers neighbours in every direction. Separation always checks every direction so neighbours approaching from behind still cause a push away.
+
+The behaviours return unweighted vectors. [`combineSteering()`](src/scripts/engine/utils/combineSteering.ts) applies the weights from [`Boid/config.ts`](src/scripts/actors/Boid/config.ts), adds any existing acceleration, and limits the result to `maxSteeringForce` before movement is calculated.
+
+| Behaviour  | Weight |
+| ---------- | -----: |
+| Alignment  |    0.5 |
+| Cohesion   |  0.005 |
+| Separation |     32 |
+| Wander     |    0.1 |
+| Seek       |      1 |
+
+These are settings for this project. Each weight scales a vector with a different natural magnitude: cohesion starts with a position offset, for example, while separation uses inverse distance. The final combined force is capped at `0.5` per fixed update.
+
+Speed-based drag is added after steering. The resulting acceleration changes velocity, velocity is limited to the boid's maximum speed, and velocity then changes position. Acceleration is cleared for the next update.
+
+Alignment, cohesion, separation, and wander run together by default. When the mouse is present and inside a boid's seeking radius, seek replaces wander for that boid. Its wander angle is retained until wandering resumes. A boid can stop near the pointer only when it is already moving slowly and its combined neighbour steering is zero.
+
+Groups form, merge, and split through these local interactions. Stronger separation maintains space within a flock, while limited perception and persistent wander allow members to take different paths. Soft steering can still permit brief overlaps during crossings. Each boid uses its own speed limit. Boids wrap after their whole body leaves the canvas, using logical canvas bounds updated on resize. Neighbour distances are measured directly between their current positions.
+
+### Wander
+
+[`wander()`](src/scripts/behaviours/wander/wander.ts) implements the two-dimensional circle construction from [Reynolds' wander description](https://www.red3d.com/cwr/steer/Wander.html).
+
+Each boid stores a `wanderAngle`, representing a point on a unit circle. Each wandering update samples an offset uniformly within a unit disk, scales it by `wander.rate`, adds it to the previous point, and projects the point back onto the circle. The updated angle becomes the next update's starting point. This memory makes successive steering directions related.
+
+The circle centre lies `√2` units along the boid's velocity direction. The circle point, scaled by `wander.strength`, is added to that centre to produce the steering vector. These are steering-vector units. With the default strength of `1`, the circle stays ahead of a moving boid. At rest, the remembered circle point supplies the initial direction.
+
+`wander.rate` defaults to `0.15` and controls how quickly the point changes. `wander.strength` controls how far it sits from the circle centre, while the wander weight controls its contribution alongside the flocking forces. Wander keeps contributing while neighbours are present. Random offsets come from `Math.random()`, so paths vary between runs.
 
 ### Drawing
 
@@ -45,7 +81,7 @@ Physics runs in fixed 1/60-second updates. Browser animation callbacks can arriv
 
 After a slow or suspended browser frame, the loop allows at most five physics updates at once and drops excess elapsed time rather than trying to replay a long pause. When the page is hidden, it stops requesting frames. When the page becomes visible, it restarts with a fresh clock. Boid velocities are applied once per fixed update, rather than scaled by each browser frame's elapsed time.
 
-Neighbour searches currently scan the flock for each boid, so their cost grows roughly with the square of the boid count. The default flock has 20 boids; a spatial grid would be a useful later change for much larger flocks.
+Neighbour searches currently scan the flock for each boid, so their cost grows roughly with the square of the boid count. A spatial grid would be a useful later change for much larger flocks.
 
 ## Demo
 
@@ -73,6 +109,10 @@ $ pnpm install
 $ pnpm start
 ```
 
+Population, size, and trait multipliers are configured in [`src/scripts/config.ts`](src/scripts/config.ts). Reload the page after changing these settings so the boid actors are created with the new traits.
+
+Development output and cache use `.parcel-dev` and `.parcel-cache-dev`. Production builds write to `dist` and use `.parcel-cache`.
+
 ### How to deploy
 
 ```bash
@@ -85,6 +125,8 @@ $ pnpm deploy
 ### Documentation
 
 - Craig Reynolds explanation of [boids behaviour](https://www.red3d.com/cwr/boids/)
+- Craig Reynolds' [steering paper](https://www.red3d.com/cwr/steer/gdc99/) and [wander demonstration](https://www.red3d.com/cwr/steer/Wander.html) are the algorithmic references.
+- Justin Windle's [Organis.ms](https://github.com/soulwire/organis.ms) is a coding reference.
 - Timm Wong [overview](https://cs.stanford.edu/people/eroberts/courses/soco/projects/2008-09/modeling-natural-systems/boids.html) on boids
 
 ### Guides

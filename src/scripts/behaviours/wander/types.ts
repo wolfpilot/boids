@@ -4,7 +4,7 @@ import type { Vector } from "../../types/geometry"
 
 export interface Options {
   source: BoidEntity
-  randomValue: number
+  randomOffset: Vector
 }
 
 export interface WanderResult {

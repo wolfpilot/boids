@@ -1,5 +1,6 @@
 import { stepBoids } from "./stepBoids"
 import { createBoidEntity } from "../../utils/testHelpers"
+import { mag } from "../../utils/vectorHelper"
 
 const bounds = { width: 1000, height: 1000 }
 
@@ -92,8 +93,8 @@ describe("stepBoids", () => {
       bounds,
     })
 
-    expect(updated.state.velocity.x).toBeCloseTo(0.76)
-    expect(updated.state.location.x).toBeCloseTo(10.76)
+    expect(updated.state.velocity.x).toBeCloseTo(0.66)
+    expect(updated.state.location.x).toBeCloseTo(10.66)
     expect(updated.state.location.y).toBe(20)
     expect(updated.state.acceleration).toEqual({ x: 0, y: 0 })
     expect(updated.state.targetVector).toEqual({ x: 100, y: 0 })
@@ -105,7 +106,7 @@ describe("stepBoids", () => {
       traits: { seekingAreaSize: 30 },
       state: { wanderAngle: Math.PI / 2 },
     })
-    const random = jest.spyOn(Math, "random").mockReturnValue(0.5)
+    const random = jest.spyOn(Math, "random").mockReturnValue(0)
 
     try {
       const [seeking] = stepBoids({
@@ -143,7 +144,7 @@ describe("stepBoids", () => {
     const source = createBoidEntity({
       state: { wanderAngle: Math.PI / 2 },
     })
-    const random = jest.spyOn(Math, "random").mockReturnValue(0.5)
+    const random = jest.spyOn(Math, "random").mockReturnValue(0)
 
     try {
       const [seeking] = stepBoids({
@@ -175,7 +176,7 @@ describe("stepBoids", () => {
       traits: { size: 1 },
       state: { location: { x: 5, y: 0 } },
     })
-    const random = jest.spyOn(Math, "random").mockReturnValue(0.5)
+    const random = jest.spyOn(Math, "random").mockReturnValue(0)
 
     try {
       const [updated] = stepBoids({
@@ -204,7 +205,7 @@ describe("stepBoids", () => {
       id: 2,
       state: { location: { x: 140, y: 100 } },
     })
-    const random = jest.spyOn(Math, "random").mockReturnValue(0.5)
+    const random = jest.spyOn(Math, "random").mockReturnValue(0)
 
     try {
       const [wandering] = stepBoids({ snapshot: [source, neighbour], bounds })
@@ -218,8 +219,7 @@ describe("stepBoids", () => {
       expect(wandering.state.location.y).toBeGreaterThan(100)
       expect(seeking.state.location.x).toBeGreaterThan(100)
       expect(seeking.state.location.y).toBeGreaterThan(100)
-      expect(wandering.state.velocity.x).toBeCloseTo(0.12)
-      expect(seeking.state.velocity.x).toBeCloseTo(0.12)
+      expect(seeking.state.velocity.x).toBeCloseTo(0.2)
       expect(source.state.location).toEqual({ x: 100, y: 100 })
     } finally {
       random.mockRestore()
@@ -260,17 +260,21 @@ describe("stepBoids", () => {
         state: { location: { x, y: 100 }, wanderAngle: Math.PI / 2 },
       })
     )
-    const random = jest.spyOn(Math, "random").mockReturnValue(0.5)
+    const random = jest.spyOn(Math, "random").mockReturnValue(0)
 
     try {
       const updated = stepBoids({ snapshot, bounds })
       const reversed = stepBoids({ snapshot: [...snapshot].reverse(), bounds })
 
       expect(updated).toEqual(reversed.reverse())
-      expect(updated[0].state.velocity.x).toBeCloseTo(0.2)
-      expect(updated[1].state.velocity.x).toBeCloseTo(-0.2)
-      expect(updated[2].state.velocity.x).toBeCloseTo(0.2)
-      expect(updated[3].state.velocity.x).toBeCloseTo(-0.2)
+      expect(updated[0].state.velocity.x).toBeGreaterThan(0)
+      expect(updated[1].state.velocity.x).toBeLessThan(0)
+      expect(updated[2].state.velocity.x).toBeCloseTo(
+        updated[0].state.velocity.x
+      )
+      expect(updated[3].state.velocity.x).toBeCloseTo(
+        updated[1].state.velocity.x
+      )
       expect(
         updated[1].state.location.x - updated[0].state.location.x
       ).toBeLessThan(40)
@@ -286,7 +290,7 @@ describe("stepBoids", () => {
     }
   })
 
-  it("keeps large boids moving apart when wandering opposes cohesion", () => {
+  it("allows cohesion to turn boids whose wandering points away", () => {
     const traits = {
       size: 60,
       maxSpeed: 6,
@@ -305,26 +309,98 @@ describe("stepBoids", () => {
       traits,
       state: { location: { x: 700, y: 500 }, wanderAngle: 0 },
     })
-    const random = jest.spyOn(Math, "random").mockReturnValue(0.5)
+    const random = jest.spyOn(Math, "random").mockReturnValue(0)
 
     try {
-      let snapshot = [first, second]
-
-      for (let update = 0; update < 120; update++) {
-        snapshot = stepBoids({
-          snapshot,
-          bounds: { width: 5000, height: 2000 },
-        })
-      }
+      const snapshot = stepBoids({
+        snapshot: [first, second],
+        bounds: { width: 5000, height: 2000 },
+      })
 
       expect(
         snapshot[1].state.location.x - snapshot[0].state.location.x
-      ).toBeGreaterThan(500)
-      expect(snapshot[0].state.velocity.x).toBeLessThan(-1)
-      expect(snapshot[1].state.velocity.x).toBeGreaterThan(1)
+      ).toBeLessThan(200)
+      expect(snapshot[0].state.velocity.x).toBeGreaterThan(0)
+      expect(snapshot[1].state.velocity.x).toBeLessThan(0)
     } finally {
       random.mockRestore()
     }
+  })
+
+  it("advances and applies wander while neighbours are present", () => {
+    const source = createBoidEntity({
+      id: 1,
+      traits: { separationAreaSize: 0 },
+      state: { location: { x: 100, y: 100 }, velocity: { x: 0.5, y: 0 } },
+    })
+    const neighbour = createBoidEntity({
+      id: 2,
+      state: { location: { x: 120, y: 100 }, velocity: { x: 0.5, y: 0 } },
+    })
+    const random = jest
+      .spyOn(Math, "random")
+      .mockReturnValue(0)
+      .mockReturnValueOnce(0.25)
+      .mockReturnValueOnce(1)
+
+    try {
+      const updated = stepBoids({ snapshot: [source, neighbour], bounds })
+      expect(updated[0].state.wanderAngle).toBeCloseTo(Math.atan(0.15))
+      expect(updated[0].state.velocity.y).toBeGreaterThan(0)
+
+      const continued = stepBoids({ snapshot: updated, bounds })
+      expect(continued[0].state.wanderAngle).toBeCloseTo(
+        updated[0].state.wanderAngle
+      )
+      expect(continued[0].state.location.y).toBeGreaterThan(
+        updated[0].state.location.y
+      )
+
+      random.mockClear()
+      const seeking = stepBoids({
+        snapshot: updated,
+        target: { x: 100, y: 140 },
+        bounds,
+      })
+      expect(seeking[0].state.wanderAngle).toBe(updated[0].state.wanderAngle)
+      expect(random).not.toHaveBeenCalled()
+      expect(source.state.wanderAngle).toBe(0)
+    } finally {
+      random.mockRestore()
+    }
+  })
+
+  it("is order independent while wandering with controlled random offsets", () => {
+    const snapshot = [
+      createBoidEntity({ id: 1, state: { location: { x: 100, y: 100 } } }),
+      createBoidEntity({
+        id: 2,
+        state: { location: { x: 130, y: 110 }, wanderAngle: Math.PI / 2 },
+      }),
+    ]
+    const before = JSON.stringify(snapshot)
+    const random = jest.spyOn(Math, "random").mockReturnValue(0)
+
+    try {
+      const forward = stepBoids({ snapshot, bounds })
+      const reverse = stepBoids({ snapshot: [...snapshot].reverse(), bounds })
+
+      expect(forward).toEqual(reverse.reverse())
+      expect(JSON.stringify(snapshot)).toBe(before)
+    } finally {
+      random.mockRestore()
+    }
+  })
+
+  it("keeps a boid with zero maximum speed stationary and finite", () => {
+    const source = createBoidEntity({
+      traits: { maxSpeed: 0, frictionFactor: 1 },
+    })
+    const [updated] = stepBoids({ snapshot: [source], bounds })
+
+    expect(mag(updated.state.velocity)).toBe(0)
+    expect(updated.state.location).toEqual({ x: 0, y: 0 })
+    expect(Number.isFinite(updated.state.wanderAngle)).toBe(true)
   })
 
   it("wraps a moving boid after it fully exits without changing the snapshot", () => {
@@ -336,7 +412,7 @@ describe("stepBoids", () => {
         wanderAngle: 0,
       },
     })
-    const random = jest.spyOn(Math, "random").mockReturnValue(0.5)
+    const random = jest.spyOn(Math, "random").mockReturnValue(0)
 
     try {
       const [updated] = stepBoids({

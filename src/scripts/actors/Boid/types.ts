@@ -6,6 +6,7 @@ export interface BoidTraits {
   frictionFactor: number
   brakingDistance: number
   alignmentAreaSize: number
+  cohesionAreaSize: number
   seekingAreaSize: number
   separationAreaSize: number
   color: string
@@ -38,6 +39,7 @@ export interface Options {
   frictionMultiplier: number
   brakingMultiplier: number
   alignmentMultiplier: number
+  cohesionMultiplier: number
   seekingMultiplier: number
   separationMultiplier: number
   color: string

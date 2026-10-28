@@ -1,16 +1,8 @@
 // Types
 import { Vector } from "../../types/geometry"
 
-// Config
-import { config as boidConfig } from "../../actors/Boid/config"
-
 // Utils
-import {
-  subtract,
-  mag,
-  setMagnitude,
-  limitMagnitude,
-} from "../../utils/vectorHelper"
+import { subtract, mag, setMagnitude } from "../../utils/vectorHelper"
 import { isInSeekingArea } from "./helpers"
 
 // Geometry
@@ -39,11 +31,5 @@ export const seek = ({ target, source }: Options): Vector => {
     desiredVelocity = setMagnitude(targetVector, source.traits.maxSpeed)
   }
 
-  // Calculate the resulting steering vector
-  const steerVector = subtract(desiredVelocity, source.state.velocity)
-
-  // Assign a force that allows only a certain amount of maneuverability
-  const res = limitMagnitude(steerVector, boidConfig.maxSteeringForce)
-
-  return res
+  return subtract(desiredVelocity, source.state.velocity)
 }

@@ -20,6 +20,7 @@ export const createBoidEntity = ({
     frictionFactor: 0,
     brakingDistance: 100,
     alignmentAreaSize: 100,
+    cohesionAreaSize: 60,
     seekingAreaSize: 80,
     separationAreaSize: 10,
     color: "#000000",

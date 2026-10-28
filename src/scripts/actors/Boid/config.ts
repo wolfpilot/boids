@@ -1,6 +1,13 @@
+import { SteeringWeights } from "../../behaviours/types"
+
 export interface BoidConfig {
   maxSteeringForce: number
-  alignmentFactor: number
+  steeringWeights: SteeringWeights
+  fieldOfViewDegrees: number
+  wander: {
+    strength: number
+    rate: number
+  }
   stopDistanceThreshold: number
   stopVelocityTreshold: number
   targetVector: {
@@ -9,20 +16,31 @@ export interface BoidConfig {
   directionVector: {
     color: string
   }
-  velocityVector: {
-    color: string
-  }
   brakingArea: {
     color: string
   }
   seekingArea: {
     color: string
   }
+  cohesionArea: {
+    color: string
+  }
 }
 
 export const config: BoidConfig = {
   maxSteeringForce: 0.5,
-  alignmentFactor: 0.025,
+  fieldOfViewDegrees: 300,
+  steeringWeights: {
+    alignment: 0.5,
+    cohesion: 0.005,
+    separation: 32,
+    wander: 0.1,
+    seek: 1,
+  },
+  wander: {
+    strength: 1,
+    rate: 0.15,
+  },
   stopDistanceThreshold: 2.5,
   stopVelocityTreshold: 0.1,
   targetVector: {
@@ -31,13 +49,13 @@ export const config: BoidConfig = {
   directionVector: {
     color: "#ff0000",
   },
-  velocityVector: {
-    color: "#151515",
-  },
   brakingArea: {
     color: "#ff0000",
   },
   seekingArea: {
     color: "#2ea8ff",
+  },
+  cohesionArea: {
+    color: "#8b5cf6",
   },
 }

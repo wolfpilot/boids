@@ -8,6 +8,7 @@ const initialState: GuiStoreState = {
   showNormalizedTargetVector: false,
   showVelocityVector: true,
   showAlignmentArea: false,
+  showCohesionArea: false,
   showSeekingArea: false,
   showSeparationArea: true,
   showStoppingArea: false,

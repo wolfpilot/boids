@@ -9,6 +9,8 @@ import { boidsQuery } from "../../stores/boids"
 // Utils
 import { multiply } from "../../utils/vectorHelper"
 import { isEntityOffscreen } from "../../utils/entityHelper"
+import { darkenHexColor, saturateHexColor } from "../../utils/colorHelper"
+import { drawArrow } from "../../utils/drawingHelper"
 
 // Geometry
 import VectorImpl from "../../geometry/Vector"
@@ -42,6 +44,7 @@ class BoidImpl implements Boid {
     frictionMultiplier,
     brakingMultiplier,
     alignmentMultiplier,
+    cohesionMultiplier,
     seekingMultiplier,
     separationMultiplier,
     color,
@@ -56,6 +59,7 @@ class BoidImpl implements Boid {
       frictionFactor: size * size * size * frictionMultiplier,
       brakingDistance: size * size * brakingMultiplier,
       alignmentAreaSize: size * alignmentMultiplier,
+      cohesionAreaSize: size * cohesionMultiplier,
       seekingAreaSize: size * seekingMultiplier,
       separationAreaSize: size * separationMultiplier,
       color,
@@ -82,6 +86,10 @@ class BoidImpl implements Boid {
 
     if (guiQuery.allValues.showAlignmentArea) {
       this.drawAlignmentArea(boidEntity.state)
+    }
+
+    if (guiQuery.allValues.showCohesionArea) {
+      this.drawCohesionArea(boidEntity.state)
     }
 
     if (guiQuery.allValues.showSeekingArea) {
@@ -140,6 +148,20 @@ class BoidImpl implements Boid {
     )
     this.ctx.lineWidth = 1
     this.ctx.strokeStyle = config.seekingArea.color
+    this.ctx.stroke()
+  }
+
+  private drawCohesionArea(state: BoidState) {
+    this.ctx.beginPath()
+    this.ctx.arc(
+      state.location.x,
+      state.location.y,
+      this.traits.cohesionAreaSize,
+      0,
+      2 * Math.PI
+    )
+    this.ctx.lineWidth = 1
+    this.ctx.strokeStyle = config.cohesionArea.color
     this.ctx.stroke()
   }
 
@@ -235,19 +257,17 @@ class BoidImpl implements Boid {
     this.ctx.stroke()
   }
 
-  // Draw the resulting force vector
   private drawVelocityVector(state: BoidState) {
-    const upscaledVelocityVector = multiply(state.velocity, 5)
+    const upscaledVelocityVector = multiply(state.velocity, 15)
 
-    this.ctx.beginPath()
-    this.ctx.moveTo(state.location.x, state.location.y)
-    this.ctx.lineWidth = 3
-    this.ctx.lineTo(
-      state.location.x + upscaledVelocityVector.x,
-      state.location.y + upscaledVelocityVector.y
-    )
-    this.ctx.strokeStyle = config.velocityVector.color
-    this.ctx.stroke()
+    drawArrow({
+      ctx: this.ctx,
+      origin: state.location,
+      displacement: upscaledVelocityVector,
+      color: darkenHexColor(saturateHexColor(this.traits.color, 0.25), 0.05),
+      lineWidth: 3,
+      headSize: 8,
+    })
   }
 }
 

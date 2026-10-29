@@ -46,6 +46,20 @@ describe("cohere", () => {
     expect(cohere({ boids: [far], source }).x).toBeCloseTo(9)
   })
 
+  it("reduces a neighbour's pull smoothly near the radius", () => {
+    const source = createBoidEntity({ traits: { cohesionAreaSize: 10 } })
+    const nearEdge = createBoidEntity({
+      state: { location: { x: 9.99, y: 0 } },
+    })
+    const boundary = createBoidEntity({
+      state: { location: { x: 10, y: 0 } },
+    })
+
+    expect(cohere({ boids: [nearEdge], source }).x).toBeGreaterThan(0)
+    expect(cohere({ boids: [nearEdge], source }).x).toBeLessThan(0.01)
+    expect(cohere({ boids: [boundary], source }).x).toBe(0)
+  })
+
   it("returns zero without neighbours or a direction to the centroid", () => {
     const source = createBoidEntity({
       state: { location: { x: 10, y: 10 }, velocity: { x: 0.3, y: 0 } },
@@ -65,7 +79,7 @@ describe("cohere", () => {
 
   it("returns the centroid offset independently of velocity and leaves inputs unchanged", () => {
     const source = createBoidEntity({
-      traits: { maxSpeed: 0.8, cohesionAreaSize: 5.1 },
+      traits: { maxSpeed: 0.8, cohesionAreaSize: 6 },
       state: { velocity: { x: 0.3, y: 0 } },
     })
     const neighbour = createBoidEntity({

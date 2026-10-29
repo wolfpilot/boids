@@ -33,4 +33,12 @@ describe("mathHelper", () => {
 
     expect(isConstrained).toBe(true)
   })
+
+  it("eases between two boundaries and clamps outside them", () => {
+    expect(mathHelper.smoothstep(10, 20, 5)).toBe(0)
+    expect(mathHelper.smoothstep(10, 20, 10)).toBe(0)
+    expect(mathHelper.smoothstep(10, 20, 15)).toBe(0.5)
+    expect(mathHelper.smoothstep(10, 20, 20)).toBe(1)
+    expect(mathHelper.smoothstep(10, 20, 25)).toBe(1)
+  })
 })

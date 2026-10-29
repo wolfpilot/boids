@@ -2,8 +2,8 @@
 import { Vector } from "../../types/geometry"
 
 // Utils
-import { add, subtract, divide } from "../../utils/vectorHelper"
-import { isInRange } from "./helpers"
+import { add, subtract, divide, multiply } from "../../utils/vectorHelper"
+import { getInfluence } from "./helpers"
 
 // Geometry
 import VectorImpl from "../../geometry/Vector"
@@ -11,16 +11,17 @@ import { Options } from "./types"
 
 // Find the average steering vector that will align with the rest of the "pack"
 export const align = ({ boids, source }: Options): Vector => {
-  const neighbours = boids.filter((boid) => isInRange(boid, source))
+  let total = new VectorImpl(0, 0)
+  let totalWeight = 0
 
-  if (neighbours.length === 0) return new VectorImpl(0, 0)
+  boids.forEach((boid) => {
+    const influence = getInfluence(boid, source)
+    if (influence === 0) return
 
-  // Calculate the overall group direction
-  const groupVelocity = neighbours
-    .map((boid) => boid.state.velocity)
-    .reduce((acc, val) => add(acc, val))
+    const difference = subtract(boid.state.velocity, source.state.velocity)
+    total = add(total, multiply(difference, influence))
+    totalWeight += influence
+  })
 
-  const averageVelocity = divide(groupVelocity, neighbours.length)
-
-  return subtract(averageVelocity, source.state.velocity)
+  return divide(total, Math.max(1, totalWeight))
 }

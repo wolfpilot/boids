@@ -32,6 +32,50 @@ describe("stepBoids", () => {
     expect(second.state.location).toEqual({ x: 5, y: 0 })
   })
 
+  it("keeps velocity continuous across the separation radius", () => {
+    const traits = {
+      size: 20,
+      maxSpeed: 2.5,
+      frictionFactor: 0.02664,
+      alignmentAreaSize: 160,
+      cohesionAreaSize: 60,
+      separationAreaSize: 25,
+    }
+    const source = createBoidEntity({
+      id: 1,
+      traits,
+      state: { location: { x: 100, y: 100 }, velocity: { x: 2, y: 0 } },
+    })
+    const neighbourAt = (distance: number) =>
+      createBoidEntity({
+        id: 2,
+        traits,
+        state: {
+          location: { x: 100 + distance, y: 100 },
+          velocity: { x: 2, y: 0 },
+        },
+      })
+    const random = jest.spyOn(Math, "random").mockReturnValue(0)
+
+    try {
+      const inside = stepBoids({
+        snapshot: [source, neighbourAt(44.9)],
+        bounds,
+      })[0]
+      const boundary = stepBoids({
+        snapshot: [source, neighbourAt(45)],
+        bounds,
+      })[0]
+
+      expect(
+        Math.abs(inside.state.velocity.x - boundary.state.velocity.x)
+      ).toBeLessThan(0.02)
+      expect(source.state.velocity).toEqual({ x: 2, y: 0 })
+    } finally {
+      random.mockRestore()
+    }
+  })
+
   it("allows a nearby boid to move an agent at its target", () => {
     const source = createBoidEntity({
       id: 1,

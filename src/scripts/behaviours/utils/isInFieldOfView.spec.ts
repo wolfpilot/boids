@@ -1,4 +1,4 @@
-import { isInFieldOfView } from "./isInFieldOfView"
+import { getFieldOfViewWeight, isInFieldOfView } from "./isInFieldOfView"
 import { createBoidEntity } from "../../utils/testHelpers"
 
 describe("isInFieldOfView", () => {
@@ -39,5 +39,24 @@ describe("isInFieldOfView", () => {
   it("sees every direction at rest and ignores coincident positions", () => {
     expect(isInFieldOfView(targetAt(180), createBoidEntity())).toBe(true)
     expect(isInFieldOfView(createBoidEntity(), source)).toBe(false)
+  })
+
+  it("eases influence over the last twenty degrees of the field", () => {
+    expect(getFieldOfViewWeight(targetAt(130), source)).toBeCloseTo(1)
+    expect(getFieldOfViewWeight(targetAt(140), source)).toBeGreaterThan(0)
+    expect(getFieldOfViewWeight(targetAt(140), source)).toBeLessThan(1)
+    expect(getFieldOfViewWeight(targetAt(149.9), source)).toBeLessThan(0.001)
+    expect(getFieldOfViewWeight(targetAt(150.1), source)).toBe(0)
+  })
+
+  it("eases into directional perception as a boid starts moving", () => {
+    const behind = targetAt(180)
+    const slow = createBoidEntity({
+      state: { velocity: { x: 0.05, y: 0 } },
+    })
+
+    expect(getFieldOfViewWeight(behind, createBoidEntity())).toBe(1)
+    expect(getFieldOfViewWeight(behind, slow)).toBeCloseTo(0.5)
+    expect(getFieldOfViewWeight(behind, source)).toBe(0)
   })
 })

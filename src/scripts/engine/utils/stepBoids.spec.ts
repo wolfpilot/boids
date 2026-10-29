@@ -184,6 +184,95 @@ describe("stepBoids", () => {
     }
   })
 
+  it("blends seek and wander at the range edge and advances wander state", () => {
+    const source = createBoidEntity({
+      traits: { seekingAreaSize: 30 },
+      state: { wanderAngle: 0 },
+    })
+    const random = jest
+      .spyOn(Math, "random")
+      .mockReturnValue(0)
+      .mockReturnValueOnce(0.25)
+      .mockReturnValueOnce(1)
+
+    try {
+      const [blended] = stepBoids({
+        snapshot: [source],
+        target: { x: 28.5, y: 0 },
+        bounds,
+      })
+
+      expect(blended.state.velocity.x).toBeGreaterThan(0)
+      expect(blended.state.velocity.y).toBeGreaterThan(0)
+      expect(blended.state.wanderAngle).toBeCloseTo(Math.atan(0.15))
+      expect(blended.state.targetVector).toEqual({ x: 28.5, y: 0 })
+
+      random.mockClear()
+      const [seeking] = stepBoids({
+        snapshot: [source],
+        target: { x: 20, y: 0 },
+        bounds,
+      })
+      expect(seeking.state.wanderAngle).toBe(0)
+      expect(random).not.toHaveBeenCalled()
+      expect(source.state.wanderAngle).toBe(0)
+    } finally {
+      random.mockRestore()
+    }
+  })
+
+  it("keeps velocity continuous when crossing the seeking radius", () => {
+    const source = createBoidEntity({
+      traits: { seekingAreaSize: 30 },
+      state: { wanderAngle: Math.PI / 2 },
+    })
+    const random = jest.spyOn(Math, "random").mockReturnValue(0)
+
+    try {
+      const [inside] = stepBoids({
+        snapshot: [source],
+        target: { x: 29.99, y: 0 },
+        bounds,
+      })
+      const [boundary] = stepBoids({
+        snapshot: [source],
+        target: { x: 30, y: 0 },
+        bounds,
+      })
+
+      expect(
+        mag({
+          x: inside.state.velocity.x - boundary.state.velocity.x,
+          y: inside.state.velocity.y - boundary.state.velocity.y,
+        })
+      ).toBeLessThan(0.02)
+      expect(boundary.state.targetVector).toEqual({ x: 0, y: 0 })
+    } finally {
+      random.mockRestore()
+    }
+  })
+
+  it("does not use the stop rule during a partial seek blend", () => {
+    const source = createBoidEntity({
+      traits: { seekingAreaSize: 2.55 },
+      state: { wanderAngle: Math.PI / 2 },
+    })
+    const random = jest.spyOn(Math, "random").mockReturnValue(0)
+
+    try {
+      const [blended] = stepBoids({
+        snapshot: [source],
+        target: { x: 2.4, y: 0 },
+        bounds,
+      })
+
+      expect(blended.state.velocity.y).toBeGreaterThan(0)
+      expect(blended.state.location.y).toBeGreaterThan(0)
+    } finally {
+      random.mockRestore()
+    }
+  })
+
   it("applies the stop rule only while seeking", () => {
     const source = createBoidEntity({
       state: { wanderAngle: Math.PI / 2 },

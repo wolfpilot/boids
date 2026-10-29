@@ -5,7 +5,7 @@ import {
   seek,
   separate,
   wander,
-  isInSeekingArea,
+  getSeekingInfluence,
 } from "../../behaviours"
 import VectorImpl from "../../geometry/Vector"
 import type { BoidEntity } from "../../types/entities"
@@ -89,38 +89,41 @@ const stepBoid = (
     separation: separate({ boids: neighbours, source }),
   }
 
-  if (!target || !isInSeekingArea(source, target)) {
+  const seekingInfluence = target ? getSeekingInfluence(source, target) : 0
+  const targetVector =
+    target && seekingInfluence > 0
+      ? subtract(target, source.state.location)
+      : new VectorImpl(0, 0)
+  const forces: SteeringForces = { ...neighbourForces }
+  let wanderAngle = source.state.wanderAngle
+
+  if (seekingInfluence < 1) {
     const { force, nextAngle } = wander({
       source,
       randomOffset: createWanderOffset(),
     })
-
-    const boid = {
-      ...source,
-      state: {
-        ...source.state,
-        wanderAngle: nextAngle,
-        targetVector: new VectorImpl(0, 0),
-        normTargetVector: new VectorImpl(0, 0),
-      },
-    }
-
-    return advanceBoid(boid, { ...neighbourForces, wander: force })
+    forces.wander = multiply(force, 1 - seekingInfluence)
+    wanderAngle = nextAngle
   }
 
-  const targetVector = subtract(target, source.state.location)
+  if (target && seekingInfluence > 0) {
+    forces.seek = multiply(seek({ target, source }), seekingInfluence)
+  }
+
   const boid = {
     ...source,
     state: {
       ...source.state,
+      wanderAngle,
       targetVector,
       normTargetVector: normalize(targetVector),
     },
   }
 
-  return shouldStop(source, targetVector, neighbourForces)
+  return seekingInfluence === 1 &&
+    shouldStop(source, targetVector, neighbourForces)
     ? stopBoid(boid)
-    : advanceBoid(boid, { ...neighbourForces, seek: seek({ target, source }) })
+    : advanceBoid(boid, forces)
 }
 
 export const stepBoids = ({

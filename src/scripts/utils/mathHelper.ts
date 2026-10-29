@@ -31,3 +31,14 @@ export const mapFromToRange = (
  */
 export const getRandomNumber = (min: number, max = 0): number =>
   Math.floor(Math.random() * (max - min + 1)) + min
+
+export const smoothstep = (
+  start: number,
+  end: number,
+  value: number
+): number => {
+  if (end <= start) return value >= end ? 1 : 0
+
+  const progress = Math.max(0, Math.min(1, (value - start) / (end - start)))
+  return progress * progress * (3 - 2 * progress)
+}

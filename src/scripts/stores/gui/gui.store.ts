@@ -10,7 +10,7 @@ const initialState: GuiStoreState = {
   showAlignmentArea: false,
   showCohesionArea: false,
   showSeekingArea: false,
-  showSeparationArea: true,
+  showSeparationArea: false,
   showStoppingArea: false,
 }
 

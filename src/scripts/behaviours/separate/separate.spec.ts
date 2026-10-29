@@ -15,10 +15,10 @@ describe("separate", () => {
     expect(separate({ boids: [boid(9)], source }).x).toBeCloseTo(-1 / 9)
   })
 
-  it("sums inverse-distance pushes without limiting individual behaviours", () => {
+  it("sums softened inverse-distance pushes without limiting them", () => {
     const force = separate({ boids: [boid(1), boid(2)], source: boid(0) })
 
-    expect(force.x).toBeCloseTo(-1.5)
+    expect(force.x).toBeCloseTo(-(1 / 1.25 + 2 / 4.25))
     expect(force.y).toBe(0)
   })
 
@@ -27,6 +27,18 @@ describe("separate", () => {
       x: 0,
       y: 0,
     })
+  })
+
+  it("tapers the push to zero at the edge and stays finite at close range", () => {
+    const source = boid(0)
+    const edgeForce = separate({ boids: [boid(9.99)], source }).x
+
+    expect(edgeForce).toBeLessThan(0)
+    expect(Math.abs(edgeForce)).toBeLessThan(0.001)
+    expect(separate({ boids: [boid(10)], source }).x).toBe(0)
+    expect(Number.isFinite(separate({ boids: [boid(0.001)], source }).x)).toBe(
+      true
+    )
   })
 
   it("ignores coincident neighbours and leaves inputs unchanged", () => {

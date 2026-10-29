@@ -2,14 +2,8 @@
 import { Vector } from "../../types/geometry"
 
 // Utils
-import {
-  add,
-  subtract,
-  multiply,
-  normalize,
-  mag,
-} from "../../utils/vectorHelper"
-import { isInRange } from "./helpers"
+import { add, subtract, multiply, mag } from "../../utils/vectorHelper"
+import { getInfluence } from "./helpers"
 
 // Geometry
 import VectorImpl from "../../geometry/Vector"
@@ -19,12 +13,17 @@ import { Options } from "./types"
 export const separate = ({ boids, source }: Options): Vector => {
   let separate = new VectorImpl(0, 0)
 
-  const neighbours = boids.filter((boid) => isInRange(boid, source))
+  boids.forEach((boid) => {
+    const influence = getInfluence(boid, source)
+    if (influence === 0) return
 
-  neighbours.forEach((boid) => {
     const offset = subtract(source.state.location, boid.state.location)
     const distance = mag(offset)
-    const desired = multiply(normalize(offset), 1 / distance)
+    const softening = (source.traits.size + boid.traits.size) / 4
+    const desired = multiply(
+      offset,
+      influence / (distance * distance + softening * softening)
+    )
 
     separate = add(separate, desired)
   })

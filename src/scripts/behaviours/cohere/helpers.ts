@@ -1,13 +1,15 @@
 import { BoidEntity } from "../../types/entities"
 import { mag, subtract } from "../../utils/vectorHelper"
-import { isInFieldOfView } from "../utils/isInFieldOfView"
+import { getFieldOfViewWeight } from "../utils/isInFieldOfView"
+import { getRangeWeight } from "../utils/getRangeWeight"
 
-export const isInRange = (target: BoidEntity, source: BoidEntity): boolean => {
+export const getInfluence = (
+  target: BoidEntity,
+  source: BoidEntity
+): number => {
   const distance = mag(subtract(target.state.location, source.state.location))
+  const rangeWeight = getRangeWeight(distance, source.traits.cohesionAreaSize)
+  if (rangeWeight === 0) return 0
 
-  return (
-    distance > 0 &&
-    distance < source.traits.cohesionAreaSize &&
-    isInFieldOfView(target, source)
-  )
+  return rangeWeight * getFieldOfViewWeight(target, source)
 }

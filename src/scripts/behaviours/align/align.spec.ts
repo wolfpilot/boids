@@ -38,13 +38,22 @@ describe("align", () => {
     ).toEqual({ x: 0, y: 0 })
   })
 
+  it("reduces a neighbour's influence smoothly near the radius", () => {
+    const source = boid(0, 1)
+    const edgeForce = align({ boids: [boid(9.99, 4)], source }).x
+
+    expect(edgeForce).toBeGreaterThan(0)
+    expect(edgeForce).toBeLessThan(0.01)
+    expect(align({ boids: [boid(10, 4)], source }).x).toBe(0)
+  })
+
   it("matches stationary or cancelling velocities without changing its inputs", () => {
     const source = boid(0, 0.4)
     const boids = [boid(1, 2), boid(2, -2)]
     const before = JSON.stringify([source, ...boids])
 
-    expect(align({ boids, source })).toEqual({ x: -0.4, y: 0 })
-    expect(align({ boids: [boid(1, 0)], source })).toEqual({ x: -0.4, y: 0 })
+    expect(align({ boids, source }).x).toBeCloseTo(-0.4)
+    expect(align({ boids: [boid(1, 0)], source }).x).toBeCloseTo(-0.4)
     expect(JSON.stringify([source, ...boids])).toBe(before)
   })
 })

@@ -1,4 +1,5 @@
 import { seek } from "./seek"
+import { getSeekingInfluence } from "./helpers"
 import { createBoidEntity } from "../../utils/testHelpers"
 
 const source = (brakingDistance: number, velocityX = 0) =>
@@ -8,6 +9,21 @@ const source = (brakingDistance: number, velocityX = 0) =>
   })
 
 describe("seek", () => {
+  it("eases seeking over the outer tenth of its radius", () => {
+    const boid = createBoidEntity({ traits: { seekingAreaSize: 30 } })
+
+    expect(getSeekingInfluence(boid, { x: 27, y: 0 })).toBe(1)
+    expect(getSeekingInfluence(boid, { x: 28.5, y: 0 })).toBeCloseTo(0.5)
+    expect(getSeekingInfluence(boid, { x: 29.99, y: 0 })).toBeGreaterThan(0)
+    expect(getSeekingInfluence(boid, { x: 30, y: 0 })).toBe(0)
+    expect(
+      getSeekingInfluence(
+        createBoidEntity({ traits: { seekingAreaSize: 0 } }),
+        { x: 0, y: 0 }
+      )
+    ).toBe(0)
+  })
+
   it("steers only when the target is inside the seeking area", () => {
     const boid = createBoidEntity({
       traits: { seekingAreaSize: 8, brakingDistance: 20 },

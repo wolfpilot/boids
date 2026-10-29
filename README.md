@@ -33,11 +33,11 @@ A boid therefore cannot react to another boid's new position until the next phys
 
 The flocking behaviours follow [Craig Reynolds' steering model](https://www.red3d.com/cwr/steer/gdc99/). Each boid reacts to neighbours within its own behaviour radii:
 
-- **Alignment** returns the average neighbour velocity minus the boid's velocity. This matches both heading and speed.
-- **Cohesion** returns the offset from the boid to the neighbours' average position. The pull naturally becomes smaller near that position.
-- **Separation** sums directions away from neighbours, with each unit direction divided by distance. Closer neighbours produce stronger pushes. Coincident positions are ignored to avoid dividing by zero.
+- **Alignment** averages neighbour velocity differences to match both heading and speed.
+- **Cohesion** averages offsets toward neighbour positions. The pull naturally becomes smaller near the group centre.
+- **Separation** sums directions away from neighbours, weighted more strongly at short distances. A softened denominator keeps the force finite at very close range.
 
-Alignment and cohesion use a `fieldOfViewDegrees` setting of `300`, measured around the velocity direction. Boids directly behind fall outside that field, allowing leading boids to take different paths. At rest, a boid considers neighbours in every direction. Separation always checks every direction so neighbours approaching from behind still cause a push away.
+Each neighbour's influence eases from full strength to zero over the outer 10% of its behaviour radius. Alignment and cohesion also ease over the last 20° on either side of the `300`° field of view. As a boid starts moving, its view changes gradually from all directions to the velocity direction over the first 10% of its maximum speed. Separation still checks every direction, including behind the boid. These transitions prevent a neighbour from suddenly adding or removing a full steering force at a boundary.
 
 The behaviours return unweighted vectors. [`combineSteering()`](src/scripts/engine/utils/combineSteering.ts) applies the weights from [`Boid/config.ts`](src/scripts/actors/Boid/config.ts), adds any existing acceleration, and limits the result to `maxSteeringForce` before movement is calculated.
 
@@ -53,7 +53,7 @@ These are settings for this project. Each weight scales a vector with a differen
 
 Speed-based drag is added after steering. The resulting acceleration changes velocity, velocity is limited to the boid's maximum speed, and velocity then changes position. Acceleration is cleared for the next update.
 
-Alignment, cohesion, separation, and wander run together by default. When the mouse is present and inside a boid's seeking radius, seek replaces wander for that boid. Its wander angle is retained until wandering resumes. A boid can stop near the pointer only when it is already moving slowly and its combined neighbour steering is zero.
+Alignment, cohesion, separation, and wander run together by default. When the mouse is present, seek eases in while wander eases out over the outer 10% of a boid's seeking radius. Inside that band, seek fully replaces wander and the wander angle is retained. The angle continues to advance while wander contributes. A boid can stop near the pointer only under full seeking influence, when it is already moving slowly and its combined neighbour steering is zero.
 
 Groups form, merge, and split through these local interactions. Stronger separation maintains space within a flock, while limited perception and persistent wander allow members to take different paths. Soft steering can still permit brief overlaps during crossings. Each boid uses its own speed limit. Boids wrap after their whole body leaves the canvas, using logical canvas bounds updated on resize. Neighbour distances are measured directly between their current positions.
 

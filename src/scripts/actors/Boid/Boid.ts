@@ -9,7 +9,7 @@ import { boidsQuery } from "../../stores/boids"
 // Utils
 import { multiply } from "../../utils/vectorHelper"
 import { isEntityOffscreen } from "../../utils/entityHelper"
-import { darkenHexColor, saturateHexColor } from "../../utils/colorHelper"
+import { darkenHexColor } from "../../utils/colorHelper"
 import { drawArrow } from "../../utils/drawingHelper"
 
 // Geometry
@@ -73,8 +73,6 @@ class BoidImpl implements Boid {
   }
 
   public draw() {
-    // !: throw? complete on die?
-
     const boidEntity = boidsQuery.getBoid(this.id)
 
     if (!boidEntity?.state) return
@@ -113,12 +111,12 @@ class BoidImpl implements Boid {
       this.drawTargetVector(boidEntity.state)
     }
 
-    if (guiQuery.allValues.showNormalizedTargetVector) {
-      this.drawDirectionVector(boidEntity.state)
-    }
-
     if (guiQuery.allValues.showVelocityVector) {
       this.drawVelocityVector(boidEntity.state)
+    }
+
+    if (guiQuery.allValues.showNormalizedTargetVector) {
+      this.drawDirectionVector(boidEntity.state)
     }
   }
 
@@ -264,7 +262,7 @@ class BoidImpl implements Boid {
       ctx: this.ctx,
       origin: state.location,
       displacement: upscaledVelocityVector,
-      color: darkenHexColor(saturateHexColor(this.traits.color, 0.25), 0.05),
+      color: darkenHexColor(this.traits.color, 0.025),
       lineWidth: 3,
       headSize: 8,
     })

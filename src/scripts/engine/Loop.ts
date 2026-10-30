@@ -17,7 +17,8 @@ interface Options {
   scheduler?: FrameScheduler
 }
 
-const UPDATE_INTERVAL_MS = 1000 / 60
+export const PHYSICS_UPDATES_PER_SECOND = 60
+const UPDATE_INTERVAL_MS = 1000 / PHYSICS_UPDATES_PER_SECOND
 const MAX_UPDATES_PER_FRAME = 5
 const TIME_TOLERANCE_MS = 1e-8
 

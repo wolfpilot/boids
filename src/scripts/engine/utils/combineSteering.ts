@@ -8,7 +8,8 @@ const behaviours = Object.keys(config.steeringWeights) as SteeringForcesTypes[]
 
 export const combineSteering = (
   forces: SteeringForces,
-  acceleration: Vector = new VectorImpl(0, 0)
+  acceleration: Vector = new VectorImpl(0, 0),
+  maxSteeringForce = config.maxSteeringForce
 ): Vector => {
   const steering = behaviours.reduce((acc, val) => {
     const force = forces[val]
@@ -22,5 +23,5 @@ export const combineSteering = (
     return acc
   }, acceleration)
 
-  return limitMagnitude(steering, config.maxSteeringForce)
+  return limitMagnitude(steering, maxSteeringForce)
 }

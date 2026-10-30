@@ -145,6 +145,22 @@ describe("stepBoids", () => {
     expect(source.state.location).toEqual({ x: 10, y: 20 })
   })
 
+  it("applies each boid's own steering force limit", () => {
+    const slowTurn = createBoidEntity({
+      traits: { maxSpeed: 10, maxSteeringForce: 0.4, seekingAreaSize: 200 },
+    })
+    const quickTurn = createBoidEntity({
+      traits: { maxSpeed: 10, maxSteeringForce: 0.6, seekingAreaSize: 200 },
+    })
+    const target = { x: 100, y: 0 }
+
+    const [slowNext] = stepBoids({ snapshot: [slowTurn], target, bounds })
+    const [quickNext] = stepBoids({ snapshot: [quickTurn], target, bounds })
+
+    expect(slowNext.state.velocity.x).toBeCloseTo(0.4)
+    expect(quickNext.state.velocity.x).toBeCloseTo(0.6)
+  })
+
   it("seeks inside its range and wanders outside it", () => {
     const source = createBoidEntity({
       traits: { seekingAreaSize: 30 },

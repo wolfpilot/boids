@@ -36,7 +36,13 @@ const shouldStop = (
 ): boolean =>
   mag(targetVector) < config.stopDistanceThreshold &&
   mag(source.state.velocity) < config.stopVelocityTreshold &&
-  mag(combineSteering(neighbourForces)) === 0
+  mag(
+    combineSteering(
+      neighbourForces,
+      new VectorImpl(0, 0),
+      source.traits.maxSteeringForce
+    )
+  ) === 0
 
 const stopBoid = (source: BoidEntity): BoidEntity => ({
   ...source,
@@ -51,7 +57,11 @@ const advanceBoid = (
   source: BoidEntity,
   forces: SteeringForces
 ): BoidEntity => {
-  const steering = combineSteering(forces, source.state.acceleration)
+  const steering = combineSteering(
+    forces,
+    source.state.acceleration,
+    source.traits.maxSteeringForce
+  )
   const friction =
     source.traits.maxSpeed === 0
       ? new VectorImpl(0, 0)

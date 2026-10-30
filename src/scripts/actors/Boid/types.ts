@@ -3,6 +3,7 @@ import { Vector } from "../../types/geometry"
 export interface BoidTraits {
   size: number
   maxSpeed: number
+  maxSteeringForce: number
   frictionFactor: number
   brakingDistance: number
   alignmentAreaSize: number

@@ -52,10 +52,20 @@ class BoidImpl implements Boid {
     this.id = id
     this.ctx = ctx
 
+    const speedRange = config.individualSpeedMultiplier
+    const forceRange = config.individualSteeringForce
+    const speedMultiplier =
+      speedRange.min + Math.random() * (speedRange.max - speedRange.min)
+    const maxSpeed = size * maxSpeedMultiplier * speedMultiplier
+    const initialHeading = Math.random() * Math.PI * 2
+    const initialSpeed = maxSpeed * config.initialSpeedFraction
+
     // Traits scale with the weight (size)
     this.traits = {
       size,
-      maxSpeed: size * maxSpeedMultiplier,
+      maxSpeed,
+      maxSteeringForce:
+        forceRange.min + Math.random() * (forceRange.max - forceRange.min),
       frictionFactor: size * size * size * frictionMultiplier,
       brakingDistance: size * size * brakingMultiplier,
       alignmentAreaSize: size * alignmentMultiplier,
@@ -68,6 +78,10 @@ class BoidImpl implements Boid {
     this.state = {
       ...initialState,
       location: new VectorImpl(x, y),
+      velocity: new VectorImpl(
+        Math.cos(initialHeading) * initialSpeed,
+        Math.sin(initialHeading) * initialSpeed
+      ),
       wanderAngle: Math.random() * Math.PI * 2,
     }
   }

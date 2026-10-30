@@ -49,4 +49,10 @@ describe("combineSteering", () => {
 
     expect(mag(force)).toBeCloseTo(0.5)
   })
+
+  it("uses each boid's steering limit when supplied", () => {
+    const forces = { seek: { x: 3, y: 4 } }
+    expect(mag(combineSteering(forces, { x: 0, y: 0 }, 0.4))).toBeCloseTo(0.4)
+    expect(mag(combineSteering(forces, { x: 0, y: 0 }, 0.6))).toBeCloseTo(0.6)
+  })
 })

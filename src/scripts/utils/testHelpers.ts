@@ -17,6 +17,7 @@ export const createBoidEntity = ({
   traits: {
     size: 10,
     maxSpeed: 1,
+    maxSteeringForce: 0.5,
     frictionFactor: 0,
     brakingDistance: 100,
     alignmentAreaSize: 100,

@@ -49,13 +49,29 @@ The behaviours return unweighted vectors. [`combineSteering()`](src/scripts/engi
 | Wander     |    0.1 |
 | Seek       |      1 |
 
-These are settings for this project. Each weight scales a vector with a different natural magnitude: cohesion starts with a position offset, for example, while separation uses inverse distance. The final combined force is capped at `0.5` per fixed update.
+These are the starting weights for this project. Each weight scales a vector with a different natural magnitude: cohesion starts with a position offset, for example, while separation uses inverse distance. The final combined force is capped at each boid's own maximum steering force before drag is added.
 
 Speed-based drag is added after steering. The resulting acceleration changes velocity, velocity is limited to the boid's maximum speed, and velocity then changes position. Acceleration is cleared for the next update.
 
 Alignment, cohesion, separation, and wander run together by default. When the mouse is present, seek eases in while wander eases out over the outer 10% of a boid's seeking radius. Inside that band, seek fully replaces wander and the wander angle is retained. The angle continues to advance while wander contributes. A boid can stop near the pointer only under full seeking influence, when it is already moving slowly and its combined neighbour steering is zero.
 
-Groups form, merge, and split through these local interactions. Stronger separation maintains space within a flock, while limited perception and persistent wander allow members to take different paths. Soft steering can still permit brief overlaps during crossings. Each boid uses its own speed limit. Boids wrap after their whole body leaves the canvas, using logical canvas bounds updated on resize. Neighbour distances are measured directly between their current positions.
+Groups form, merge, and split through these local interactions. Stronger separation maintains space within a flock, while limited perception and persistent wander allow members to take different paths. Soft steering can still permit brief overlaps during crossings. Boids wrap after their whole body leaves the canvas, using logical canvas bounds updated on resize. Neighbour distances are measured directly between their current positions.
+
+### Individual and shared variation
+
+When created, each boid gets a permanent maximum speed between 80% and 120% of the speed derived from its size, and a permanent maximum steering force between `0.4` and `0.6`. It starts in a random direction at 30% of its own maximum speed. These traits give neighbours slightly different movement without changing a boid's speed limit in bursts.
+
+Once per fixed physics update, the engine calculates one set of flocking settings for the whole group. Each radius and weight follows a smooth sine cycle around its starting value:
+
+| Behaviour | Radius change and period | Weight change and period |
+| --------- | ------------------------ | ------------------------ |
+| Alignment | ±20% every 12 seconds    | ±25% every 20 seconds    |
+| Cohesion  | ±25% every 24 seconds    | ±25% every 48 seconds    |
+| Separation | ±15% every 10 seconds   | ±20% every 16 seconds    |
+
+The cycles begin at the starting values and advance with physics updates, so pausing the simulation pauses the cycles. Boids keep their own radii and traits; the shared settings scale their effective neighbour radii and the three flocking weights for that update. Wander and seek keep their starting weights. The radius overlays show the effective radii as they change.
+
+Justin Windle's [Organis.ms flock demo](https://github.com/soulwire/organis.ms/blob/gh-pages/demos/flock.js) inspired the use of individual variation and changing flock rules. This implementation uses fixed individual traits and smooth, shared cycles while retaining persistent wander and pointer seeking.
 
 ### Wander
 

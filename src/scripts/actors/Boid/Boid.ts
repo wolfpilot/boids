@@ -18,6 +18,8 @@ import { Boid, BoidState, BoidTraits, Options } from "./types"
 import type { FlockDynamics } from "../../behaviours/types"
 
 // Setup
+const FRICTION_MULTIPLIER_SCALE = 1e-5
+
 const initialState: BoidState = {
   location: new VectorImpl(0, 0),
   acceleration: new VectorImpl(0, 0),
@@ -67,7 +69,8 @@ class BoidImpl implements Boid {
       maxSpeed,
       maxSteeringForce:
         forceRange.min + Math.random() * (forceRange.max - forceRange.min),
-      frictionFactor: size * size * size * frictionMultiplier,
+      frictionFactor:
+        size * size * size * frictionMultiplier * FRICTION_MULTIPLIER_SCALE,
       brakingDistance: size * size * brakingMultiplier,
       alignmentAreaSize: size * alignmentMultiplier,
       cohesionAreaSize: size * cohesionMultiplier,

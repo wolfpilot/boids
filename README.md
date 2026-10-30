@@ -51,7 +51,7 @@ The behaviours return unweighted vectors. [`combineSteering()`](src/scripts/engi
 
 These are the starting weights for this project. Each weight scales a vector with a different natural magnitude: cohesion starts with a position offset, for example, while separation uses inverse distance. The final combined force is capped at each boid's own maximum steering force before drag is added.
 
-Speed-based drag is added after steering. The resulting acceleration changes velocity, velocity is limited to the boid's maximum speed, and velocity then changes position. Acceleration is cleared for the next update.
+Speed-based drag is added after steering. Each boid's friction factor starts at `size³ × 0.33 × 10⁻⁵`. The resulting acceleration changes velocity, velocity is limited to the boid's maximum speed, and velocity then changes position. Acceleration is cleared for the next update.
 
 Alignment, cohesion, separation, and wander run together by default. When the mouse is present, seek eases in while wander eases out over the outer 10% of a boid's seeking radius. Inside that band, seek fully replaces wander and the wander angle is retained. The angle continues to advance while wander contributes. A boid can stop near the pointer only under full seeking influence, when it is already moving slowly and its combined neighbour steering is zero.
 

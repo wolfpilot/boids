@@ -20,28 +20,30 @@ import {
 } from "../../utils/vectorHelper"
 import { wrapLocation } from "./wrapLocation"
 import { combineSteering } from "./combineSteering"
-import { SteeringForces } from "../../behaviours/types"
+import { FlockDynamics, SteeringForces } from "../../behaviours/types"
 import { createWanderOffset } from "./createWanderOffset"
+import { getFlockDynamics } from "./getFlockDynamics"
 
 interface StepBoidsOptions {
   snapshot: readonly BoidEntity[]
   bounds: Bounds
   target?: Vector
+  flockDynamics?: FlockDynamics
 }
 
 const shouldStop = (
   source: BoidEntity,
   targetVector: Vector,
-  neighbourForces: SteeringForces
+  neighbourForces: SteeringForces,
+  flockDynamics: FlockDynamics
 ): boolean =>
   mag(targetVector) < config.stopDistanceThreshold &&
   mag(source.state.velocity) < config.stopVelocityTreshold &&
   mag(
-    combineSteering(
-      neighbourForces,
-      new VectorImpl(0, 0),
-      source.traits.maxSteeringForce
-    )
+    combineSteering(neighbourForces, {
+      maxSteeringForce: source.traits.maxSteeringForce,
+      weights: flockDynamics.steeringWeights,
+    })
   ) === 0
 
 const stopBoid = (source: BoidEntity): BoidEntity => ({
@@ -55,13 +57,14 @@ const stopBoid = (source: BoidEntity): BoidEntity => ({
 
 const advanceBoid = (
   source: BoidEntity,
-  forces: SteeringForces
+  forces: SteeringForces,
+  flockDynamics: FlockDynamics
 ): BoidEntity => {
-  const steering = combineSteering(
-    forces,
-    source.state.acceleration,
-    source.traits.maxSteeringForce
-  )
+  const steering = combineSteering(forces, {
+    acceleration: source.state.acceleration,
+    maxSteeringForce: source.traits.maxSteeringForce,
+    weights: flockDynamics.steeringWeights,
+  })
   const friction =
     source.traits.maxSpeed === 0
       ? new VectorImpl(0, 0)
@@ -90,13 +93,28 @@ const advanceBoid = (
 const stepBoid = (
   source: BoidEntity,
   snapshot: readonly BoidEntity[],
+  flockDynamics: FlockDynamics,
   target?: Vector
 ): BoidEntity => {
   const neighbours = snapshot.filter((boid) => boid.id !== source.id)
+  const flockingSource = {
+    ...source,
+    traits: {
+      ...source.traits,
+      alignmentAreaSize:
+        source.traits.alignmentAreaSize *
+        flockDynamics.alignmentRadiusMultiplier,
+      cohesionAreaSize:
+        source.traits.cohesionAreaSize * flockDynamics.cohesionRadiusMultiplier,
+      separationAreaSize:
+        source.traits.separationAreaSize *
+        flockDynamics.separationRadiusMultiplier,
+    },
+  }
   const neighbourForces = {
-    alignment: align({ boids: neighbours, source }),
-    cohesion: cohere({ boids: neighbours, source }),
-    separation: separate({ boids: neighbours, source }),
+    alignment: align({ boids: neighbours, source: flockingSource }),
+    cohesion: cohere({ boids: neighbours, source: flockingSource }),
+    separation: separate({ boids: neighbours, source: flockingSource }),
   }
 
   const seekingInfluence = target ? getSeekingInfluence(source, target) : 0
@@ -131,18 +149,19 @@ const stepBoid = (
   }
 
   return seekingInfluence === 1 &&
-    shouldStop(source, targetVector, neighbourForces)
+    shouldStop(source, targetVector, neighbourForces, flockDynamics)
     ? stopBoid(boid)
-    : advanceBoid(boid, forces)
+    : advanceBoid(boid, forces, flockDynamics)
 }
 
 export const stepBoids = ({
   snapshot,
   bounds,
   target,
+  flockDynamics = getFlockDynamics(0),
 }: StepBoidsOptions): BoidEntity[] =>
   snapshot.map((source) => {
-    const boid = stepBoid(source, snapshot, target)
+    const boid = stepBoid(source, snapshot, flockDynamics, target)
 
     return {
       ...boid,

@@ -1,4 +1,5 @@
 import { Vector } from "../../types/geometry"
+import type { FlockDynamics } from "../../behaviours/types"
 
 export interface BoidTraits {
   size: number
@@ -27,7 +28,7 @@ export interface Boid {
   id: number
   traits: BoidTraits
   state: BoidState
-  draw: () => void
+  draw: (flockDynamics?: FlockDynamics) => void
 }
 
 export interface Options {

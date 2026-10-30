@@ -12,7 +12,7 @@ describe("combineSteering", () => {
     }
 
     const acceleration = Object.freeze({ x: 0.01, y: 0.02 })
-    const result = combineSteering(forces, acceleration)
+    const result = combineSteering(forces, { acceleration })
 
     expect(result.x).toBeCloseTo(0.302)
     expect(result.y).toBeCloseTo(0.09)
@@ -30,7 +30,10 @@ describe("combineSteering", () => {
   })
 
   it("includes existing acceleration in the force budget", () => {
-    expect(combineSteering({}, { x: 3, y: 4 })).toEqual({ x: 0.3, y: 0.4 })
+    expect(combineSteering({}, { acceleration: { x: 3, y: 4 } })).toEqual({
+      x: 0.3,
+      y: 0.4,
+    })
   })
 
   it("returns zero without forces or when they cancel", () => {
@@ -52,7 +55,26 @@ describe("combineSteering", () => {
 
   it("uses each boid's steering limit when supplied", () => {
     const forces = { seek: { x: 3, y: 4 } }
-    expect(mag(combineSteering(forces, { x: 0, y: 0 }, 0.4))).toBeCloseTo(0.4)
-    expect(mag(combineSteering(forces, { x: 0, y: 0 }, 0.6))).toBeCloseTo(0.6)
+    expect(mag(combineSteering(forces, { maxSteeringForce: 0.4 }))).toBeCloseTo(
+      0.4
+    )
+    expect(mag(combineSteering(forces, { maxSteeringForce: 0.6 }))).toBeCloseTo(
+      0.6
+    )
+  })
+
+  it("uses the shared flocking weights without changing the defaults", () => {
+    const weights = {
+      alignment: 0,
+      cohesion: 0,
+      separation: 0,
+      wander: 0,
+      seek: 0.2,
+    }
+    expect(combineSteering({ seek: { x: 1, y: 0 } }, { weights })).toEqual({
+      x: 0.2,
+      y: 0,
+    })
+    expect(combineSteering({ seek: { x: 1, y: 0 } })).toEqual({ x: 0.5, y: 0 })
   })
 })

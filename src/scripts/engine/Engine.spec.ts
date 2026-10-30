@@ -4,6 +4,7 @@ import { boidsQuery, boidsStore } from "../stores/boids"
 import { createBoidEntity } from "../utils/testHelpers"
 import Engine from "./Engine"
 import type { FrameScheduler } from "./Loop"
+import { getFlockDynamics } from "./utils/getFlockDynamics"
 
 describe("Engine", () => {
   afterEach(() => {
@@ -54,5 +55,45 @@ describe("Engine", () => {
 
     engine.stop()
     expect(scheduler.cancelFrame).toHaveBeenCalledWith(1)
+  })
+
+  it("keeps flock cycles on physics time across a pause", () => {
+    let now = 0
+    let frameCallback: FrameRequestCallback | undefined
+    const scheduler: FrameScheduler = {
+      now: () => now,
+      requestFrame: (callback) => {
+        frameCallback = callback
+        return 1
+      },
+      cancelFrame: jest.fn(),
+    }
+    const canvas: Canvas = {
+      state: { isEnabled: true, fill: "#fff" },
+      init: jest.fn(),
+      draw: jest.fn(),
+      getBounds: () => ({ width: 100, height: 80 }),
+    }
+    const boid: Boid = { ...createBoidEntity(), draw: jest.fn() }
+    const engine = new Engine({ canvas, boids: [boid], maxFps: 60, scheduler })
+    const advanceFrame = () => {
+      now += 1000 / 60
+      if (!frameCallback) throw new Error("No frame was scheduled")
+      frameCallback(now)
+    }
+
+    engine.init()
+    engine.start()
+    advanceFrame()
+    advanceFrame()
+    engine.stop()
+    now += 10000
+    engine.start()
+    advanceFrame()
+
+    expect(boid.draw).toHaveBeenNthCalledWith(1, getFlockDynamics(0))
+    expect(boid.draw).toHaveBeenNthCalledWith(2, getFlockDynamics(1))
+    expect(boid.draw).toHaveBeenNthCalledWith(3, getFlockDynamics(2))
+    engine.stop()
   })
 })

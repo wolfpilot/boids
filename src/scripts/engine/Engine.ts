@@ -10,6 +10,7 @@ import { uiQuery } from "../stores/ui"
 // Engine
 import Loop, { FramePlan } from "./Loop"
 import { stepBoids } from "./utils/stepBoids"
+import { getFlockDynamics } from "./utils/getFlockDynamics"
 import { Options } from "./types"
 
 /**
@@ -22,6 +23,8 @@ export default class Engine {
   private readonly canvas: Canvas
   private readonly boids: readonly Boid[]
   private readonly loop: Loop
+  private physicsUpdateIndex = 0
+  private flockDynamics = getFlockDynamics(0)
 
   constructor({ canvas, boids, maxFps, scheduler }: Options) {
     this.canvas = canvas
@@ -75,14 +78,18 @@ export default class Engine {
 
   private update() {
     const { isPointerPresent, pointerVector } = uiQuery.allValues
+    const flockDynamics = getFlockDynamics(this.physicsUpdateIndex)
 
     const updatedBoids = stepBoids({
       snapshot: boidsQuery.all,
       target: isPointerPresent ? pointerVector : undefined,
       bounds: this.canvas.getBounds(),
+      flockDynamics,
     })
 
     boidsStore.set(updatedBoids)
+    this.flockDynamics = flockDynamics
+    this.physicsUpdateIndex++
   }
 
   private draw() {
@@ -90,6 +97,6 @@ export default class Engine {
       this.canvas.draw()
     }
 
-    this.boids.forEach((boid) => boid.draw())
+    this.boids.forEach((boid) => boid.draw(this.flockDynamics))
   }
 }

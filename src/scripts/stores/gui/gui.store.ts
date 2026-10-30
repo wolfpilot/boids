@@ -1,7 +1,17 @@
 import { Store, StoreConfig } from "@datorama/akita"
 import { GuiStoreState } from "./gui.types"
+import { config } from "../../config"
 
 const initialState: GuiStoreState = {
+  globalMultipliers: {
+    maxSpeedMultiplier: config.boids.maxSpeedMultiplier,
+    brakingMultiplier: config.boids.brakingMultiplier,
+    alignmentMultiplier: config.boids.alignmentMultiplier,
+    cohesionMultiplier: config.boids.cohesionMultiplier,
+    seekingMultiplier: config.boids.seekingMultiplier,
+    separationMultiplier: config.boids.separationMultiplier,
+    frictionMultiplier: config.boids.frictionMultiplier,
+  },
   maxFps: 60,
   logFps: true,
   showTargetVector: false,

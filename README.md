@@ -59,7 +59,7 @@ Groups form, merge, and split through these local interactions. Stronger separat
 
 ### Individual and shared variation
 
-When created, each boid gets a permanent maximum speed between 80% and 120% of the speed derived from its size, and a permanent maximum steering force between `0.4` and `0.6`. It starts in a random direction at 30% of its own maximum speed. These traits give neighbours slightly different movement without changing a boid's speed limit in bursts.
+When created, each boid gets an individual speed factor between 75% and 350% of the speed derived from its size, and a permanent maximum steering force between `0.35` and `0.7`. It starts in a random direction at 30% of its own maximum speed. The individual speed factor stays with that boid when the global speed multiplier changes.
 
 Once per fixed physics update, the engine calculates one set of flocking settings for the whole group. Each radius and weight follows a smooth sine cycle around its starting value:
 
@@ -71,7 +71,7 @@ Once per fixed physics update, the engine calculates one set of flocking setting
 
 The cycles begin at the starting values and advance with physics updates, so pausing the simulation pauses the cycles. Boids keep their own radii and traits; the shared settings scale their effective neighbour radii and the three flocking weights for that update. Wander and seek keep their starting weights. The radius overlays show the effective radii as they change.
 
-Justin Windle's [Organis.ms flock demo](https://github.com/soulwire/organis.ms/blob/gh-pages/demos/flock.js) inspired the use of individual variation and changing flock rules. This implementation uses fixed individual traits and smooth, shared cycles while retaining persistent wander and pointer seeking.
+Justin Windle's [Organis.ms flock demo](https://github.com/soulwire/organis.ms/blob/gh-pages/demos/flock.js) inspired the use of individual variation and changing flock rules. This implementation uses fixed individual variation and smooth, shared cycles while retaining persistent wander and pointer seeking.
 
 ### Wander
 
@@ -125,7 +125,7 @@ $ pnpm install
 $ pnpm start
 ```
 
-Population, size, and trait multipliers are configured in [`src/scripts/config.ts`](src/scripts/config.ts). Reload the page after changing these settings so the boid actors are created with the new traits.
+Population, size, and the starting trait multipliers are configured in [`src/scripts/config.ts`](src/scripts/config.ts). The GUI's `global` folder lets you change all seven multipliers for existing boids while the simulation runs. The numeric fields accept nonnegative values, including zero, and have no preset upper limit. Changing population or size in the config still requires a reload.
 
 Development output and cache use `.parcel-dev` and `.parcel-cache-dev`. Production builds write to `dist` and use `.parcel-cache`.
 

@@ -1,7 +1,7 @@
 import { Query } from "@datorama/akita"
 
 // Types
-import { GuiStoreState } from "./gui.types"
+import { GlobalBoidMultipliers, GuiStoreState } from "./gui.types"
 
 // Store
 import { GuiStore } from "./gui.store"
@@ -10,6 +10,7 @@ export class GuiQuery extends Query<GuiStoreState> {
   allState$ = this.select()
   logFps$ = this.select("logFps")
   maxFps$ = this.select("maxFps")
+  globalMultipliers$ = this.select("globalMultipliers")
 
   constructor(protected store: GuiStore) {
     super(store)
@@ -21,6 +22,10 @@ export class GuiQuery extends Query<GuiStoreState> {
 
   get maxFps(): number {
     return this.getValue().maxFps
+  }
+
+  get globalMultipliers(): GlobalBoidMultipliers {
+    return this.getValue().globalMultipliers
   }
 
   get logFps(): boolean {

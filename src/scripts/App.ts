@@ -82,6 +82,10 @@ class App {
       this.engine.setMaxFps(maxFps)
     })
 
+    guiQuery.globalMultipliers$.subscribe((multipliers) => {
+      this.engine.setGlobalMultipliers(multipliers)
+    })
+
     // VisibilityManager updates isRunning when the tab is hidden or shown
     appQuery.isRunning$.subscribe((isRunning) => {
       isRunning ? this.engine.start() : this.engine.stop()

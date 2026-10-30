@@ -103,30 +103,33 @@ class BoidImpl implements Boid {
     if (guiQuery.allValues.showAlignmentArea) {
       this.drawAlignmentArea(
         boidEntity.state,
-        flockDynamics?.alignmentRadiusMultiplier ?? 1
+        boidEntity.traits.alignmentAreaSize *
+          (flockDynamics?.alignmentRadiusMultiplier ?? 1)
       )
     }
 
     if (guiQuery.allValues.showCohesionArea) {
       this.drawCohesionArea(
         boidEntity.state,
-        flockDynamics?.cohesionRadiusMultiplier ?? 1
+        boidEntity.traits.cohesionAreaSize *
+          (flockDynamics?.cohesionRadiusMultiplier ?? 1)
       )
     }
 
     if (guiQuery.allValues.showSeekingArea) {
-      this.drawSeekingArea(boidEntity.state)
+      this.drawSeekingArea(boidEntity.state, boidEntity.traits.seekingAreaSize)
     }
 
     if (guiQuery.allValues.showSeparationArea) {
       this.drawSeparationArea(
         boidEntity.state,
-        flockDynamics?.separationRadiusMultiplier ?? 1
+        boidEntity.traits.separationAreaSize *
+          (flockDynamics?.separationRadiusMultiplier ?? 1)
       )
     }
 
     if (guiQuery.allValues.showStoppingArea) {
-      this.drawStoppingArea(boidEntity.state)
+      this.drawStoppingArea(boidEntity.state, boidEntity.traits.brakingDistance)
     }
 
     // Skip drawing if offscreen
@@ -148,50 +151,32 @@ class BoidImpl implements Boid {
   }
 
   // Draw area in which the boid can be affected by external forces
-  private drawAlignmentArea(state: BoidState, radiusMultiplier: number) {
+  private drawAlignmentArea(state: BoidState, radius: number) {
     this.ctx.beginPath()
-    this.ctx.arc(
-      state.location.x,
-      state.location.y,
-      this.traits.alignmentAreaSize * radiusMultiplier,
-      0,
-      2 * Math.PI
-    )
+    this.ctx.arc(state.location.x, state.location.y, radius, 0, 2 * Math.PI)
     this.ctx.lineWidth = 1
     this.ctx.strokeStyle = this.traits.color
     this.ctx.stroke()
   }
 
-  private drawSeekingArea(state: BoidState) {
+  private drawSeekingArea(state: BoidState, radius: number) {
     this.ctx.beginPath()
-    this.ctx.arc(
-      state.location.x,
-      state.location.y,
-      this.traits.seekingAreaSize,
-      0,
-      2 * Math.PI
-    )
+    this.ctx.arc(state.location.x, state.location.y, radius, 0, 2 * Math.PI)
     this.ctx.lineWidth = 1
     this.ctx.strokeStyle = config.seekingArea.color
     this.ctx.stroke()
   }
 
-  private drawCohesionArea(state: BoidState, radiusMultiplier: number) {
+  private drawCohesionArea(state: BoidState, radius: number) {
     this.ctx.beginPath()
-    this.ctx.arc(
-      state.location.x,
-      state.location.y,
-      this.traits.cohesionAreaSize * radiusMultiplier,
-      0,
-      2 * Math.PI
-    )
+    this.ctx.arc(state.location.x, state.location.y, radius, 0, 2 * Math.PI)
     this.ctx.lineWidth = 1
     this.ctx.strokeStyle = config.cohesionArea.color
     this.ctx.stroke()
   }
 
   // Draw area in which the boid wants to push itself away from others
-  private drawSeparationArea(state: BoidState, radiusMultiplier: number) {
+  private drawSeparationArea(state: BoidState, radius: number) {
     this.ctx.save()
     this.ctx.globalAlpha = 0.35
 
@@ -200,13 +185,7 @@ class BoidImpl implements Boid {
       state.location.x - this.traits.size / 2,
       state.location.y - this.traits.size / 2
     )
-    this.ctx.arc(
-      state.location.x,
-      state.location.y,
-      this.traits.separationAreaSize * radiusMultiplier,
-      0,
-      2 * Math.PI
-    )
+    this.ctx.arc(state.location.x, state.location.y, radius, 0, 2 * Math.PI)
     this.ctx.fillStyle = this.traits.color
     this.ctx.fill()
 
@@ -214,7 +193,7 @@ class BoidImpl implements Boid {
   }
 
   // Draw area in which the boid deccelerates near the target
-  private drawStoppingArea(state: BoidState) {
+  private drawStoppingArea(state: BoidState, radius: number) {
     this.ctx.save()
     this.ctx.globalAlpha = 0.05
 
@@ -223,13 +202,7 @@ class BoidImpl implements Boid {
       state.location.x - this.traits.size / 2,
       state.location.y - this.traits.size / 2
     )
-    this.ctx.arc(
-      state.location.x,
-      state.location.y,
-      this.traits.brakingDistance,
-      0,
-      2 * Math.PI
-    )
+    this.ctx.arc(state.location.x, state.location.y, radius, 0, 2 * Math.PI)
     this.ctx.fillStyle = config.brakingArea.color
     this.ctx.fill()
 

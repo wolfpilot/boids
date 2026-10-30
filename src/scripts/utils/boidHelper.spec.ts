@@ -8,6 +8,7 @@ import { BOID_COLORS } from "../constants/colors"
 
 // Actors
 import Boid from "../actors/Boid/Boid"
+import { config as boidConfig } from "../actors/Boid/config"
 import { mag } from "./vectorHelper"
 
 let canvas: HTMLCanvasElement
@@ -42,6 +43,10 @@ beforeEach(() => {
   })
 })
 
+afterEach(() => {
+  jest.restoreAllMocks()
+})
+
 describe("actorHelper", () => {
   it("should generate an array of Boids within the specified constraints", () => {
     expect(randomBoids.length).toBe(options.total)
@@ -60,14 +65,24 @@ describe("actorHelper", () => {
       expect(boid.traits.size).toBeGreaterThanOrEqual(options.minSize)
       expect(boid.traits.size).toBeLessThanOrEqual(options.maxSize)
       expect(boid.traits.maxSpeed).toBeGreaterThanOrEqual(
-        boid.traits.size * options.maxSpeedMultiplier * 0.8
+        boid.traits.size *
+          options.maxSpeedMultiplier *
+          boidConfig.individualSpeedMultiplier.min
       )
       expect(boid.traits.maxSpeed).toBeLessThanOrEqual(
-        boid.traits.size * options.maxSpeedMultiplier * 1.2
+        boid.traits.size *
+          options.maxSpeedMultiplier *
+          boidConfig.individualSpeedMultiplier.max
       )
-      expect(boid.traits.maxSteeringForce).toBeGreaterThanOrEqual(0.4)
-      expect(boid.traits.maxSteeringForce).toBeLessThanOrEqual(0.6)
-      expect(mag(boid.state.velocity)).toBeCloseTo(boid.traits.maxSpeed * 0.3)
+      expect(boid.traits.maxSteeringForce).toBeGreaterThanOrEqual(
+        boidConfig.individualSteeringForce.min
+      )
+      expect(boid.traits.maxSteeringForce).toBeLessThanOrEqual(
+        boidConfig.individualSteeringForce.max
+      )
+      expect(mag(boid.state.velocity)).toBeCloseTo(
+        boid.traits.maxSpeed * boidConfig.initialSpeedFraction
+      )
 
       expect(boid.state.location.x).toBeGreaterThanOrEqual(0)
       expect(boid.state.location.x).toBeLessThanOrEqual(options.maxX)
@@ -86,20 +101,27 @@ describe("actorHelper", () => {
     jest.spyOn(Math, "random").mockReturnValue(0)
     const minimum = generate()
     expect(minimum.traits.maxSpeed).toBeCloseTo(
-      minimum.traits.size * options.maxSpeedMultiplier * 0.8
+      minimum.traits.size *
+        options.maxSpeedMultiplier *
+        boidConfig.individualSpeedMultiplier.min
     )
-    expect(minimum.traits.maxSteeringForce).toBe(0.4)
+    expect(minimum.traits.maxSteeringForce).toBe(
+      boidConfig.individualSteeringForce.min
+    )
     expect(minimum.state.velocity.y).toBe(0)
 
     jest.spyOn(Math, "random").mockReturnValue(0.999999)
     const maximum = generate()
     expect(maximum.traits.maxSpeed).toBeCloseTo(
-      maximum.traits.size * options.maxSpeedMultiplier * 1.2
+      maximum.traits.size *
+        options.maxSpeedMultiplier *
+        boidConfig.individualSpeedMultiplier.max
     )
-    expect(maximum.traits.maxSteeringForce).toBeCloseTo(0.6)
+    expect(maximum.traits.maxSteeringForce).toBeCloseTo(
+      boidConfig.individualSteeringForce.max
+    )
     expect(mag(maximum.state.velocity)).toBeCloseTo(
-      maximum.traits.maxSpeed * 0.3
+      maximum.traits.maxSpeed * boidConfig.initialSpeedFraction
     )
-    jest.restoreAllMocks()
   })
 })

@@ -1,5 +1,5 @@
-import { cohere } from "./cohere"
-import { createBoidEntity } from "../../utils/testHelpers"
+import { cohere } from "@behaviours/cohere/cohere"
+import { createBoidEntity } from "@utils/testHelpers"
 
 describe("cohere", () => {
   it("steers toward the average neighbour position", () => {

@@ -1,5 +1,5 @@
-import type { Bounds } from "../../types/geometry"
-import { Canvas, CanvasState } from "./types"
+import type { Bounds } from "@ts/geometry"
+import { Canvas, CanvasState } from "@actors/Canvas/types"
 
 // Setup
 const initialState: CanvasState = {

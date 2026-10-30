@@ -1,7 +1,7 @@
 import { EntityStore, StoreConfig } from "@datorama/akita"
 
 // Types
-import { BoidsStoreState } from "./boids.types"
+import { BoidsStoreState } from "@stores/boids/boids.types"
 
 const initialState: BoidsStoreState = {
   boids: [],

@@ -1,5 +1,5 @@
 // Types
-import { Vector } from "../types/geometry"
+import { Vector } from "@ts/geometry"
 
 class VectorImpl implements Vector {
   public x: number

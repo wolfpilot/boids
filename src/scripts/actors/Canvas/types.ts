@@ -1,4 +1,4 @@
-import type { Bounds } from "../../types/geometry"
+import type { Bounds } from "@ts/geometry"
 
 export interface CanvasState {
   isEnabled: boolean

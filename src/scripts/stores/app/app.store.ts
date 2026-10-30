@@ -1,5 +1,5 @@
 import { Store, StoreConfig } from "@datorama/akita"
-import { AppStoreState } from "./app.types"
+import { AppStoreState } from "@stores/app/app.types"
 
 const initialState: AppStoreState = {
   isRunning: true,

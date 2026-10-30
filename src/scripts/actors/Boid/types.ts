@@ -1,5 +1,5 @@
-import { Vector } from "../../types/geometry"
-import type { FlockDynamics } from "../../behaviours/types"
+import { Vector } from "@ts/geometry"
+import type { FlockDynamics } from "@behaviours/types"
 
 export interface BoidTraits {
   size: number

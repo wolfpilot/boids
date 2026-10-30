@@ -1,8 +1,8 @@
 // Utils
-import { getRandomNumber } from "./mathHelper"
+import { getRandomNumber } from "@utils/mathHelper"
 
 // Actors
-import BoidImpl from "../actors/Boid/Boid"
+import BoidImpl from "@actors/Boid/Boid"
 
 interface GenerateRandomizedBoidsOptions {
   total: number

@@ -1,4 +1,4 @@
-import { wrapLocation } from "./wrapLocation"
+import { wrapLocation } from "@engine/utils/wrapLocation"
 
 const bounds = { width: 100, height: 80 }
 

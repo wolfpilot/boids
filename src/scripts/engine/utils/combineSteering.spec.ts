@@ -1,5 +1,5 @@
-import { combineSteering } from "./combineSteering"
-import { mag } from "../../utils/vectorHelper"
+import { combineSteering } from "@engine/utils/combineSteering"
+import { mag } from "@utils/vectorHelper"
 
 describe("combineSteering", () => {
   it("applies each behaviour's weight without changing its inputs", () => {

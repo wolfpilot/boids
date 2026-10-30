@@ -1,5 +1,5 @@
 // Constants
-import { BOID_COLORS } from "./constants/colors"
+import { BOID_COLORS } from "@constants/colors"
 
 export const config = {
   boids: {

@@ -1,5 +1,5 @@
-import { createWanderOffset } from "./createWanderOffset"
-import { mag } from "../../utils/vectorHelper"
+import { createWanderOffset } from "@engine/utils/createWanderOffset"
+import { mag } from "@utils/vectorHelper"
 
 describe("createWanderOffset", () => {
   afterEach(() => jest.restoreAllMocks())

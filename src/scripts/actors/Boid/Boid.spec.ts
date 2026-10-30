@@ -1,8 +1,8 @@
 import { config as appConfig } from "../../config"
-import { getFlockDynamics } from "../../engine/utils/getFlockDynamics"
-import { boidsStore } from "../../stores/boids"
-import { guiService } from "../../stores/gui"
-import Boid from "./Boid"
+import { getFlockDynamics } from "@engine/utils/getFlockDynamics"
+import { boidsStore } from "@stores/boids"
+import { guiService } from "@stores/gui"
+import Boid from "@actors/Boid/Boid"
 
 describe("Boid drawing", () => {
   afterEach(() => {

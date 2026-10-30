@@ -1,7 +1,7 @@
 import { config } from "../../config"
-import { GuiQuery } from "./gui.query"
-import { GuiService } from "./gui.service"
-import { GuiStore } from "./gui.store"
+import { GuiQuery } from "@stores/gui/gui.query"
+import { GuiService } from "@stores/gui/gui.service"
+import { GuiStore } from "@stores/gui/gui.store"
 
 describe("global boid multipliers", () => {
   it("starts from the boid config and publishes valid edits", () => {

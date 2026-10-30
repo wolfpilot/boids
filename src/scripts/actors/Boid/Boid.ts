@@ -1,21 +1,21 @@
 // Config
-import { config } from "./config"
+import { config } from "@actors/Boid/config"
 
 // Store
-import { guiQuery } from "../../stores/gui"
-import { uiQuery } from "../../stores/ui"
-import { boidsQuery } from "../../stores/boids"
+import { guiQuery } from "@stores/gui"
+import { uiQuery } from "@stores/ui"
+import { boidsQuery } from "@stores/boids"
 
 // Utils
-import { multiply } from "../../utils/vectorHelper"
-import { isEntityOffscreen } from "../../utils/entityHelper"
-import { darkenHexColor } from "../../utils/colorHelper"
-import { drawArrow } from "../../utils/drawingHelper"
+import { multiply } from "@utils/vectorHelper"
+import { isEntityOffscreen } from "@utils/entityHelper"
+import { darkenHexColor } from "@utils/colorHelper"
+import { drawArrow } from "@utils/drawingHelper"
 
 // Geometry
-import VectorImpl from "../../geometry/Vector"
-import { Boid, BoidState, BoidTraits, Options } from "./types"
-import type { FlockDynamics } from "../../behaviours/types"
+import VectorImpl from "@geometry/Vector"
+import { Boid, BoidState, BoidTraits, Options } from "@actors/Boid/types"
+import type { FlockDynamics } from "@behaviours/types"
 
 // Setup
 const FRICTION_MULTIPLIER_SCALE = 1e-5

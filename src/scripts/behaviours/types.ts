@@ -1,4 +1,4 @@
-import { Vector } from "../types/geometry"
+import { Vector } from "@ts/geometry"
 
 export const behaviours = {
   align: "align",

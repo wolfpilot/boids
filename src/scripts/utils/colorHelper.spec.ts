@@ -2,7 +2,7 @@ import {
   darkenHexColor,
   lightenHexColor,
   saturateHexColor,
-} from "./colorHelper"
+} from "@utils/colorHelper"
 
 describe("darkenHexColor", () => {
   it("darkens each RGB channel by ten percent", () => {

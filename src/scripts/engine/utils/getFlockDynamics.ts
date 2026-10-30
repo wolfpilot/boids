@@ -1,6 +1,6 @@
-import { config } from "../../actors/Boid/config"
-import type { FlockDynamics } from "../../behaviours/types"
-import { PHYSICS_UPDATES_PER_SECOND } from "../Loop"
+import { config } from "@actors/Boid/config"
+import type { FlockDynamics } from "@behaviours/types"
+import { PHYSICS_UPDATES_PER_SECOND } from "@engine/Loop"
 
 const cycle = (updateIndex: number, periodSeconds: number, amplitude: number) =>
   1 +

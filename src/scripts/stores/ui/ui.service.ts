@@ -1,7 +1,7 @@
-import { UiStore } from "./ui.store"
+import { UiStore } from "@stores/ui/ui.store"
 
 // Types
-import { Vector } from "../../types/geometry"
+import { Vector } from "@ts/geometry"
 
 export class UiService {
   constructor(private uiStore: UiStore) {}

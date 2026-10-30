@@ -1,5 +1,5 @@
 // Store
-import { appService } from "../stores/app"
+import { appService } from "@stores/app"
 
 class VisibilityManager {
   public init() {

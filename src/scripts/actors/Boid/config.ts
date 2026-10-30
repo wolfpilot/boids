@@ -1,4 +1,4 @@
-import { SteeringWeights } from "../../behaviours/types"
+import { SteeringWeights } from "@behaviours/types"
 
 export interface BoidConfig {
   maxSteeringForce: number

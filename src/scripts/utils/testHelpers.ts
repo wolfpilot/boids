@@ -1,6 +1,6 @@
-import type { BoidState, BoidTraits } from "../actors/Boid/types"
-import type { BoidEntity } from "../types/entities"
-import VectorImpl from "../geometry/Vector"
+import type { BoidState, BoidTraits } from "@actors/Boid/types"
+import type { BoidEntity } from "@ts/entities"
+import VectorImpl from "@geometry/Vector"
 
 interface BoidEntityOverrides {
   id?: number

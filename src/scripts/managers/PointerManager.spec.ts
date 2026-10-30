@@ -1,5 +1,5 @@
-import PointerManager from "./PointerManager"
-import { uiQuery, uiService } from "../stores/ui"
+import PointerManager from "@managers/PointerManager"
+import { uiQuery, uiService } from "@stores/ui"
 
 const dispatchPointer = (
   target: EventTarget,

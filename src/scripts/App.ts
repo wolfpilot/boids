@@ -1,27 +1,27 @@
 // Types
-import { Canvas } from "./actors/Canvas/types"
+import { Canvas } from "@actors/Canvas/types"
 
 // Actors
-import CanvasImpl from "./actors/Canvas/Canvas"
+import CanvasImpl from "@actors/Canvas/Canvas"
 
 // Stores
-import { appQuery } from "./stores/app"
-import { guiQuery } from "./stores/gui"
+import { appQuery } from "@stores/app"
+import { guiQuery } from "@stores/gui"
 
 // Managers
-import VisibilityManager from "./managers/VisibilityManager"
-import PointerManager from "./managers/PointerManager"
+import VisibilityManager from "@managers/VisibilityManager"
+import PointerManager from "@managers/PointerManager"
 
 // Config
 import { config } from "./config"
 
 // Utils
-import { generateRandomizedBoids } from "./utils/boidHelper"
-import Engine from "./engine/Engine"
+import { generateRandomizedBoids } from "@utils/boidHelper"
+import Engine from "@engine/Engine"
 
 // Interface
-import GUI from "./interface/GUI"
-import FpsMonitor from "./interface/FpsMonitor"
+import GUI from "@interface/GUI"
+import FpsMonitor from "@interface/FpsMonitor"
 
 /**
  * App creates the canvas, boid actors, managers and interface.

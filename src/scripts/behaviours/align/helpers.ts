@@ -1,10 +1,10 @@
 // Types
-import { BoidEntity } from "../../types/entities"
+import { BoidEntity } from "@ts/entities"
 
 // Utils
-import { subtract, mag } from "../../utils/vectorHelper"
-import { getFieldOfViewWeight } from "../utils/isInFieldOfView"
-import { getRangeWeight } from "../utils/getRangeWeight"
+import { subtract, mag } from "@utils/vectorHelper"
+import { getFieldOfViewWeight } from "@behaviours/utils/isInFieldOfView"
+import { getRangeWeight } from "@behaviours/utils/getRangeWeight"
 
 export const getInfluence = (
   target: BoidEntity,

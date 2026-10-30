@@ -1,6 +1,6 @@
-import { GuiStore } from "./gui.store"
-import { GuiService } from "./gui.service"
-import { GuiQuery } from "./gui.query"
+import { GuiStore } from "@stores/gui/gui.store"
+import { GuiService } from "@stores/gui/gui.service"
+import { GuiQuery } from "@stores/gui/gui.query"
 
 export { GuiStore, GuiService, GuiQuery }
 

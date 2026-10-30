@@ -1,7 +1,7 @@
-import { stepBoids } from "./stepBoids"
-import { getFlockDynamics } from "./getFlockDynamics"
-import { createBoidEntity } from "../../utils/testHelpers"
-import { mag } from "../../utils/vectorHelper"
+import { stepBoids } from "@engine/utils/stepBoids"
+import { getFlockDynamics } from "@engine/utils/getFlockDynamics"
+import { createBoidEntity } from "@utils/testHelpers"
+import { mag } from "@utils/vectorHelper"
 
 const bounds = { width: 1000, height: 1000 }
 

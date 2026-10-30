@@ -1,8 +1,8 @@
-import type { BoidEntity } from "../../types/entities"
-import type { Vector } from "../../types/geometry"
-import { createBoidEntity } from "../../utils/testHelpers"
-import { mag } from "../../utils/vectorHelper"
-import { stepBoids } from "./stepBoids"
+import type { BoidEntity } from "@ts/entities"
+import type { Vector } from "@ts/geometry"
+import { createBoidEntity } from "@utils/testHelpers"
+import { mag } from "@utils/vectorHelper"
+import { stepBoids } from "@engine/utils/stepBoids"
 
 const createRandom = (seed: number) => () => {
   seed = (seed * 1664525 + 1013904223) % 2 ** 32

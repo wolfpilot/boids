@@ -7,6 +7,7 @@
     "lib": ["dom", "esnext", "dom.iterable", "scripthost"],
     "outDir": "./dist/",
     "rootDir": ".",
+    "baseUrl": "./",
     "strict": true,
     "sourceMap": true,
     "skipLibCheck": true,
@@ -22,7 +23,19 @@
     "removeComments": false,
     "preserveConstEnums": true,
     "experimentalDecorators": true,
-    "types": ["jest"]
+    "types": ["jest"],
+    "paths": {
+      "@actors/*": ["src/scripts/actors/*"],
+      "@behaviours/*": ["src/scripts/behaviours/*"],
+      "@constants/*": ["src/scripts/constants/*"],
+      "@engine/*": ["src/scripts/engine/*"],
+      "@geometry/*": ["src/scripts/geometry/*"],
+      "@interface/*": ["src/scripts/interface/*"],
+      "@managers/*": ["src/scripts/managers/*"],
+      "@stores/*": ["src/scripts/stores/*"],
+      "@ts/*": ["src/scripts/types/*"],
+      "@utils/*": ["src/scripts/utils/*"]
+    }
   },
   "exclude": [".cache", "node_modules"],
   "include": ["typings/**/*.d.ts", "src/**/*.ts"],

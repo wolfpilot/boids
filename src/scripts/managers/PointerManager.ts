@@ -1,5 +1,5 @@
 // Store
-import { uiService } from "../stores/ui"
+import { uiService } from "@stores/ui"
 
 class PointerManager {
   public init() {

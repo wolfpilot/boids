@@ -1,5 +1,5 @@
-import VisibilityManager from "./VisibilityManager"
-import { appQuery } from "../stores/app"
+import VisibilityManager from "@managers/VisibilityManager"
+import { appQuery } from "@stores/app"
 
 describe("VisibilityManager", () => {
   it("tracks initial visibility and later resumes the app", () => {

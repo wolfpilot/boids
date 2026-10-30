@@ -1,7 +1,7 @@
-import { config } from "../../actors/Boid/config"
-import { createBoidEntity } from "../../utils/testHelpers"
-import { mag, subtract } from "../../utils/vectorHelper"
-import { wander } from "./wander"
+import { config } from "@actors/Boid/config"
+import { createBoidEntity } from "@utils/testHelpers"
+import { mag, subtract } from "@utils/vectorHelper"
+import { wander } from "@behaviours/wander/wander"
 
 describe("wander", () => {
   it("places a unit circle ahead of the velocity direction", () => {

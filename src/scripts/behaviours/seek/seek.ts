@@ -1,13 +1,13 @@
 // Types
-import { Vector } from "../../types/geometry"
+import { Vector } from "@ts/geometry"
 
 // Utils
-import { subtract, mag, setMagnitude } from "../../utils/vectorHelper"
-import { isInSeekingArea } from "./helpers"
+import { subtract, mag, setMagnitude } from "@utils/vectorHelper"
+import { isInSeekingArea } from "@behaviours/seek/helpers"
 
 // Geometry
-import VectorImpl from "../../geometry/Vector"
-import { Options } from "./types"
+import VectorImpl from "@geometry/Vector"
+import { Options } from "@behaviours/seek/types"
 
 export const seek = ({ target, source }: Options): Vector => {
   if (!isInSeekingArea(source, target)) {

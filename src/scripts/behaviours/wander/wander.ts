@@ -1,7 +1,7 @@
-import { config } from "../../actors/Boid/config"
-import VectorImpl from "../../geometry/Vector"
-import { add, mag, multiply, normalize } from "../../utils/vectorHelper"
-import { Options, WanderResult } from "./types"
+import { config } from "@actors/Boid/config"
+import VectorImpl from "@geometry/Vector"
+import { add, mag, multiply, normalize } from "@utils/vectorHelper"
+import { Options, WanderResult } from "@behaviours/wander/types"
 
 const CIRCLE_DISTANCE = Math.SQRT2
 const FULL_TURN = Math.PI * 2

@@ -1,7 +1,7 @@
-import { BoidEntity } from "../../types/entities"
-import { Vector } from "../../types/geometry"
-import { mag, subtract } from "../../utils/vectorHelper"
-import { smoothstep } from "../../utils/mathHelper"
+import { BoidEntity } from "@ts/entities"
+import { Vector } from "@ts/geometry"
+import { mag, subtract } from "@utils/vectorHelper"
+import { smoothstep } from "@utils/mathHelper"
 
 export const isInSeekingArea = (source: BoidEntity, target: Vector): boolean =>
   mag(subtract(target, source.state.location)) < source.traits.seekingAreaSize

@@ -1,15 +1,15 @@
 import "jest-canvas-mock"
 
 // Utils
-import { generateRandomizedBoids } from "./boidHelper"
+import { generateRandomizedBoids } from "@utils/boidHelper"
 
 // Constants
-import { BOID_COLORS } from "../constants/colors"
+import { BOID_COLORS } from "@constants/colors"
 
 // Actors
-import Boid from "../actors/Boid/Boid"
-import { config as boidConfig } from "../actors/Boid/config"
-import { mag } from "./vectorHelper"
+import Boid from "@actors/Boid/Boid"
+import { config as boidConfig } from "@actors/Boid/config"
+import { mag } from "@utils/vectorHelper"
 
 let canvas: HTMLCanvasElement
 let ctx: CanvasRenderingContext2D | null

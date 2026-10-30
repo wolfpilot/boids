@@ -1,5 +1,5 @@
-import { GuiStore } from "./gui.store"
-import { GlobalBoidMultipliers } from "./gui.types"
+import { GuiStore } from "@stores/gui/gui.store"
+import { GlobalBoidMultipliers } from "@stores/gui/gui.types"
 
 export class GuiService {
   constructor(private guiStore: GuiStore) {}

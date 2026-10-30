@@ -1,4 +1,4 @@
-import CanvasImpl from "./Canvas"
+import CanvasImpl from "@actors/Canvas/Canvas"
 
 describe("Canvas", () => {
   it("keeps logical bounds and backing size current after resize", () => {

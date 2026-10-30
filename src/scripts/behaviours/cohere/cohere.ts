@@ -1,8 +1,8 @@
-import VectorImpl from "../../geometry/Vector"
-import { Vector } from "../../types/geometry"
-import { add, divide, multiply, subtract } from "../../utils/vectorHelper"
-import { getInfluence } from "./helpers"
-import { Options } from "./types"
+import VectorImpl from "@geometry/Vector"
+import { Vector } from "@ts/geometry"
+import { add, divide, multiply, subtract } from "@utils/vectorHelper"
+import { getInfluence } from "@behaviours/cohere/helpers"
+import { Options } from "@behaviours/cohere/types"
 
 export const cohere = ({ boids, source }: Options): Vector => {
   let total = new VectorImpl(0, 0)

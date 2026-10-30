@@ -1,4 +1,4 @@
-import { getRangeWeight } from "./getRangeWeight"
+import { getRangeWeight } from "@behaviours/utils/getRangeWeight"
 
 describe("getRangeWeight", () => {
   it("retains full influence through ninety percent of a radius", () => {

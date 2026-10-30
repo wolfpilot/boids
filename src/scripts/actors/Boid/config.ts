@@ -2,6 +2,9 @@ import { SteeringWeights } from "../../behaviours/types"
 
 export interface BoidConfig {
   maxSteeringForce: number
+  individualSpeedMultiplier: { min: number; max: number }
+  individualSteeringForce: { min: number; max: number }
+  initialSpeedFraction: number
   steeringWeights: SteeringWeights
   fieldOfViewDegrees: number
   wander: {
@@ -29,6 +32,9 @@ export interface BoidConfig {
 
 export const config: BoidConfig = {
   maxSteeringForce: 0.5,
+  individualSpeedMultiplier: { min: 0.75, max: 3.5 },
+  individualSteeringForce: { min: 0.35, max: 0.7 },
+  initialSpeedFraction: 0.3,
   fieldOfViewDegrees: 300,
   steeringWeights: {
     alignment: 0.5,

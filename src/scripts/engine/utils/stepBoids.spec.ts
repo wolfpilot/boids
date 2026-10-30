@@ -1,4 +1,5 @@
 import { stepBoids } from "./stepBoids"
+import { getFlockDynamics } from "./getFlockDynamics"
 import { createBoidEntity } from "../../utils/testHelpers"
 import { mag } from "../../utils/vectorHelper"
 
@@ -15,21 +16,67 @@ describe("stepBoids", () => {
       state: { location: { x: 5, y: 0 }, velocity: { x: -0.1, y: 0 } },
     })
     const target = { x: 20, y: 0 }
+    const flockDynamics = getFlockDynamics(135)
 
     const forward = stepBoids({
       snapshot: [first, second],
       target,
       bounds,
+      flockDynamics,
     })
     const reverse = stepBoids({
       snapshot: [second, first],
       target,
       bounds,
+      flockDynamics,
     })
 
     expect(forward).toEqual(reverse.reverse())
     expect(first.state.location).toEqual({ x: 0, y: 0 })
     expect(second.state.location).toEqual({ x: 5, y: 0 })
+  })
+
+  it("uses shared radius changes without changing stored traits", () => {
+    const source = createBoidEntity({
+      id: 1,
+      traits: {
+        maxSpeed: 2,
+        maxSteeringForce: 1,
+        alignmentAreaSize: 1,
+        cohesionAreaSize: 60,
+        separationAreaSize: 1,
+      },
+      state: { velocity: { x: 0.1, y: 0 } },
+    })
+    const neighbour = createBoidEntity({
+      id: 2,
+      state: { location: { x: 70, y: 0 }, velocity: { x: 0.1, y: 0 } },
+    })
+    const baseDynamics = getFlockDynamics(0)
+    const widerDynamics = {
+      ...baseDynamics,
+      cohesionRadiusMultiplier: 1.25,
+    }
+    const random = jest.spyOn(Math, "random").mockReturnValue(0)
+
+    try {
+      const [usual] = stepBoids({
+        snapshot: [source, neighbour],
+        bounds,
+        flockDynamics: baseDynamics,
+      })
+      const [wider] = stepBoids({
+        snapshot: [source, neighbour],
+        bounds,
+        flockDynamics: widerDynamics,
+      })
+
+      expect(wider.state.velocity.x).toBeGreaterThan(usual.state.velocity.x)
+      expect(source.traits.cohesionAreaSize).toBe(60)
+      expect(neighbour.state.location).toEqual({ x: 70, y: 0 })
+    } finally {
+      random.mockRestore()
+    }
   })
 
   it("keeps velocity continuous across the separation radius", () => {
@@ -143,6 +190,22 @@ describe("stepBoids", () => {
     expect(updated.state.acceleration).toEqual({ x: 0, y: 0 })
     expect(updated.state.targetVector).toEqual({ x: 100, y: 0 })
     expect(source.state.location).toEqual({ x: 10, y: 20 })
+  })
+
+  it("applies each boid's own steering force limit", () => {
+    const slowTurn = createBoidEntity({
+      traits: { maxSpeed: 10, maxSteeringForce: 0.4, seekingAreaSize: 200 },
+    })
+    const quickTurn = createBoidEntity({
+      traits: { maxSpeed: 10, maxSteeringForce: 0.6, seekingAreaSize: 200 },
+    })
+    const target = { x: 100, y: 0 }
+
+    const [slowNext] = stepBoids({ snapshot: [slowTurn], target, bounds })
+    const [quickNext] = stepBoids({ snapshot: [quickTurn], target, bounds })
+
+    expect(slowNext.state.velocity.x).toBeCloseTo(0.4)
+    expect(quickNext.state.velocity.x).toBeCloseTo(0.6)
   })
 
   it("seeks inside its range and wanders outside it", () => {

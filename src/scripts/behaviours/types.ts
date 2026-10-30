@@ -26,3 +26,10 @@ export interface SteeringWeights {
   seek: number
 }
 export type SteeringWeightsTypes = keyof SteeringWeights
+
+export interface FlockDynamics {
+  alignmentRadiusMultiplier: number
+  cohesionRadiusMultiplier: number
+  separationRadiusMultiplier: number
+  steeringWeights: SteeringWeights
+}

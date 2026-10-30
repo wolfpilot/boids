@@ -15,6 +15,7 @@ import { drawArrow } from "../../utils/drawingHelper"
 // Geometry
 import VectorImpl from "../../geometry/Vector"
 import { Boid, BoidState, BoidTraits, Options } from "./types"
+import type { FlockDynamics } from "../../behaviours/types"
 
 // Setup
 const initialState: BoidState = {
@@ -52,10 +53,20 @@ class BoidImpl implements Boid {
     this.id = id
     this.ctx = ctx
 
+    const speedRange = config.individualSpeedMultiplier
+    const forceRange = config.individualSteeringForce
+    const speedMultiplier =
+      speedRange.min + Math.random() * (speedRange.max - speedRange.min)
+    const maxSpeed = size * maxSpeedMultiplier * speedMultiplier
+    const initialHeading = Math.random() * Math.PI * 2
+    const initialSpeed = maxSpeed * config.initialSpeedFraction
+
     // Traits scale with the weight (size)
     this.traits = {
       size,
-      maxSpeed: size * maxSpeedMultiplier,
+      maxSpeed,
+      maxSteeringForce:
+        forceRange.min + Math.random() * (forceRange.max - forceRange.min),
       frictionFactor: size * size * size * frictionMultiplier,
       brakingDistance: size * size * brakingMultiplier,
       alignmentAreaSize: size * alignmentMultiplier,
@@ -68,11 +79,15 @@ class BoidImpl implements Boid {
     this.state = {
       ...initialState,
       location: new VectorImpl(x, y),
+      velocity: new VectorImpl(
+        Math.cos(initialHeading) * initialSpeed,
+        Math.sin(initialHeading) * initialSpeed
+      ),
       wanderAngle: Math.random() * Math.PI * 2,
     }
   }
 
-  public draw() {
+  public draw(flockDynamics?: FlockDynamics) {
     const boidEntity = boidsQuery.getBoid(this.id)
 
     if (!boidEntity?.state) return
@@ -83,11 +98,17 @@ class BoidImpl implements Boid {
     })
 
     if (guiQuery.allValues.showAlignmentArea) {
-      this.drawAlignmentArea(boidEntity.state)
+      this.drawAlignmentArea(
+        boidEntity.state,
+        flockDynamics?.alignmentRadiusMultiplier ?? 1
+      )
     }
 
     if (guiQuery.allValues.showCohesionArea) {
-      this.drawCohesionArea(boidEntity.state)
+      this.drawCohesionArea(
+        boidEntity.state,
+        flockDynamics?.cohesionRadiusMultiplier ?? 1
+      )
     }
 
     if (guiQuery.allValues.showSeekingArea) {
@@ -95,7 +116,10 @@ class BoidImpl implements Boid {
     }
 
     if (guiQuery.allValues.showSeparationArea) {
-      this.drawSeparationArea(boidEntity.state)
+      this.drawSeparationArea(
+        boidEntity.state,
+        flockDynamics?.separationRadiusMultiplier ?? 1
+      )
     }
 
     if (guiQuery.allValues.showStoppingArea) {
@@ -121,12 +145,12 @@ class BoidImpl implements Boid {
   }
 
   // Draw area in which the boid can be affected by external forces
-  private drawAlignmentArea(state: BoidState) {
+  private drawAlignmentArea(state: BoidState, radiusMultiplier: number) {
     this.ctx.beginPath()
     this.ctx.arc(
       state.location.x,
       state.location.y,
-      this.traits.alignmentAreaSize,
+      this.traits.alignmentAreaSize * radiusMultiplier,
       0,
       2 * Math.PI
     )
@@ -149,12 +173,12 @@ class BoidImpl implements Boid {
     this.ctx.stroke()
   }
 
-  private drawCohesionArea(state: BoidState) {
+  private drawCohesionArea(state: BoidState, radiusMultiplier: number) {
     this.ctx.beginPath()
     this.ctx.arc(
       state.location.x,
       state.location.y,
-      this.traits.cohesionAreaSize,
+      this.traits.cohesionAreaSize * radiusMultiplier,
       0,
       2 * Math.PI
     )
@@ -164,7 +188,7 @@ class BoidImpl implements Boid {
   }
 
   // Draw area in which the boid wants to push itself away from others
-  private drawSeparationArea(state: BoidState) {
+  private drawSeparationArea(state: BoidState, radiusMultiplier: number) {
     this.ctx.save()
     this.ctx.globalAlpha = 0.35
 
@@ -176,7 +200,7 @@ class BoidImpl implements Boid {
     this.ctx.arc(
       state.location.x,
       state.location.y,
-      this.traits.separationAreaSize,
+      this.traits.separationAreaSize * radiusMultiplier,
       0,
       2 * Math.PI
     )
@@ -256,7 +280,7 @@ class BoidImpl implements Boid {
   }
 
   private drawVelocityVector(state: BoidState) {
-    const upscaledVelocityVector = multiply(state.velocity, 15)
+    const upscaledVelocityVector = multiply(state.velocity, 7.5)
 
     drawArrow({
       ctx: this.ctx,

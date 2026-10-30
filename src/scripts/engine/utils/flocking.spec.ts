@@ -12,7 +12,7 @@ const createRandom = (seed: number) => () => {
 const traitsForSize = (size: number) => ({
   size,
   maxSpeed: size * 0.1,
-  frictionFactor: size ** 3 * 0.00000333,
+  frictionFactor: size ** 3 * 0.33 * 1e-5,
   brakingDistance: size ** 2 * 0.15,
   alignmentAreaSize: size * 8,
   cohesionAreaSize: size * 6,

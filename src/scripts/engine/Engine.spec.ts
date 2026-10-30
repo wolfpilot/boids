@@ -1,6 +1,7 @@
 import type { Boid } from "../actors/Boid/types"
 import type { Canvas } from "../actors/Canvas/types"
 import { boidsQuery, boidsStore } from "../stores/boids"
+import { guiQuery } from "../stores/gui"
 import { createBoidEntity } from "../utils/testHelpers"
 import Engine from "./Engine"
 import type { FrameScheduler } from "./Loop"
@@ -95,5 +96,52 @@ describe("Engine", () => {
     expect(boid.draw).toHaveBeenNthCalledWith(2, getFlockDynamics(1))
     expect(boid.draw).toHaveBeenNthCalledWith(3, getFlockDynamics(2))
     engine.stop()
+  })
+
+  it("updates existing traits without changing motion state or individual speed variation", () => {
+    const canvas: Canvas = {
+      state: { isEnabled: true, fill: "#fff" },
+      init: jest.fn(),
+      draw: jest.fn(),
+      getBounds: () => ({ width: 100, height: 80 }),
+    }
+    const boids: Boid[] = [
+      {
+        ...createBoidEntity({ id: 1, traits: { maxSpeed: 2 } }),
+        draw: jest.fn(),
+      },
+      {
+        ...createBoidEntity({ id: 2, traits: { maxSpeed: 4 } }),
+        draw: jest.fn(),
+      },
+    ]
+    const engine = new Engine({ canvas, boids, maxFps: 60 })
+    const initial = guiQuery.globalMultipliers
+
+    engine.init()
+    const initialStates = boidsQuery.all.map((boid) => boid.state)
+    engine.setGlobalMultipliers({
+      ...initial,
+      maxSpeedMultiplier: initial.maxSpeedMultiplier * 2,
+      cohesionMultiplier: initial.cohesionMultiplier * 3,
+    })
+
+    expect(boidsQuery.all.map((boid) => boid.traits.maxSpeed)).toEqual([4, 8])
+    expect(boidsQuery.all.map((boid) => boid.traits.cohesionAreaSize)).toEqual([
+      180, 180,
+    ])
+    boidsQuery.all.forEach((boid, index) => {
+      expect(boid.state).toBe(initialStates[index])
+    })
+    expect(boids[0].traits.maxSpeed).toBe(2)
+
+    engine.setGlobalMultipliers({ ...initial, maxSpeedMultiplier: 0 })
+    expect(boidsQuery.all.map((boid) => boid.traits.maxSpeed)).toEqual([0, 0])
+
+    engine.setGlobalMultipliers(initial)
+    expect(boidsQuery.all.map((boid) => boid.traits.maxSpeed)).toEqual([2, 4])
+    boidsQuery.all.forEach((boid, index) => {
+      expect(boid.state).toBe(initialStates[index])
+    })
   })
 })

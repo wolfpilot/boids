@@ -1,4 +1,15 @@
+export interface GlobalBoidMultipliers {
+  maxSpeedMultiplier: number
+  brakingMultiplier: number
+  alignmentMultiplier: number
+  cohesionMultiplier: number
+  seekingMultiplier: number
+  separationMultiplier: number
+  frictionMultiplier: number
+}
+
 export interface GuiStoreState {
+  globalMultipliers: GlobalBoidMultipliers
   maxFps: number
   logFps: boolean
   showTargetVector: boolean

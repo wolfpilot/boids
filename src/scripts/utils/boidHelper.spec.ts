@@ -27,7 +27,7 @@ const options = {
   cohesionMultiplier: 6,
   seekingMultiplier: 6,
   separationMultiplier: 1.25,
-  frictionMultiplier: 0.00000333,
+  frictionMultiplier: 0.33,
   colors: BOID_COLORS,
 }
 
@@ -82,6 +82,9 @@ describe("actorHelper", () => {
       )
       expect(mag(boid.state.velocity)).toBeCloseTo(
         boid.traits.maxSpeed * boidConfig.initialSpeedFraction
+      )
+      expect(boid.traits.frictionFactor).toBeCloseTo(
+        boid.traits.size ** 3 * options.frictionMultiplier * 1e-5
       )
 
       expect(boid.state.location.x).toBeGreaterThanOrEqual(0)

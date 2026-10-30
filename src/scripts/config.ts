@@ -12,7 +12,7 @@ export const config = {
     cohesionMultiplier: 3,
     seekingMultiplier: 6,
     separationMultiplier: 1.25,
-    frictionMultiplier: 0.00000333,
+    frictionMultiplier: 0.33,
     colors: BOID_COLORS,
   },
 }

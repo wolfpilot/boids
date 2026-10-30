@@ -83,7 +83,7 @@ describe("stepBoids", () => {
     const traits = {
       size: 20,
       maxSpeed: 2.5,
-      frictionFactor: 0.02664,
+      frictionFactor: 0.0264,
       alignmentAreaSize: 160,
       cohesionAreaSize: 60,
       separationAreaSize: 25,

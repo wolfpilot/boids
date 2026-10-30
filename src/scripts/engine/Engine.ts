@@ -1,16 +1,19 @@
 // Actors
 import { Canvas } from "../actors/Canvas/types"
 import { Boid } from "../actors/Boid/types"
+import type { BoidTraits } from "../actors/Boid/types"
 
 // Stores
 import { appService } from "../stores/app"
 import { boidsStore, boidsQuery } from "../stores/boids"
 import { uiQuery } from "../stores/ui"
+import type { GlobalBoidMultipliers } from "../stores/gui/gui.types"
 
 // Engine
 import Loop, { FramePlan } from "./Loop"
 import { stepBoids } from "./utils/stepBoids"
 import { getFlockDynamics } from "./utils/getFlockDynamics"
+import { getScaledBoidTraits } from "./utils/getScaledBoidTraits"
 import { Options } from "./types"
 
 /**
@@ -22,6 +25,7 @@ import { Options } from "./types"
 export default class Engine {
   private readonly canvas: Canvas
   private readonly boids: readonly Boid[]
+  private readonly originalTraits: Map<number, BoidTraits>
   private readonly loop: Loop
   private physicsUpdateIndex = 0
   private flockDynamics = getFlockDynamics(0)
@@ -29,6 +33,9 @@ export default class Engine {
   constructor({ canvas, boids, maxFps, scheduler }: Options) {
     this.canvas = canvas
     this.boids = boids
+    this.originalTraits = new Map(
+      boids.map((boid) => [boid.id, { ...boid.traits }])
+    )
     this.loop = new Loop({
       onFrame: this.onFrame,
       maxFps,
@@ -56,6 +63,20 @@ export default class Engine {
 
   public setMaxFps(maxFps: number) {
     this.loop.setMaxFps(maxFps)
+  }
+
+  public setGlobalMultipliers(multipliers: GlobalBoidMultipliers) {
+    boidsStore.set(
+      boidsQuery.all.map((boid) => {
+        const original = this.originalTraits.get(boid.id)
+        if (!original) return boid
+
+        return {
+          ...boid,
+          traits: getScaledBoidTraits(original, multipliers),
+        }
+      })
+    )
   }
 
   private onFrame = ({

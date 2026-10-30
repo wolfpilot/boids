@@ -32,8 +32,8 @@ export interface BoidConfig {
 
 export const config: BoidConfig = {
   maxSteeringForce: 0.5,
-  individualSpeedMultiplier: { min: 0.8, max: 1.2 },
-  individualSteeringForce: { min: 0.4, max: 0.6 },
+  individualSpeedMultiplier: { min: 0.75, max: 3.5 },
+  individualSteeringForce: { min: 0.35, max: 0.7 },
   initialSpeedFraction: 0.3,
   fieldOfViewDegrees: 300,
   steeringWeights: {

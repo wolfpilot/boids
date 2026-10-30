@@ -280,7 +280,7 @@ class BoidImpl implements Boid {
   }
 
   private drawVelocityVector(state: BoidState) {
-    const upscaledVelocityVector = multiply(state.velocity, 15)
+    const upscaledVelocityVector = multiply(state.velocity, 7.5)
 
     drawArrow({
       ctx: this.ctx,

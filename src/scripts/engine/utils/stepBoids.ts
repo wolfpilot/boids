@@ -1,4 +1,4 @@
-import { config } from "../../actors/Boid/config"
+import { config } from "@actors/Boid/config"
 import {
   align,
   cohere,
@@ -6,10 +6,10 @@ import {
   separate,
   wander,
   getSeekingInfluence,
-} from "../../behaviours"
-import VectorImpl from "../../geometry/Vector"
-import type { BoidEntity } from "../../types/entities"
-import type { Bounds, Vector } from "../../types/geometry"
+} from "@behaviours/index"
+import VectorImpl from "@geometry/Vector"
+import type { BoidEntity } from "@ts/entities"
+import type { Bounds, Vector } from "@ts/geometry"
 import {
   add,
   limitMagnitude,
@@ -17,12 +17,12 @@ import {
   multiply,
   normalize,
   subtract,
-} from "../../utils/vectorHelper"
-import { wrapLocation } from "./wrapLocation"
-import { combineSteering } from "./combineSteering"
-import { FlockDynamics, SteeringForces } from "../../behaviours/types"
-import { createWanderOffset } from "./createWanderOffset"
-import { getFlockDynamics } from "./getFlockDynamics"
+} from "@utils/vectorHelper"
+import { wrapLocation } from "@engine/utils/wrapLocation"
+import { combineSteering } from "@engine/utils/combineSteering"
+import { FlockDynamics, SteeringForces } from "@behaviours/types"
+import { createWanderOffset } from "@engine/utils/createWanderOffset"
+import { getFlockDynamics } from "@engine/utils/getFlockDynamics"
 
 interface StepBoidsOptions {
   snapshot: readonly BoidEntity[]

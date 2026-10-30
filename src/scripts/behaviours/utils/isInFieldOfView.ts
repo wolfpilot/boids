@@ -1,7 +1,7 @@
-import { config } from "../../actors/Boid/config"
-import type { BoidEntity } from "../../types/entities"
-import { mag, subtract } from "../../utils/vectorHelper"
-import { smoothstep } from "../../utils/mathHelper"
+import { config } from "@actors/Boid/config"
+import type { BoidEntity } from "@ts/entities"
+import { mag, subtract } from "@utils/vectorHelper"
+import { smoothstep } from "@utils/mathHelper"
 
 export const getFieldOfViewWeight = (
   target: BoidEntity,

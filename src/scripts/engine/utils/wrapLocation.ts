@@ -1,5 +1,5 @@
-import VectorImpl from "../../geometry/Vector"
-import type { Bounds, Vector } from "../../types/geometry"
+import VectorImpl from "@geometry/Vector"
+import type { Bounds, Vector } from "@ts/geometry"
 
 export const wrapLocation = (
   location: Vector,

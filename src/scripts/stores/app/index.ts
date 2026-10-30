@@ -1,6 +1,6 @@
-import { AppStore } from "./app.store"
-import { AppService } from "./app.service"
-import { AppQuery } from "./app.query"
+import { AppStore } from "@stores/app/app.store"
+import { AppService } from "@stores/app/app.service"
+import { AppQuery } from "@stores/app/app.query"
 
 export { AppStore, AppService, AppQuery }
 

@@ -1,5 +1,5 @@
 import { Store, StoreConfig } from "@datorama/akita"
-import { UiStoreState } from "./ui.types"
+import { UiStoreState } from "@stores/ui/ui.types"
 
 const initialState: UiStoreState = {
   pointerVector: {

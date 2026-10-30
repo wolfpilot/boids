@@ -1,4 +1,4 @@
-import Loop, { FramePlan, FrameScheduler } from "./Loop"
+import Loop, { FramePlan, FrameScheduler } from "@engine/Loop"
 
 const createScheduler = () => {
   let time = 0

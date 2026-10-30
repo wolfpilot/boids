@@ -1,4 +1,4 @@
-import { AppStore } from "./app.store"
+import { AppStore } from "@stores/app/app.store"
 
 export class AppService {
   constructor(private appStore: AppStore) {}

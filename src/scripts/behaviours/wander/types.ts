@@ -1,6 +1,6 @@
 // Types
-import type { BoidEntity } from "../../types/entities"
-import type { Vector } from "../../types/geometry"
+import type { BoidEntity } from "@ts/entities"
+import type { Vector } from "@ts/geometry"
 
 export interface Options {
   source: BoidEntity

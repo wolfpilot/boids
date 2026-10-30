@@ -1,7 +1,7 @@
-import { config } from "../../actors/Boid/config"
-import type { FlockDynamics, SteeringWeights } from "../../behaviours/types"
-import { PHYSICS_UPDATES_PER_SECOND } from "../Loop"
-import { getFlockDynamics } from "./getFlockDynamics"
+import { config } from "@actors/Boid/config"
+import type { FlockDynamics, SteeringWeights } from "@behaviours/types"
+import { PHYSICS_UPDATES_PER_SECOND } from "@engine/Loop"
+import { getFlockDynamics } from "@engine/utils/getFlockDynamics"
 
 const quarterCycle = (seconds: number) =>
   (seconds * PHYSICS_UPDATES_PER_SECOND) / 4

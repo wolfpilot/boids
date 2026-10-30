@@ -1,8 +1,8 @@
 import App from "./App"
-import Engine from "./engine/Engine"
-import FpsMonitor from "./interface/FpsMonitor"
-import { boidsQuery, boidsStore } from "./stores/boids"
-import { guiQuery } from "./stores/gui"
+import Engine from "@engine/Engine"
+import FpsMonitor from "@interface/FpsMonitor"
+import { boidsQuery, boidsStore } from "@stores/boids"
+import { guiQuery } from "@stores/gui"
 
 describe("App global controls", () => {
   afterEach(() => {

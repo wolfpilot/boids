@@ -1,5 +1,8 @@
-import { getFieldOfViewWeight, isInFieldOfView } from "./isInFieldOfView"
-import { createBoidEntity } from "../../utils/testHelpers"
+import {
+  getFieldOfViewWeight,
+  isInFieldOfView,
+} from "@behaviours/utils/isInFieldOfView"
+import { createBoidEntity } from "@utils/testHelpers"
 
 describe("isInFieldOfView", () => {
   const source = createBoidEntity({ state: { velocity: { x: 1, y: 0 } } })

@@ -1,11 +1,11 @@
-import type { Boid } from "../actors/Boid/types"
-import type { Canvas } from "../actors/Canvas/types"
-import { boidsQuery, boidsStore } from "../stores/boids"
-import { guiQuery } from "../stores/gui"
-import { createBoidEntity } from "../utils/testHelpers"
-import Engine from "./Engine"
-import type { FrameScheduler } from "./Loop"
-import { getFlockDynamics } from "./utils/getFlockDynamics"
+import type { Boid } from "@actors/Boid/types"
+import type { Canvas } from "@actors/Canvas/types"
+import { boidsQuery, boidsStore } from "@stores/boids"
+import { guiQuery } from "@stores/gui"
+import { createBoidEntity } from "@utils/testHelpers"
+import Engine from "@engine/Engine"
+import type { FrameScheduler } from "@engine/Loop"
+import { getFlockDynamics } from "@engine/utils/getFlockDynamics"
 
 describe("Engine", () => {
   afterEach(() => {

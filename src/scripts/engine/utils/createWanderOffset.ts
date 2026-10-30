@@ -1,5 +1,5 @@
-import VectorImpl from "../../geometry/Vector"
-import type { Vector } from "../../types/geometry"
+import VectorImpl from "@geometry/Vector"
+import type { Vector } from "@ts/geometry"
 
 export const createWanderOffset = (): Vector => {
   const angle = Math.random() * Math.PI * 2

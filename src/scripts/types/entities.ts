@@ -1,5 +1,5 @@
 // Types
-import { BoidTraits, BoidState } from "../actors/Boid/types"
+import { BoidTraits, BoidState } from "@actors/Boid/types"
 
 export interface BoidEntity {
   id: number

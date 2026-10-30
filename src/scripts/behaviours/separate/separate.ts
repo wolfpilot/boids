@@ -1,13 +1,13 @@
 // Types
-import { Vector } from "../../types/geometry"
+import { Vector } from "@ts/geometry"
 
 // Utils
-import { add, subtract, multiply, mag } from "../../utils/vectorHelper"
-import { getInfluence } from "./helpers"
+import { add, subtract, multiply, mag } from "@utils/vectorHelper"
+import { getInfluence } from "@behaviours/separate/helpers"
 
 // Geometry
-import VectorImpl from "../../geometry/Vector"
-import { Options } from "./types"
+import VectorImpl from "@geometry/Vector"
+import { Options } from "@behaviours/separate/types"
 
 // Keep a distance from neighbouring boids
 export const separate = ({ boids, source }: Options): Vector => {

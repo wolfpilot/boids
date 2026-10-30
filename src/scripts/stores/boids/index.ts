@@ -1,5 +1,5 @@
-import { BoidsStore } from "./boids.store"
-import { BoidsQuery } from "./boids.query"
+import { BoidsStore } from "@stores/boids/boids.store"
+import { BoidsQuery } from "@stores/boids/boids.query"
 
 export { BoidsStore, BoidsQuery }
 

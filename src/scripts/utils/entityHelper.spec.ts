@@ -1,10 +1,10 @@
 import "jest-canvas-mock"
 
 // Utils
-import { isEntityOutside, isEntityOffscreen } from "./entityHelper"
+import { isEntityOutside, isEntityOffscreen } from "@utils/entityHelper"
 
 // Geometry
-import VectorImpl from "../geometry/Vector"
+import VectorImpl from "@geometry/Vector"
 
 describe("actorHelper", () => {
   it("should determine if the entity is found outside the area", () => {

@@ -1,6 +1,6 @@
-import type { BoidTraits } from "../../actors/Boid/types"
+import type { BoidTraits } from "@actors/Boid/types"
 import { config } from "../../config"
-import type { GlobalBoidMultipliers } from "../../stores/gui/gui.types"
+import type { GlobalBoidMultipliers } from "@stores/gui/gui.types"
 
 const scale = (original: number, initial: number, current: number): number =>
   original * (current / initial)

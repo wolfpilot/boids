@@ -1,4 +1,4 @@
-import * as mathHelper from "./mathHelper"
+import * as mathHelper from "@utils/mathHelper"
 
 describe("mathHelper", () => {
   it("should sum up numbers", () => {

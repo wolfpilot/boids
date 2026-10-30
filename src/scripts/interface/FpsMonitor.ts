@@ -1,8 +1,8 @@
 import { Subscription } from "rxjs"
 
 // Store
-import { appQuery } from "../stores/app"
-import { guiQuery } from "../stores/gui"
+import { appQuery } from "@stores/app"
+import { guiQuery } from "@stores/gui"
 
 export interface FpsMonitorState {
   count: number

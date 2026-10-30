@@ -1,12 +1,12 @@
-import { config } from "../../actors/Boid/config"
+import { config } from "@actors/Boid/config"
 import {
   SteeringForces,
   SteeringForcesTypes,
   SteeringWeights,
-} from "../../behaviours/types"
-import VectorImpl from "../../geometry/Vector"
-import type { Vector } from "../../types/geometry"
-import { add, limitMagnitude, multiply } from "../../utils/vectorHelper"
+} from "@behaviours/types"
+import VectorImpl from "@geometry/Vector"
+import type { Vector } from "@ts/geometry"
+import { add, limitMagnitude, multiply } from "@utils/vectorHelper"
 
 const behaviours = Object.keys(config.steeringWeights) as SteeringForcesTypes[]
 

@@ -1,5 +1,5 @@
-import { align } from "./align"
-import { createBoidEntity } from "../../utils/testHelpers"
+import { align } from "@behaviours/align/align"
+import { createBoidEntity } from "@utils/testHelpers"
 
 const boid = (x: number, velocityX: number) =>
   createBoidEntity({

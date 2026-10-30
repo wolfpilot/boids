@@ -1,4 +1,4 @@
-import { Vector } from "../types/geometry"
+import { Vector } from "@ts/geometry"
 
 interface ArrowOptions {
   ctx: CanvasRenderingContext2D

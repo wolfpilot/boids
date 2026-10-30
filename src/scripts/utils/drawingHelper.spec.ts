@@ -1,5 +1,5 @@
-import VectorImpl from "../geometry/Vector"
-import { drawArrow } from "./drawingHelper"
+import VectorImpl from "@geometry/Vector"
+import { drawArrow } from "@utils/drawingHelper"
 
 describe("drawArrow", () => {
   const ctx = document.createElement("canvas").getContext("2d")!

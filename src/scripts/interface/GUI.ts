@@ -1,7 +1,7 @@
 import * as dat from "dat.gui"
 
 // Store
-import { guiService, guiQuery } from "../stores/gui"
+import { guiService, guiQuery } from "@stores/gui"
 
 // Create mutable config object from the store's initial state
 const defaults = { ...guiQuery.allValues }

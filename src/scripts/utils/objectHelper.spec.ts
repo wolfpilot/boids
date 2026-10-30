@@ -1,4 +1,4 @@
-import * as objectHelper from "./objectHelper"
+import * as objectHelper from "@utils/objectHelper"
 
 describe("objectHelper", () => {
   it("should return whether the argument is a object", () => {

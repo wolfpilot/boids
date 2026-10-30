@@ -1,4 +1,4 @@
-import { createBoidEntity } from "./testHelpers"
+import { createBoidEntity } from "@utils/testHelpers"
 
 describe("createBoidEntity", () => {
   it("creates a complete entity with independent state vectors", () => {

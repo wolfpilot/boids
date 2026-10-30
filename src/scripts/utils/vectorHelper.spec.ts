@@ -1,7 +1,7 @@
-import * as vectorHelper from "./vectorHelper"
+import * as vectorHelper from "@utils/vectorHelper"
 
 // Geometry
-import VectorImpl from "../geometry/Vector"
+import VectorImpl from "@geometry/Vector"
 
 describe("vectorHelper", () => {
   it("should clone a vector correctly", () => {

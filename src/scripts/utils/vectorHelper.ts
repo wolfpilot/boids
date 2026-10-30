@@ -1,11 +1,11 @@
 // Types
-import { Vector } from "../types/geometry"
+import { Vector } from "@ts/geometry"
 
 // Utils
-import { sum } from "./mathHelper"
+import { sum } from "@utils/mathHelper"
 
 // Geometry
-import VectorImpl from "../geometry/Vector"
+import VectorImpl from "@geometry/Vector"
 
 // Returns a new copy of the supplied vector
 export const clone = (v: Vector): Vector => new VectorImpl(v.x, v.y)

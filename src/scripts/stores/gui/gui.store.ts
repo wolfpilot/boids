@@ -1,5 +1,5 @@
 import { Store, StoreConfig } from "@datorama/akita"
-import { GuiStoreState } from "./gui.types"
+import { GuiStoreState } from "@stores/gui/gui.types"
 import { config } from "../../config"
 
 const initialState: GuiStoreState = {

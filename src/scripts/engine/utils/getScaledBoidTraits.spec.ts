@@ -1,6 +1,6 @@
-import { createBoidEntity } from "../../utils/testHelpers"
-import { guiQuery } from "../../stores/gui"
-import { getScaledBoidTraits } from "./getScaledBoidTraits"
+import { createBoidEntity } from "@utils/testHelpers"
+import { guiQuery } from "@stores/gui"
+import { getScaledBoidTraits } from "@engine/utils/getScaledBoidTraits"
 
 describe("getScaledBoidTraits", () => {
   const initial = guiQuery.globalMultipliers

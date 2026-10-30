@@ -1,9 +1,9 @@
 // Types
-import { BoidEntity } from "../../types/entities"
+import { BoidEntity } from "@ts/entities"
 
 // Utils
-import { subtract, mag } from "../../utils/vectorHelper"
-import { getRangeWeight } from "../utils/getRangeWeight"
+import { subtract, mag } from "@utils/vectorHelper"
+import { getRangeWeight } from "@behaviours/utils/getRangeWeight"
 
 export const getInfluence = (
   target: BoidEntity,

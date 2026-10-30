@@ -1,9 +1,9 @@
-import { seek } from "./seek/seek"
-import { getSeekingInfluence, isInSeekingArea } from "./seek/helpers"
-import { align } from "./align/align"
-import { cohere } from "./cohere/cohere"
-import { separate } from "./separate/separate"
-import { wander } from "./wander/wander"
+import { seek } from "@behaviours/seek/seek"
+import { getSeekingInfluence, isInSeekingArea } from "@behaviours/seek/helpers"
+import { align } from "@behaviours/align/align"
+import { cohere } from "@behaviours/cohere/cohere"
+import { separate } from "@behaviours/separate/separate"
+import { wander } from "@behaviours/wander/wander"
 
 export {
   seek,

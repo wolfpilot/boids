@@ -1,6 +1,6 @@
-import { UiStore } from "./ui.store"
-import { UiService } from "./ui.service"
-import { UiQuery } from "./ui.query"
+import { UiStore } from "@stores/ui/ui.store"
+import { UiService } from "@stores/ui/ui.service"
+import { UiQuery } from "@stores/ui/ui.query"
 
 export { UiStore, UiService, UiQuery }
 

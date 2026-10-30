@@ -1,20 +1,20 @@
 // Actors
-import { Canvas } from "../actors/Canvas/types"
-import { Boid } from "../actors/Boid/types"
-import type { BoidTraits } from "../actors/Boid/types"
+import { Canvas } from "@actors/Canvas/types"
+import { Boid } from "@actors/Boid/types"
+import type { BoidTraits } from "@actors/Boid/types"
 
 // Stores
-import { appService } from "../stores/app"
-import { boidsStore, boidsQuery } from "../stores/boids"
-import { uiQuery } from "../stores/ui"
-import type { GlobalBoidMultipliers } from "../stores/gui/gui.types"
+import { appService } from "@stores/app"
+import { boidsStore, boidsQuery } from "@stores/boids"
+import { uiQuery } from "@stores/ui"
+import type { GlobalBoidMultipliers } from "@stores/gui/gui.types"
 
 // Engine
-import Loop, { FramePlan } from "./Loop"
-import { stepBoids } from "./utils/stepBoids"
-import { getFlockDynamics } from "./utils/getFlockDynamics"
-import { getScaledBoidTraits } from "./utils/getScaledBoidTraits"
-import { Options } from "./types"
+import Loop, { FramePlan } from "@engine/Loop"
+import { stepBoids } from "@engine/utils/stepBoids"
+import { getFlockDynamics } from "@engine/utils/getFlockDynamics"
+import { getScaledBoidTraits } from "@engine/utils/getScaledBoidTraits"
+import { Options } from "@engine/types"
 
 /**
  * Engine runs two loops in sequence:

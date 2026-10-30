@@ -1,6 +1,6 @@
-import { seek } from "./seek"
-import { getSeekingInfluence } from "./helpers"
-import { createBoidEntity } from "../../utils/testHelpers"
+import { seek } from "@behaviours/seek/seek"
+import { getSeekingInfluence } from "@behaviours/seek/helpers"
+import { createBoidEntity } from "@utils/testHelpers"
 
 const source = (brakingDistance: number, velocityX = 0) =>
   createBoidEntity({

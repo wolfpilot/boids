@@ -3,6 +3,7 @@ import * as dat from "dat.gui"
 // Store
 import { guiService, guiQuery } from "@stores/gui"
 import type { PointerMode } from "@stores/gui/gui.types"
+import { ThemeNameTypes } from "@constants/themes"
 
 // Create mutable config object from the store's initial state
 const defaults = { ...guiQuery.allValues }
@@ -17,6 +18,7 @@ class GUI {
 
     const engineFolder = gui.addFolder("engine")
     const pointerFolder = gui.addFolder("pointer")
+    const themeFolder = gui.addFolder("theme")
     const vectorFolder = gui.addFolder("vector")
     const boidsFolder = gui.addFolder("boids")
 
@@ -29,6 +31,9 @@ class GUI {
       "seek",
       "flee",
     ])
+
+    // themes
+    const themeCtrl = themeFolder.add(defaults, "theme")
 
     // vector
     const targetVectorCtrl = vectorFolder.add(defaults, "showTargetVector")
@@ -81,16 +86,27 @@ class GUI {
 
     engineFolder.open()
     pointerFolder.open()
+    themeFolder.open()
     vectorFolder.open()
     boidsFolder.open()
 
-    // fps
+    // engine
     maxFpsCtrl.onChange((value: number) => {
       guiService.updateMaxFps(value)
     })
 
     logFpsCtrl.onChange((value: boolean) => {
       guiService.updateLogFps(value)
+    })
+
+    // pointer
+    pointerModeCtrl.onChange((mode: PointerMode) => {
+      guiService.updatePointerMode(mode)
+    })
+
+    // theme
+    themeCtrl.onChange((value: ThemeNameTypes) => {
+      guiService.updateTheme(value)
     })
 
     // vector
@@ -130,12 +146,7 @@ class GUI {
       guiService.updateShowStoppingArea(value)
     })
 
-    // pointer
-    pointerModeCtrl.onChange((mode: PointerMode) => {
-      guiService.updatePointerMode(mode)
-    })
-
-    // global
+    // boids
     maxSpeedCtrl.onChange((value: number) => {
       guiService.updateMaxSpeedMultiplier(value)
     })

@@ -1,6 +1,6 @@
 // Constants
 import { behaviours } from "@behaviours/types"
-import { BOID_COLORS } from "@constants/colors"
+import { ThemeNames, THEMES } from "@constants/themes"
 
 export const config = {
   engine: {
@@ -9,6 +9,9 @@ export const config = {
   },
   pointer: {
     mode: behaviours.flee,
+  },
+  theme: {
+    name: ThemeNames.default,
   },
   vector: {
     showTargetVector: false,
@@ -33,6 +36,7 @@ export const config = {
     fleeingMultiplier: 10,
     separationMultiplier: 1.25,
     frictionMultiplier: 0.33,
-    colors: BOID_COLORS,
+    // TODO: Wire to GUI
+    colors: THEMES[0].boids,
   },
 }

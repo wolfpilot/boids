@@ -1,10 +1,12 @@
 import type { Bounds } from "@ts/geometry"
 import { Canvas, CanvasState } from "@actors/Canvas/types"
+import { THEMES } from "@constants/themes"
 
 // Setup
 const initialState: CanvasState = {
   isEnabled: true,
-  fill: "#fff",
+  // TODO: Wire to GUI
+  fill: THEMES[0].canvas,
 }
 
 class CanvasImpl implements Canvas {

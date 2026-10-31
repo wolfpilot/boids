@@ -1,4 +1,5 @@
 import type { SteeringTarget } from "@behaviours/types"
+import { ThemeNameTypes } from "@constants/themes"
 
 export type PointerMode = SteeringTarget["behaviour"]
 
@@ -22,6 +23,10 @@ export interface GuiStorePointerState {
   pointerMode: PointerMode
 }
 
+export interface GuiStoreThemeState {
+  theme: ThemeNameTypes
+}
+
 export interface GuiStoreVectorState {
   showTargetVector: boolean
   showNormalizedTargetVector: boolean
@@ -38,5 +43,6 @@ export type GuiStoreBoidsState = BoidMultipliers
 
 export type GuiStoreState = GuiStoreEngineState &
   GuiStorePointerState &
+  GuiStoreThemeState &
   GuiStoreVectorState &
   GuiStoreBoidsState

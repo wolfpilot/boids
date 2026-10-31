@@ -1,3 +1,4 @@
+import { ThemeNameTypes } from "@constants/themes"
 import { GuiStore } from "@stores/gui/gui.store"
 import { BoidMultipliers, PointerMode } from "@stores/gui/gui.types"
 
@@ -16,6 +17,11 @@ export class GuiService {
   // pointer
   updatePointerMode(mode: PointerMode) {
     this.guiStore.update({ pointerMode: mode })
+  }
+
+  // theme
+  updateTheme(name: ThemeNameTypes) {
+    this.guiStore.update({ theme: name })
   }
 
   // vector

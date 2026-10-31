@@ -4,6 +4,7 @@ export const behaviours = {
   align: "align",
   cohere: "cohere",
   seek: "seek",
+  flee: "flee",
   separate: "separate",
   wander: "wander",
 } as const

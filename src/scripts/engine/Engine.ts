@@ -1,3 +1,6 @@
+// Types
+import type { Theme } from "@theme/types"
+
 // Actors
 import { Canvas } from "@actors/Canvas/types"
 import { Boid } from "@actors/Boid/types"
@@ -16,6 +19,7 @@ import { stepBoids } from "@engine/utils/stepBoids"
 import { getFlockDynamics } from "@engine/utils/getFlockDynamics"
 import { getScaledBoidTraits } from "@engine/utils/getScaledBoidTraits"
 import { Options } from "@engine/types"
+import { getRandomNumber } from "@utils/mathHelper"
 
 /**
  * Engine runs two loops in sequence:
@@ -74,10 +78,27 @@ export default class Engine {
 
         return {
           ...boid,
-          traits: getScaledBoidTraits(original, multipliers),
+          traits: {
+            ...getScaledBoidTraits(original, multipliers),
+            color: boid.traits.color,
+          },
         }
       })
     )
+  }
+
+  public setTheme(theme: Theme) {
+    this.canvas.state.fill = theme.canvas
+    boidsStore.set(
+      boidsQuery.all.map((boid) => ({
+        ...boid,
+        traits: {
+          ...boid.traits,
+          color: theme.boids[getRandomNumber(0, theme.boids.length - 1)],
+        },
+      }))
+    )
+    this.draw()
   }
 
   private onFrame = ({

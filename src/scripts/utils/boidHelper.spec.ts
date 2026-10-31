@@ -2,9 +2,10 @@ import "jest-canvas-mock"
 
 // Utils
 import { generateRandomizedBoids } from "@utils/boidHelper"
+import { getTheme } from "@theme/helpers"
 
 // Constants
-import { BOID_COLORS } from "@constants/colors"
+import { ThemeNames } from "@theme/types"
 
 // Actors
 import Boid from "@actors/Boid/Boid"
@@ -29,7 +30,7 @@ const options = {
   fleeingMultiplier: 6,
   separationMultiplier: 1.25,
   frictionMultiplier: 0.33,
-  colors: BOID_COLORS,
+  colors: getTheme(ThemeNames.default).boids,
 }
 
 beforeEach(() => {

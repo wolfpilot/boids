@@ -8,6 +8,8 @@ const initialState: GuiStoreState = {
   logFps: config.engine.logFps,
   // pointer
   pointerMode: config.pointer.mode,
+  // theme
+  theme: config.theme.name,
   // vector
   showTargetVector: config.vector.showTargetVector,
   showNormalizedTargetVector: config.vector.showNormalizedTargetVector,

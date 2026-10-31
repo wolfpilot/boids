@@ -3,9 +3,8 @@ import * as dat from "dat.gui"
 // Store
 import { guiService, guiQuery } from "@stores/gui"
 import type { PointerMode } from "@stores/gui/gui.types"
-
-// Create mutable config object from the store's initial state
-const defaults = { ...guiQuery.allValues }
+import { THEMES } from "@theme/constants"
+import { ThemeNameTypes } from "@theme/types"
 
 class GUI {
   public init() {
@@ -13,10 +12,12 @@ class GUI {
   }
 
   private setupGUI() {
+    const defaults = { ...guiQuery.allValues }
     const gui = new dat.GUI({ width: 300 })
 
     const engineFolder = gui.addFolder("engine")
     const pointerFolder = gui.addFolder("pointer")
+    const themeFolder = gui.addFolder("theme")
     const vectorFolder = gui.addFolder("vector")
     const boidsFolder = gui.addFolder("boids")
 
@@ -29,6 +30,13 @@ class GUI {
       "seek",
       "flee",
     ])
+
+    // theme
+    const themeCtrl = themeFolder.add(
+      defaults,
+      "theme",
+      THEMES.map((theme) => theme.name)
+    )
 
     // vector
     const targetVectorCtrl = vectorFolder.add(defaults, "showTargetVector")
@@ -81,16 +89,27 @@ class GUI {
 
     engineFolder.open()
     pointerFolder.open()
+    themeFolder.open()
     vectorFolder.open()
     boidsFolder.open()
 
-    // fps
+    // engine
     maxFpsCtrl.onChange((value: number) => {
       guiService.updateMaxFps(value)
     })
 
     logFpsCtrl.onChange((value: boolean) => {
       guiService.updateLogFps(value)
+    })
+
+    // pointer
+    pointerModeCtrl.onChange((mode: PointerMode) => {
+      guiService.updatePointerMode(mode)
+    })
+
+    // theme
+    themeCtrl.onChange((value: ThemeNameTypes) => {
+      guiService.updateTheme(value)
     })
 
     // vector
@@ -130,12 +149,7 @@ class GUI {
       guiService.updateShowStoppingArea(value)
     })
 
-    // pointer
-    pointerModeCtrl.onChange((mode: PointerMode) => {
-      guiService.updatePointerMode(mode)
-    })
-
-    // global
+    // boids
     maxSpeedCtrl.onChange((value: number) => {
       guiService.updateMaxSpeedMultiplier(value)
     })

@@ -7,6 +7,8 @@ import { createBoidEntity } from "@utils/testHelpers"
 import Engine from "@engine/Engine"
 import type { FrameScheduler } from "@engine/Loop"
 import { getFlockDynamics } from "@engine/utils/getFlockDynamics"
+import { getTheme } from "@theme/helpers"
+import { ThemeNames } from "@theme/types"
 
 describe("Engine", () => {
   afterEach(() => {
@@ -150,6 +152,58 @@ describe("Engine", () => {
     boidsQuery.all.forEach((boid, index) => {
       expect(boid.state).toBe(initialStates[index])
     })
+  })
+
+  it("recolors existing boids and canvas on every theme change", () => {
+    const canvas: Canvas = {
+      state: { isEnabled: true, fill: "#ffffff" },
+      init: jest.fn(),
+      draw: jest.fn(),
+      getBounds: () => ({ width: 100, height: 80 }),
+    }
+    const boids: Boid[] = [1, 2].map((id) => ({
+      ...createBoidEntity({ id, traits: { maxSpeed: id } }),
+      draw: jest.fn(),
+    }))
+    const engine = new Engine({ canvas, boids, maxFps: 60 })
+    engine.init()
+    const initialStates = boidsQuery.all.map((boid) => boid.state)
+    const firebird = getTheme(ThemeNames.theFirebird)
+    const defaultTheme = getTheme(ThemeNames.default)
+    const random = jest.spyOn(Math, "random")
+
+    random.mockReturnValueOnce(0).mockReturnValueOnce(0.999999)
+    engine.setTheme(firebird)
+
+    expect(canvas.state.fill).toBe(firebird.canvas)
+    expect(boidsQuery.all.map((boid) => boid.traits.color)).toEqual([
+      firebird.boids[0],
+      firebird.boids.at(-1),
+    ])
+    expect(boidsQuery.all.map((boid) => boid.traits.maxSpeed)).toEqual([1, 2])
+    boidsQuery.all.forEach((boid, index) => {
+      expect(boid.state).toBe(initialStates[index])
+    })
+    expect(canvas.draw).toHaveBeenCalledTimes(1)
+    boids.forEach((boid) => expect(boid.draw).toHaveBeenCalledTimes(1))
+
+    engine.setBoidMultipliers({
+      ...guiQuery.boidMultipliers,
+      maxSpeedMultiplier: guiQuery.maxSpeedMultiplier * 2,
+    })
+    expect(boidsQuery.all.map((boid) => boid.traits.color)).toEqual([
+      firebird.boids[0],
+      firebird.boids.at(-1),
+    ])
+
+    random.mockReturnValueOnce(0.5).mockReturnValueOnce(0.1)
+    engine.setTheme(defaultTheme)
+    expect(canvas.state.fill).toBe(defaultTheme.canvas)
+    expect(boidsQuery.all.map((boid) => boid.traits.color)).toEqual([
+      defaultTheme.boids[6],
+      defaultTheme.boids[1],
+    ])
+    expect(canvas.draw).toHaveBeenCalledTimes(2)
   })
 
   it("uses the current pointer mode on each physics update", () => {

@@ -3,6 +3,7 @@ import { getFlockDynamics } from "@engine/utils/getFlockDynamics"
 import { boidsStore } from "@stores/boids"
 import { guiService } from "@stores/gui"
 import Boid from "@actors/Boid/Boid"
+import { darkenHexColor } from "@utils/colorHelper"
 
 describe("Boid drawing", () => {
   afterEach(() => {
@@ -99,5 +100,37 @@ describe("Boid drawing", () => {
     boid.draw()
 
     expect(lineTo).toHaveBeenCalledWith(60, 45)
+  })
+
+  it("draws the published color after a theme change", () => {
+    const ctx = document.createElement("canvas").getContext("2d")
+    if (!ctx) throw new Error("No canvas context")
+
+    const boid = new Boid({
+      ...appConfig.boids,
+      id: 1,
+      ctx,
+      x: 50,
+      y: 50,
+      size: 10,
+      color: "#ff0000",
+    })
+    boidsStore.set([
+      {
+        id: boid.id,
+        state: { ...boid.state, velocity: { x: 1, y: 0 } },
+        traits: { ...boid.traits, color: "#00ff00" },
+      },
+    ])
+    const strokeColors: string[] = []
+    jest.spyOn(ctx, "stroke").mockImplementation(() => {
+      strokeColors.push(String(ctx.strokeStyle))
+    })
+
+    boid.draw()
+
+    expect(ctx.fillStyle).toBe("#00ff00")
+    expect(strokeColors).toContain(darkenHexColor("#00ff00", 0.025))
+    expect(boid.traits.color).toBe("#ff0000")
   })
 })

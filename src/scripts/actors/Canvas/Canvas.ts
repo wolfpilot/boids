@@ -1,25 +1,21 @@
 import type { Bounds } from "@ts/geometry"
 import { Canvas, CanvasState } from "@actors/Canvas/types"
 
-// Setup
-const initialState: CanvasState = {
-  isEnabled: true,
-  fill: "#fff",
-}
-
 class CanvasImpl implements Canvas {
   public state: CanvasState
   private canvas: HTMLCanvasElement
   private ctx: CanvasRenderingContext2D
   private bounds: Bounds = { width: 0, height: 0 }
 
-  constructor(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D) {
+  constructor(
+    canvas: HTMLCanvasElement,
+    ctx: CanvasRenderingContext2D,
+    fill: string
+  ) {
     this.canvas = canvas
     this.ctx = ctx
 
-    this.state = {
-      ...initialState,
-    }
+    this.state = { isEnabled: true, fill }
   }
 
   public init() {

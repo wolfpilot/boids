@@ -11,6 +11,7 @@ describe("Boid drawing", () => {
     guiService.updateShowAlignmentArea(false)
     guiService.updateShowCohesionArea(false)
     guiService.updateShowSeekingArea(false)
+    guiService.updateShowFleeingArea(false)
     guiService.updateShowSeparationArea(false)
     guiService.updateShowStoppingArea(false)
   })
@@ -37,6 +38,7 @@ describe("Boid drawing", () => {
           alignmentAreaSize: 100,
           cohesionAreaSize: 120,
           seekingAreaSize: 140,
+          fleeingAreaSize: 145,
           separationAreaSize: 130,
           brakingDistance: 150,
         },
@@ -45,6 +47,7 @@ describe("Boid drawing", () => {
     guiService.updateShowAlignmentArea(true)
     guiService.updateShowCohesionArea(true)
     guiService.updateShowSeekingArea(true)
+    guiService.updateShowFleeingArea(true)
     guiService.updateShowSeparationArea(true)
     guiService.updateShowStoppingArea(true)
     const arc = jest.spyOn(ctx, "arc")
@@ -59,6 +62,7 @@ describe("Boid drawing", () => {
     expect(arc).toHaveBeenCalledWith(50, 50, 200, 0, 2 * Math.PI)
     expect(arc).toHaveBeenCalledWith(50, 50, 360, 0, 2 * Math.PI)
     expect(arc).toHaveBeenCalledWith(50, 50, 140, 0, 2 * Math.PI)
+    expect(arc).toHaveBeenCalledWith(50, 50, 145, 0, 2 * Math.PI)
     expect(arc).toHaveBeenCalledWith(50, 50, 520, 0, 2 * Math.PI)
     expect(arc).toHaveBeenCalledWith(50, 50, 150, 0, 2 * Math.PI)
   })

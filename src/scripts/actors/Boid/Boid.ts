@@ -49,6 +49,7 @@ class BoidImpl implements Boid {
     alignmentMultiplier,
     cohesionMultiplier,
     seekingMultiplier,
+    fleeingMultiplier,
     separationMultiplier,
     color,
   }: Options) {
@@ -75,6 +76,7 @@ class BoidImpl implements Boid {
       alignmentAreaSize: size * alignmentMultiplier,
       cohesionAreaSize: size * cohesionMultiplier,
       seekingAreaSize: size * seekingMultiplier,
+      fleeingAreaSize: size * fleeingMultiplier,
       separationAreaSize: size * separationMultiplier,
       color,
     }
@@ -118,6 +120,10 @@ class BoidImpl implements Boid {
 
     if (guiQuery.allValues.showSeekingArea) {
       this.drawSeekingArea(boidEntity.state, boidEntity.traits.seekingAreaSize)
+    }
+
+    if (guiQuery.allValues.showFleeingArea) {
+      this.drawFleeingArea(boidEntity.state, boidEntity.traits.fleeingAreaSize)
     }
 
     if (guiQuery.allValues.showSeparationArea) {
@@ -164,6 +170,14 @@ class BoidImpl implements Boid {
     this.ctx.arc(state.location.x, state.location.y, radius, 0, 2 * Math.PI)
     this.ctx.lineWidth = 1
     this.ctx.strokeStyle = config.seekingArea.color
+    this.ctx.stroke()
+  }
+
+  private drawFleeingArea(state: BoidState, radius: number) {
+    this.ctx.beginPath()
+    this.ctx.arc(state.location.x, state.location.y, radius, 0, 2 * Math.PI)
+    this.ctx.lineWidth = 1
+    this.ctx.strokeStyle = config.fleeingArea.color
     this.ctx.stroke()
   }
 

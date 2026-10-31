@@ -33,6 +33,7 @@ class GUI {
     const alignmentAreaCtrl = boidFolder.add(defaults, "showAlignmentArea")
     const cohesionAreaCtrl = boidFolder.add(defaults, "showCohesionArea")
     const seekingAreaCtrl = boidFolder.add(defaults, "showSeekingArea")
+    const fleeingAreaCtrl = boidFolder.add(defaults, "showFleeingArea")
     const separationAreaCtrl = boidFolder.add(defaults, "showSeparationArea")
     const stoppingAreaCtrl = boidFolder.add(defaults, "showStoppingArea")
 
@@ -58,6 +59,10 @@ class GUI {
       .add(globalInputs, "seekingMultiplier")
       .step(0.01)
     seekingCtrl.updateDisplay()
+    const fleeingCtrl = globalFolder
+      .add(globalInputs, "fleeingMultiplier")
+      .step(0.01)
+    fleeingCtrl.updateDisplay()
     const separationCtrl = globalFolder
       .add(globalInputs, "separationMultiplier")
       .step(0.01)
@@ -103,6 +108,10 @@ class GUI {
 
     seekingAreaCtrl.onChange((value: boolean) => {
       guiService.updateShowSeekingArea(value)
+    })
+
+    fleeingAreaCtrl.onChange((value: boolean) => {
+      guiService.updateShowFleeingArea(value)
     })
 
     separationAreaCtrl.onChange((value: boolean) => {
@@ -157,6 +166,15 @@ class GUI {
       globalInputs.seekingMultiplier =
         guiQuery.globalMultipliers.seekingMultiplier
       seekingCtrl.updateDisplay()
+    })
+
+    fleeingCtrl.onChange((value: number) => {
+      guiService.updateFleeingMultiplier(value)
+    })
+    fleeingCtrl.onFinishChange(() => {
+      globalInputs.fleeingMultiplier =
+        guiQuery.globalMultipliers.fleeingMultiplier
+      fleeingCtrl.updateDisplay()
     })
 
     separationCtrl.onChange((value: number) => {

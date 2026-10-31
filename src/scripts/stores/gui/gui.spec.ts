@@ -19,6 +19,7 @@ describe("global boid multipliers", () => {
       alignmentMultiplier: config.boids.alignmentMultiplier,
       cohesionMultiplier: config.boids.cohesionMultiplier,
       seekingMultiplier: config.boids.seekingMultiplier,
+      fleeingMultiplier: config.boids.fleeingMultiplier,
       separationMultiplier: config.boids.separationMultiplier,
       frictionMultiplier: config.boids.frictionMultiplier,
     })
@@ -39,6 +40,7 @@ describe("global boid multipliers", () => {
     expect(service.updateAlignmentMultiplier(3)).toBe(true)
     expect(service.updateCohesionMultiplier(4)).toBe(true)
     expect(service.updateSeekingMultiplier(5)).toBe(true)
+    expect(service.updateFleeingMultiplier(5.5)).toBe(true)
     expect(service.updateSeparationMultiplier(6)).toBe(true)
     expect(service.updateFrictionMultiplier(7)).toBe(true)
 
@@ -48,6 +50,7 @@ describe("global boid multipliers", () => {
       alignmentMultiplier: 3,
       cohesionMultiplier: 4,
       seekingMultiplier: 5,
+      fleeingMultiplier: 5.5,
       separationMultiplier: 6,
       frictionMultiplier: 7,
     })
@@ -61,8 +64,13 @@ describe("global boid multipliers", () => {
     expect(service.updateFrictionMultiplier(-1)).toBe(false)
     expect(service.updateFrictionMultiplier(NaN)).toBe(false)
     expect(service.updateFrictionMultiplier(Infinity)).toBe(false)
+    expect(service.updateFleeingMultiplier(-1)).toBe(false)
+    expect(service.updateFleeingMultiplier(NaN)).toBe(false)
     expect(query.globalMultipliers.frictionMultiplier).toBe(
       config.boids.frictionMultiplier
+    )
+    expect(query.globalMultipliers.fleeingMultiplier).toBe(
+      config.boids.fleeingMultiplier
     )
   })
 })

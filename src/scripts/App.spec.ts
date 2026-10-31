@@ -2,12 +2,13 @@ import App from "./App"
 import Engine from "@engine/Engine"
 import FpsMonitor from "@interface/FpsMonitor"
 import { boidsQuery, boidsStore } from "@stores/boids"
-import { guiQuery } from "@stores/gui"
+import { guiQuery, guiService } from "@stores/gui"
 
 describe("App global controls", () => {
   afterEach(() => {
     jest.restoreAllMocks()
     boidsStore.set([])
+    guiService.updateShowFleeingArea(false)
     document.body.innerHTML = ""
   })
 
@@ -39,6 +40,7 @@ describe("App global controls", () => {
       "alignmentMultiplier",
       "cohesionMultiplier",
       "seekingMultiplier",
+      "fleeingMultiplier",
       "separationMultiplier",
       "frictionMultiplier",
     ])
@@ -52,6 +54,19 @@ describe("App global controls", () => {
       element.textContent?.includes("separationMultiplier")
     )
     expect(separationRow?.querySelector("input")?.value).toBe("1.25")
+    const fleeingRow = globalRows.find((element) =>
+      element.textContent?.includes("fleeingMultiplier")
+    )
+    const fleeingInput = fleeingRow?.querySelector("input")
+    if (!fleeingInput) throw new Error("No fleeing multiplier input")
+    expect(fleeingInput.value).toBe("6")
+    const fleeingAreaRow = Array.from(
+      document.querySelectorAll(".dg .cr.boolean")
+    ).find((element) => element.textContent?.includes("showFleeingArea"))
+    const fleeingAreaInput = fleeingAreaRow?.querySelector("input")
+    if (!fleeingAreaInput) throw new Error("No fleeing area toggle")
+    fleeingAreaInput.click()
+    expect(guiQuery.showFleeingArea).toBe(true)
 
     const row = Array.from(document.querySelectorAll(".dg .cr")).find(
       (element) => element.textContent?.includes("cohesionMultiplier")
@@ -83,6 +98,22 @@ describe("App global controls", () => {
     expect(boidsQuery.all[0].traits.frictionFactor).toBe(
       boid.traits.frictionFactor
     )
+
+    fleeingInput.value = "0"
+    fleeingInput.dispatchEvent(new Event("change", { bubbles: true }))
+    expect(boidsQuery.all[0].traits.fleeingAreaSize).toBe(0)
+
+    fleeingInput.value = "7.5"
+    fleeingInput.dispatchEvent(new Event("change", { bubbles: true }))
+    expect(boidsQuery.all[0].traits.fleeingAreaSize).toBe(
+      boid.traits.size * 7.5
+    )
+
+    fleeingInput.value = "-1"
+    fleeingInput.dispatchEvent(new Event("change", { bubbles: true }))
+    fleeingInput.dispatchEvent(new Event("blur"))
+    expect(guiQuery.globalMultipliers.fleeingMultiplier).toBe(7.5)
+    expect(fleeingInput.value).toBe("7.5")
 
     input.value = "-1"
     input.dispatchEvent(new Event("change", { bubbles: true }))

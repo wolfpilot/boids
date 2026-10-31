@@ -4,6 +4,7 @@ export interface GlobalBoidMultipliers {
   alignmentMultiplier: number
   cohesionMultiplier: number
   seekingMultiplier: number
+  fleeingMultiplier: number
   separationMultiplier: number
   frictionMultiplier: number
 }
@@ -18,6 +19,7 @@ export interface GuiStoreState {
   showAlignmentArea: boolean
   showCohesionArea: boolean
   showSeekingArea: boolean
+  showFleeingArea: boolean
   showSeparationArea: boolean
   showStoppingArea: boolean
 }

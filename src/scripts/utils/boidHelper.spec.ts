@@ -26,6 +26,7 @@ const options = {
   alignmentMultiplier: 8,
   cohesionMultiplier: 6,
   seekingMultiplier: 6,
+  fleeingMultiplier: 6,
   separationMultiplier: 1.25,
   frictionMultiplier: 0.33,
   colors: BOID_COLORS,
@@ -92,6 +93,7 @@ describe("actorHelper", () => {
       expect(boid.traits.alignmentAreaSize).toBe(boid.traits.size * 8)
       expect(boid.traits.cohesionAreaSize).toBe(boid.traits.size * 6)
       expect(boid.traits.seekingAreaSize).toBe(boid.traits.size * 6)
+      expect(boid.traits.fleeingAreaSize).toBe(boid.traits.size * 6)
     })
   })
 

@@ -25,6 +25,9 @@ export interface BoidConfig {
   seekingArea: {
     color: string
   }
+  fleeingArea: {
+    color: string
+  }
   cohesionArea: {
     color: string
   }
@@ -60,6 +63,9 @@ export const config: BoidConfig = {
   },
   seekingArea: {
     color: "#2ea8ff",
+  },
+  fleeingArea: {
+    color: "#ff8a3d",
   },
   cohesionArea: {
     color: "#8b5cf6",

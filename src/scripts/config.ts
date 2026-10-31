@@ -11,6 +11,7 @@ export const config = {
     alignmentMultiplier: 8,
     cohesionMultiplier: 3,
     seekingMultiplier: 6,
+    fleeingMultiplier: 6,
     separationMultiplier: 1.25,
     frictionMultiplier: 0.33,
     colors: BOID_COLORS,

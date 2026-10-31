@@ -124,11 +124,15 @@ describe("Engine", () => {
       ...initial,
       maxSpeedMultiplier: initial.maxSpeedMultiplier * 2,
       cohesionMultiplier: initial.cohesionMultiplier * 3,
+      fleeingMultiplier: initial.fleeingMultiplier * 2,
     })
 
     expect(boidsQuery.all.map((boid) => boid.traits.maxSpeed)).toEqual([4, 8])
     expect(boidsQuery.all.map((boid) => boid.traits.cohesionAreaSize)).toEqual([
       180, 180,
+    ])
+    expect(boidsQuery.all.map((boid) => boid.traits.fleeingAreaSize)).toEqual([
+      120, 120,
     ])
     boidsQuery.all.forEach((boid, index) => {
       expect(boid.state).toBe(initialStates[index])

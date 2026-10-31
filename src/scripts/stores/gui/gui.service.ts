@@ -38,6 +38,10 @@ export class GuiService {
     this.guiStore.update({ showSeekingArea: val })
   }
 
+  updateShowFleeingArea(val: boolean) {
+    this.guiStore.update({ showFleeingArea: val })
+  }
+
   updateShowSeparationArea(val: boolean) {
     this.guiStore.update({ showSeparationArea: val })
   }
@@ -65,6 +69,10 @@ export class GuiService {
 
   updateSeekingMultiplier(value: number): boolean {
     return this.updateMultiplier("seekingMultiplier", value)
+  }
+
+  updateFleeingMultiplier(value: number): boolean {
+    return this.updateMultiplier("fleeingMultiplier", value)
   }
 
   updateSeparationMultiplier(value: number): boolean {

@@ -56,6 +56,10 @@ export class GuiQuery extends Query<GuiStoreState> {
     return this.getValue().showSeekingArea
   }
 
+  get showFleeingArea(): boolean {
+    return this.getValue().showFleeingArea
+  }
+
   get showSeparationArea(): boolean {
     return this.getValue().showSeparationArea
   }

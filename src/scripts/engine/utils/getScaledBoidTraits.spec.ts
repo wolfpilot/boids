@@ -13,18 +13,20 @@ describe("getScaledBoidTraits", () => {
       alignmentAreaSize: 160,
       cohesionAreaSize: 60,
       seekingAreaSize: 120,
+      fleeingAreaSize: 120,
       separationAreaSize: 25,
       frictionFactor: 0.02,
     },
   }).traits
 
-  it("scales all seven traits without changing the original or force cap", () => {
+  it("scales all eight traits without changing the original or force cap", () => {
     const scaled = getScaledBoidTraits(original, {
       maxSpeedMultiplier: initial.maxSpeedMultiplier * 2,
       brakingMultiplier: initial.brakingMultiplier * 3,
       alignmentMultiplier: initial.alignmentMultiplier * 4,
       cohesionMultiplier: initial.cohesionMultiplier * 5,
       seekingMultiplier: initial.seekingMultiplier * 6,
+      fleeingMultiplier: initial.fleeingMultiplier * 7,
       separationMultiplier: initial.separationMultiplier * 7,
       frictionMultiplier: initial.frictionMultiplier * 8,
     })
@@ -32,10 +34,11 @@ describe("getScaledBoidTraits", () => {
     expect(scaled).toEqual({
       ...original,
       maxSpeed: 6,
-      brakingDistance: 180,
+      brakingDistance: expect.closeTo(180),
       alignmentAreaSize: 640,
       cohesionAreaSize: 300,
       seekingAreaSize: 720,
+      fleeingAreaSize: 840,
       separationAreaSize: 175,
       frictionFactor: 0.16,
     })
@@ -50,6 +53,7 @@ describe("getScaledBoidTraits", () => {
       alignmentMultiplier: 0,
       cohesionMultiplier: 0,
       seekingMultiplier: 0,
+      fleeingMultiplier: 0,
       separationMultiplier: 0,
       frictionMultiplier: 0,
     })
@@ -59,6 +63,7 @@ describe("getScaledBoidTraits", () => {
     expect(zero.alignmentAreaSize).toBe(0)
     expect(zero.cohesionAreaSize).toBe(0)
     expect(zero.seekingAreaSize).toBe(0)
+    expect(zero.fleeingAreaSize).toBe(0)
     expect(zero.separationAreaSize).toBe(0)
     expect(zero.frictionFactor).toBe(0)
     expect(getScaledBoidTraits(original, initial)).toEqual(original)

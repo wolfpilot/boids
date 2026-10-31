@@ -35,6 +35,11 @@ export const getScaledBoidTraits = (
     config.boids.seekingMultiplier,
     multipliers.seekingMultiplier
   ),
+  fleeingAreaSize: scale(
+    original.fleeingAreaSize,
+    config.boids.fleeingMultiplier,
+    multipliers.fleeingMultiplier
+  ),
   separationAreaSize: scale(
     original.separationAreaSize,
     config.boids.separationMultiplier,

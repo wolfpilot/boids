@@ -9,6 +9,7 @@ const initialState: GuiStoreState = {
     alignmentMultiplier: config.boids.alignmentMultiplier,
     cohesionMultiplier: config.boids.cohesionMultiplier,
     seekingMultiplier: config.boids.seekingMultiplier,
+    fleeingMultiplier: config.boids.fleeingMultiplier,
     separationMultiplier: config.boids.separationMultiplier,
     frictionMultiplier: config.boids.frictionMultiplier,
   },
@@ -20,6 +21,7 @@ const initialState: GuiStoreState = {
   showAlignmentArea: false,
   showCohesionArea: false,
   showSeekingArea: false,
+  showFleeingArea: false,
   showSeparationArea: false,
   showStoppingArea: false,
 }

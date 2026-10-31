@@ -1,4 +1,4 @@
-import { ThemeNameTypes } from "@constants/themes"
+import { ThemeNameTypes } from "@theme/types"
 import { GuiStore } from "@stores/gui/gui.store"
 import { BoidMultipliers, PointerMode } from "@stores/gui/gui.types"
 

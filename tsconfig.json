@@ -27,12 +27,12 @@
     "paths": {
       "@actors/*": ["src/scripts/actors/*"],
       "@behaviours/*": ["src/scripts/behaviours/*"],
-      "@constants/*": ["src/scripts/constants/*"],
       "@engine/*": ["src/scripts/engine/*"],
       "@geometry/*": ["src/scripts/geometry/*"],
       "@interface/*": ["src/scripts/interface/*"],
       "@managers/*": ["src/scripts/managers/*"],
       "@stores/*": ["src/scripts/stores/*"],
+      "@theme/*": ["src/scripts/theme/*"],
       "@ts/*": ["src/scripts/types/*"],
       "@utils/*": ["src/scripts/utils/*"]
     }

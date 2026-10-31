@@ -14,6 +14,8 @@ import PointerManager from "@managers/PointerManager"
 
 // Config
 import { config } from "./config"
+import { getTheme } from "@theme/helpers"
+import { skip } from "rxjs"
 
 // Utils
 import { generateRandomizedBoids } from "@utils/boidHelper"
@@ -40,17 +42,19 @@ class App {
   constructor() {
     const wWidth = window.innerWidth
     const wHeight = window.innerHeight
+    const theme = getTheme(guiQuery.theme)
 
     this.canvasEl = <HTMLCanvasElement>document.getElementById("canvas")
     this.ctx = <CanvasRenderingContext2D>(
       this.canvasEl.getContext("2d", { alpha: false })
     )
-    this.canvas = new CanvasImpl(this.canvasEl, this.ctx)
+    this.canvas = new CanvasImpl(this.canvasEl, this.ctx, theme.canvas)
     this.gui = new GUI()
     this.fpsMonitor = new FpsMonitor()
 
     const boids = generateRandomizedBoids({
       ...config.boids,
+      colors: theme.boids,
       ctx: this.ctx,
       maxX: wWidth,
       maxY: wHeight,
@@ -84,6 +88,10 @@ class App {
 
     guiQuery.boidMultipliers$.subscribe((multipliers) => {
       this.engine.setBoidMultipliers(multipliers)
+    })
+
+    guiQuery.theme$.pipe(skip(1)).subscribe((name) => {
+      this.engine.setTheme(getTheme(name))
     })
 
     // VisibilityManager updates isRunning when the tab is hidden or shown

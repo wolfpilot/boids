@@ -1,5 +1,5 @@
 import type { SteeringTarget } from "@behaviours/types"
-import { ThemeNameTypes } from "@constants/themes"
+import { ThemeNameTypes } from "@theme/types"
 
 export type PointerMode = SteeringTarget["behaviour"]
 

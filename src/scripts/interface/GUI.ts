@@ -3,10 +3,8 @@ import * as dat from "dat.gui"
 // Store
 import { guiService, guiQuery } from "@stores/gui"
 import type { PointerMode } from "@stores/gui/gui.types"
-import { ThemeNameTypes } from "@constants/themes"
-
-// Create mutable config object from the store's initial state
-const defaults = { ...guiQuery.allValues }
+import { THEMES } from "@theme/constants"
+import { ThemeNameTypes } from "@theme/types"
 
 class GUI {
   public init() {
@@ -14,6 +12,7 @@ class GUI {
   }
 
   private setupGUI() {
+    const defaults = { ...guiQuery.allValues }
     const gui = new dat.GUI({ width: 300 })
 
     const engineFolder = gui.addFolder("engine")
@@ -32,8 +31,12 @@ class GUI {
       "flee",
     ])
 
-    // themes
-    const themeCtrl = themeFolder.add(defaults, "theme")
+    // theme
+    const themeCtrl = themeFolder.add(
+      defaults,
+      "theme",
+      THEMES.map((theme) => theme.name)
+    )
 
     // vector
     const targetVectorCtrl = vectorFolder.add(defaults, "showTargetVector")

@@ -7,7 +7,9 @@ describe("Canvas", () => {
     const originalDpi = window.devicePixelRatio
     const element = document.createElement("canvas")
     const context = element.getContext("2d") as CanvasRenderingContext2D
-    const canvas = new CanvasImpl(element, context)
+    const canvas = new CanvasImpl(element, context, "#ffffff")
+
+    expect(canvas.state.fill).toBe("#ffffff")
 
     try {
       Object.defineProperties(window, {

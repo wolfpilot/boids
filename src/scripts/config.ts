@@ -1,6 +1,6 @@
 // Constants
 import { behaviours } from "@behaviours/types"
-import { ThemeNames, THEMES } from "@constants/themes"
+import { ThemeNames } from "@theme/types"
 
 export const config = {
   engine: {
@@ -36,7 +36,5 @@ export const config = {
     fleeingMultiplier: 10,
     separationMultiplier: 1.25,
     frictionMultiplier: 0.33,
-    // TODO: Wire to GUI
-    colors: THEMES[0].boids,
   },
 }

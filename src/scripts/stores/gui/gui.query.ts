@@ -6,6 +6,7 @@ import {
   GuiStoreState,
   PointerMode,
 } from "@stores/gui/gui.types"
+import type { ThemeNameTypes } from "@theme/types"
 
 // Store
 import { GuiStore } from "@stores/gui/gui.store"
@@ -14,6 +15,7 @@ export class GuiQuery extends Query<GuiStoreState> {
   allState$ = this.select()
   logFps$ = this.select("logFps")
   maxFps$ = this.select("maxFps")
+  theme$ = this.select("theme")
   boidMultipliers$ = this.select([
     "maxSpeedMultiplier",
     "brakingMultiplier",
@@ -59,6 +61,10 @@ export class GuiQuery extends Query<GuiStoreState> {
   // pointer
   get pointerMode(): PointerMode {
     return this.getValue().pointerMode
+  }
+
+  get theme(): ThemeNameTypes {
+    return this.getValue().theme
   }
 
   // vector

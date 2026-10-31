@@ -1,5 +1,5 @@
 import { GuiStore } from "@stores/gui/gui.store"
-import { GlobalBoidMultipliers } from "@stores/gui/gui.types"
+import { GlobalBoidMultipliers, PointerMode } from "@stores/gui/gui.types"
 
 export class GuiService {
   constructor(private guiStore: GuiStore) {}
@@ -11,6 +11,11 @@ export class GuiService {
 
   updateLogFps(val: boolean) {
     this.guiStore.update({ logFps: val })
+  }
+
+  // pointer
+  updatePointerMode(mode: PointerMode) {
+    this.guiStore.update({ pointerMode: mode })
   }
 
   // vector

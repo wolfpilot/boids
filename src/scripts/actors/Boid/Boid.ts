@@ -3,7 +3,6 @@ import { config } from "@actors/Boid/config"
 
 // Store
 import { guiQuery } from "@stores/gui"
-import { uiQuery } from "@stores/ui"
 import { boidsQuery } from "@stores/boids"
 
 // Utils
@@ -246,7 +245,10 @@ class BoidImpl implements Boid {
     this.ctx.beginPath()
     this.ctx.moveTo(state.location.x, state.location.y)
     this.ctx.lineWidth = 1
-    this.ctx.lineTo(uiQuery.pointerVector.x, uiQuery.pointerVector.y)
+    this.ctx.lineTo(
+      state.location.x + state.targetVector.x,
+      state.location.y + state.targetVector.y
+    )
     this.ctx.strokeStyle = config.targetVector.color
     this.ctx.stroke()
   }

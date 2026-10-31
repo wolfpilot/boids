@@ -1,7 +1,8 @@
 import type { Boid } from "@actors/Boid/types"
 import type { Canvas } from "@actors/Canvas/types"
 import { boidsQuery, boidsStore } from "@stores/boids"
-import { guiQuery } from "@stores/gui"
+import { guiQuery, guiService } from "@stores/gui"
+import { uiService } from "@stores/ui"
 import { createBoidEntity } from "@utils/testHelpers"
 import Engine from "@engine/Engine"
 import type { FrameScheduler } from "@engine/Loop"
@@ -11,6 +12,8 @@ describe("Engine", () => {
   afterEach(() => {
     jest.restoreAllMocks()
     boidsStore.set([])
+    uiService.clearPointerPresence()
+    guiService.updatePointerMode("seek")
   })
 
   it("publishes initial boids and finishes updates before drawing", () => {
@@ -147,5 +150,59 @@ describe("Engine", () => {
     boidsQuery.all.forEach((boid, index) => {
       expect(boid.state).toBe(initialStates[index])
     })
+  })
+
+  it("uses the current pointer mode on each physics update", () => {
+    let now = 0
+    let frameCallback: FrameRequestCallback | undefined
+    const scheduler: FrameScheduler = {
+      now: () => now,
+      requestFrame: (callback) => {
+        frameCallback = callback
+        return 1
+      },
+      cancelFrame: jest.fn(),
+    }
+    const canvas: Canvas = {
+      state: { isEnabled: true, fill: "#fff" },
+      init: jest.fn(),
+      draw: jest.fn(),
+      getBounds: () => ({ width: 1000, height: 1000 }),
+    }
+    const boid: Boid = {
+      ...createBoidEntity({
+        state: {
+          location: { x: 100, y: 100 },
+          wanderAngle: Math.PI / 2,
+        },
+      }),
+      draw: jest.fn(),
+    }
+    const engine = new Engine({ canvas, boids: [boid], maxFps: 60, scheduler })
+    const advanceFrame = () => {
+      now += 1000 / 60
+      if (!frameCallback) throw new Error("No frame was scheduled")
+      frameCallback(now)
+    }
+
+    engine.init()
+    const initial = boidsQuery.all[0]
+    uiService.updatePointerVector({ x: 120, y: 100 })
+    engine.start()
+    advanceFrame()
+    expect(boidsQuery.all[0].state.velocity.x).toBeGreaterThan(0)
+
+    boidsStore.set([initial])
+    guiService.updatePointerMode("flee")
+    advanceFrame()
+    expect(boidsQuery.all[0].state.velocity.x).toBeLessThan(0)
+
+    boidsStore.set([initial])
+    uiService.clearPointerPresence()
+    const random = jest.spyOn(Math, "random").mockReturnValue(0)
+    advanceFrame()
+    expect(boidsQuery.all[0].state.velocity.y).toBeGreaterThan(0)
+    expect(random).toHaveBeenCalled()
+    engine.stop()
   })
 })

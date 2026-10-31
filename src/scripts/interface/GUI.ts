@@ -2,6 +2,7 @@ import * as dat from "dat.gui"
 
 // Store
 import { guiService, guiQuery } from "@stores/gui"
+import type { PointerMode } from "@stores/gui/gui.types"
 
 // Create mutable config object from the store's initial state
 const defaults = { ...guiQuery.allValues }
@@ -16,6 +17,7 @@ class GUI {
 
     const fpsFolder = gui.addFolder("fps")
     const boidFolder = gui.addFolder("vector")
+    const pointerFolder = gui.addFolder("pointer")
     const globalFolder = gui.addFolder("global")
 
     // fps
@@ -36,6 +38,12 @@ class GUI {
     const fleeingAreaCtrl = boidFolder.add(defaults, "showFleeingArea")
     const separationAreaCtrl = boidFolder.add(defaults, "showSeparationArea")
     const stoppingAreaCtrl = boidFolder.add(defaults, "showStoppingArea")
+
+    // pointer
+    const pointerModeCtrl = pointerFolder.add(defaults, "pointerMode", [
+      "seek",
+      "flee",
+    ])
 
     // global
     const globalInputs = { ...guiQuery.globalMultipliers }
@@ -74,6 +82,7 @@ class GUI {
 
     fpsFolder.open()
     boidFolder.open()
+    pointerFolder.open()
     globalFolder.open()
 
     // fps
@@ -120,6 +129,11 @@ class GUI {
 
     stoppingAreaCtrl.onChange((value: boolean) => {
       guiService.updateShowStoppingArea(value)
+    })
+
+    // pointer
+    pointerModeCtrl.onChange((mode: PointerMode) => {
+      guiService.updatePointerMode(mode)
     })
 
     // global

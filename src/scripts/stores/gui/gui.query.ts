@@ -1,7 +1,11 @@
 import { Query } from "@datorama/akita"
 
 // Types
-import { GlobalBoidMultipliers, GuiStoreState } from "@stores/gui/gui.types"
+import {
+  GlobalBoidMultipliers,
+  GuiStoreState,
+  PointerMode,
+} from "@stores/gui/gui.types"
 
 // Store
 import { GuiStore } from "@stores/gui/gui.store"
@@ -30,6 +34,10 @@ export class GuiQuery extends Query<GuiStoreState> {
 
   get logFps(): boolean {
     return this.getValue().logFps
+  }
+
+  get pointerMode(): PointerMode {
+    return this.getValue().pointerMode
   }
 
   get showTargetVector(): boolean {

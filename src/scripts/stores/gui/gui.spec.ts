@@ -4,6 +4,16 @@ import { GuiService } from "@stores/gui/gui.service"
 import { GuiStore } from "@stores/gui/gui.store"
 
 describe("global boid multipliers", () => {
+  it("switches pointer mode from seek to flee", () => {
+    const store = new GuiStore()
+    const query = new GuiQuery(store)
+    const service = new GuiService(store)
+
+    expect(query.pointerMode).toBe("seek")
+    service.updatePointerMode("flee")
+    expect(query.pointerMode).toBe("flee")
+  })
+
   it("starts from the boid config and publishes valid edits", () => {
     const store = new GuiStore()
     const query = new GuiQuery(store)

@@ -13,7 +13,7 @@ Just a fun little project exploring Boid simulations in JS Canvas.
 
 ## Intro
 
-This Canvas experiment combines wandering, alignment, cohesion, and separation. A boid seeks the pointer when it comes within range.
+This Canvas experiment combines wandering, alignment, cohesion, and separation. When the pointer is in range, a boid seeks or flees from it according to the GUI's pointer mode.
 
 ## How it works
 
@@ -48,12 +48,15 @@ The behaviours return unweighted vectors. [`combineSteering()`](src/scripts/engi
 | Separation |     32 |
 | Wander     |    0.1 |
 | Seek       |      1 |
+| Flee       |      1 |
 
 These are the starting weights for this project. Each weight scales a vector with a different natural magnitude: cohesion starts with a position offset, for example, while separation uses inverse distance. The final combined force is capped at each boid's own maximum steering force before drag is added.
 
 Speed-based drag is added after steering. Each boid's friction factor starts at `size³ × 0.33 × 10⁻⁵`. The resulting acceleration changes velocity, velocity is limited to the boid's maximum speed, and velocity then changes position. Acceleration is cleared for the next update.
 
-Alignment, cohesion, separation, and wander run together by default. When the mouse is present, seek eases in while wander eases out over the outer 10% of a boid's seeking radius. Inside that band, seek fully replaces wander and the wander angle is retained. The angle continues to advance while wander contributes. A boid can stop near the pointer only under full seeking influence, when it is already moving slowly and its combined neighbour steering is zero.
+Alignment, cohesion, separation, and wander run together by default. When the mouse is present, the selected pointer behaviour eases in while wander eases out over the outer 10% of its radius. Inside that band, seek or flee fully replaces wander and the wander angle is retained. The angle continues to advance while wander contributes. A boid can stop near the pointer only under full seeking influence, when it is already moving slowly and its combined neighbour steering is zero.
+
+Flee steers toward maximum speed away from a target position. Its calculation does not depend on the pointer; the engine currently supplies the pointer position, and another caller could supply another boid's position. Flee does not predict a moving target's future location.
 
 Groups form, merge, and split through these local interactions. Stronger separation maintains space within a flock, while limited perception and persistent wander allow members to take different paths. Soft steering can still permit brief overlaps during crossings. Boids wrap after their whole body leaves the canvas, using logical canvas bounds updated on resize. Neighbour distances are measured directly between their current positions.
 
@@ -125,7 +128,7 @@ $ pnpm install
 $ pnpm start
 ```
 
-Population, size, and the starting trait multipliers are configured in [`src/scripts/config.ts`](src/scripts/config.ts). The GUI's `global` folder lets you change all seven multipliers for existing boids while the simulation runs. The numeric fields accept nonnegative values, including zero, and have no preset upper limit. Changing population or size in the config still requires a reload.
+Population, size, and the starting trait multipliers are configured in [`src/scripts/config.ts`](src/scripts/config.ts). The GUI's `global` folder lets you change all eight multipliers for existing boids while the simulation runs, including an independent flee radius. The `pointer` folder switches between seek and flee, with seek selected initially. The numeric fields accept nonnegative values, including zero, and have no preset upper limit. Changing population or size in the config still requires a reload.
 
 Development output and cache use `.parcel-dev` and `.parcel-cache-dev`. Production builds write to `dist` and use `.parcel-cache`.
 

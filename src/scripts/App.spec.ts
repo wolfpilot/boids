@@ -9,6 +9,7 @@ describe("App global controls", () => {
     jest.restoreAllMocks()
     boidsStore.set([])
     guiService.updateShowFleeingArea(false)
+    guiService.updatePointerMode("seek")
     document.body.innerHTML = ""
   })
 
@@ -67,6 +68,16 @@ describe("App global controls", () => {
     if (!fleeingAreaInput) throw new Error("No fleeing area toggle")
     fleeingAreaInput.click()
     expect(guiQuery.showFleeingArea).toBe(true)
+
+    const pointerModeRow = Array.from(
+      document.querySelectorAll(".dg .cr")
+    ).find((element) => element.textContent?.includes("pointerMode"))
+    const pointerModeSelect = pointerModeRow?.querySelector("select")
+    if (!pointerModeSelect) throw new Error("No pointer mode selector")
+    expect(pointerModeSelect.value).toBe("seek")
+    pointerModeSelect.value = "flee"
+    pointerModeSelect.dispatchEvent(new Event("change", { bubbles: true }))
+    expect(guiQuery.pointerMode).toBe("flee")
 
     const row = Array.from(document.querySelectorAll(".dg .cr")).find(
       (element) => element.textContent?.includes("cohesionMultiplier")

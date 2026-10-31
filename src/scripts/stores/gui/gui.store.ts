@@ -15,6 +15,7 @@ const initialState: GuiStoreState = {
   },
   maxFps: 60,
   logFps: true,
+  pointerMode: "seek",
   showTargetVector: false,
   showNormalizedTargetVector: false,
   showVelocityVector: true,

@@ -8,6 +8,7 @@ import { appService } from "@stores/app"
 import { boidsStore, boidsQuery } from "@stores/boids"
 import { uiQuery } from "@stores/ui"
 import type { GlobalBoidMultipliers } from "@stores/gui/gui.types"
+import { guiQuery } from "@stores/gui"
 
 // Engine
 import Loop, { FramePlan } from "@engine/Loop"
@@ -104,7 +105,7 @@ export default class Engine {
     const updatedBoids = stepBoids({
       snapshot: boidsQuery.all,
       target: isPointerPresent
-        ? { position: pointerVector, behaviour: "seek" }
+        ? { position: pointerVector, behaviour: guiQuery.pointerMode }
         : undefined,
       bounds: this.canvas.getBounds(),
       flockDynamics,

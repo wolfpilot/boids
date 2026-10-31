@@ -9,9 +9,9 @@ describe("global boid multipliers", () => {
     const query = new GuiQuery(store)
     const service = new GuiService(store)
 
-    expect(query.pointerMode).toBe("seek")
-    service.updatePointerMode("flee")
     expect(query.pointerMode).toBe("flee")
+    service.updatePointerMode("seek")
+    expect(query.pointerMode).toBe("seek")
   })
 
   it("starts from the boid config and publishes valid edits", () => {

@@ -40,14 +40,16 @@ describe("flee", () => {
     ).toEqual({ x: 0, y: 0 })
   })
 
-  it("fades over the outer tenth of a supplied radius", () => {
-    const source = createBoidEntity()
-    const targetAt = (distance: number) => ({ x: distance, y: 0 })
+  it("fades over the outer tenth of its fleeing radius", () => {
+    const source = createBoidEntity({ traits: { fleeingAreaSize: 30 } })
+    const zeroRadiusSource = createBoidEntity({
+      traits: { fleeingAreaSize: 0 },
+    })
 
-    expect(getFleeingInfluence(source, targetAt(0), 30)).toBe(1)
-    expect(getFleeingInfluence(source, targetAt(27), 30)).toBe(1)
-    expect(getFleeingInfluence(source, targetAt(28.5), 30)).toBeCloseTo(0.5)
-    expect(getFleeingInfluence(source, targetAt(30), 30)).toBe(0)
-    expect(getFleeingInfluence(source, targetAt(0), 0)).toBe(0)
+    expect(getFleeingInfluence(source, { x: 0, y: 0 })).toBe(1)
+    expect(getFleeingInfluence(source, { x: 27, y: 0 })).toBe(1)
+    expect(getFleeingInfluence(source, { x: 28.5, y: 0 })).toBeCloseTo(0.5)
+    expect(getFleeingInfluence(source, { x: 30, y: 0 })).toBe(0)
+    expect(getFleeingInfluence(zeroRadiusSource, { x: 0, y: 0 })).toBe(0)
   })
 })

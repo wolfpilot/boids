@@ -2,7 +2,7 @@ import type { SteeringTarget } from "@behaviours/types"
 
 export type PointerMode = SteeringTarget["behaviour"]
 
-export interface GlobalBoidMultipliers {
+export interface BoidMultipliers {
   maxSpeedMultiplier: number
   brakingMultiplier: number
   alignmentMultiplier: number
@@ -13,11 +13,16 @@ export interface GlobalBoidMultipliers {
   frictionMultiplier: number
 }
 
-export interface GuiStoreState {
-  globalMultipliers: GlobalBoidMultipliers
+export interface GuiStoreEngineState {
   maxFps: number
   logFps: boolean
+}
+
+export interface GuiStorePointerState {
   pointerMode: PointerMode
+}
+
+export interface GuiStoreVectorState {
   showTargetVector: boolean
   showNormalizedTargetVector: boolean
   showVelocityVector: boolean
@@ -28,3 +33,10 @@ export interface GuiStoreState {
   showSeparationArea: boolean
   showStoppingArea: boolean
 }
+
+export type GuiStoreBoidsState = BoidMultipliers
+
+export type GuiStoreState = GuiStoreEngineState &
+  GuiStorePointerState &
+  GuiStoreVectorState &
+  GuiStoreBoidsState

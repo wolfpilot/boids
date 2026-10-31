@@ -3,28 +3,30 @@ import { GuiStoreState } from "@stores/gui/gui.types"
 import { config } from "../../config"
 
 const initialState: GuiStoreState = {
-  globalMultipliers: {
-    maxSpeedMultiplier: config.boids.maxSpeedMultiplier,
-    brakingMultiplier: config.boids.brakingMultiplier,
-    alignmentMultiplier: config.boids.alignmentMultiplier,
-    cohesionMultiplier: config.boids.cohesionMultiplier,
-    seekingMultiplier: config.boids.seekingMultiplier,
-    fleeingMultiplier: config.boids.fleeingMultiplier,
-    separationMultiplier: config.boids.separationMultiplier,
-    frictionMultiplier: config.boids.frictionMultiplier,
-  },
-  maxFps: 144,
-  logFps: true,
-  pointerMode: "flee",
-  showTargetVector: false,
-  showNormalizedTargetVector: false,
-  showVelocityVector: true,
-  showAlignmentArea: false,
-  showCohesionArea: false,
-  showSeekingArea: false,
-  showFleeingArea: false,
-  showSeparationArea: false,
-  showStoppingArea: false,
+  // engine
+  maxFps: config.engine.maxFps,
+  logFps: config.engine.logFps,
+  // pointer
+  pointerMode: config.pointer.mode,
+  // vector
+  showTargetVector: config.vector.showTargetVector,
+  showNormalizedTargetVector: config.vector.showNormalizedTargetVector,
+  showVelocityVector: config.vector.showVelocityVector,
+  showAlignmentArea: config.vector.showAlignmentArea,
+  showCohesionArea: config.vector.showCohesionArea,
+  showSeekingArea: config.vector.showSeekingArea,
+  showFleeingArea: config.vector.showFleeingArea,
+  showSeparationArea: config.vector.showSeparationArea,
+  showStoppingArea: config.vector.showStoppingArea,
+  // boids
+  maxSpeedMultiplier: config.boids.maxSpeedMultiplier,
+  brakingMultiplier: config.boids.brakingMultiplier,
+  alignmentMultiplier: config.boids.alignmentMultiplier,
+  cohesionMultiplier: config.boids.cohesionMultiplier,
+  seekingMultiplier: config.boids.seekingMultiplier,
+  fleeingMultiplier: config.boids.fleeingMultiplier,
+  separationMultiplier: config.boids.separationMultiplier,
+  frictionMultiplier: config.boids.frictionMultiplier,
 }
 
 @StoreConfig({ name: "gui" })

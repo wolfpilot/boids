@@ -7,7 +7,7 @@ import type { BoidTraits } from "@actors/Boid/types"
 import { appService } from "@stores/app"
 import { boidsStore, boidsQuery } from "@stores/boids"
 import { uiQuery } from "@stores/ui"
-import type { GlobalBoidMultipliers } from "@stores/gui/gui.types"
+import type { BoidMultipliers } from "@stores/gui/gui.types"
 import { guiQuery } from "@stores/gui"
 
 // Engine
@@ -66,7 +66,7 @@ export default class Engine {
     this.loop.setMaxFps(maxFps)
   }
 
-  public setGlobalMultipliers(multipliers: GlobalBoidMultipliers) {
+  public setBoidMultipliers(multipliers: BoidMultipliers) {
     boidsStore.set(
       boidsQuery.all.map((boid) => {
         const original = this.originalTraits.get(boid.id)

@@ -10,9 +10,11 @@ export const behaviours = {
 } as const
 export type BehaviourTypes = (typeof behaviours)[keyof typeof behaviours]
 
+export type SteeringTargetBehaviours = Extract<BehaviourTypes, "seek" | "flee">
+
 export interface SteeringTarget {
   position: Vector
-  behaviour: "seek" | "flee"
+  behaviour: SteeringTargetBehaviours
 }
 
 export interface SteeringForces {

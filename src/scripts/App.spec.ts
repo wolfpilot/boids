@@ -16,9 +16,9 @@ describe("App global controls", () => {
   it("updates boids from stepped numeric controls and restores invalid input", () => {
     jest.spyOn(Engine.prototype, "start").mockImplementation()
     jest.spyOn(FpsMonitor.prototype, "init").mockImplementation()
-    const setGlobalMultipliers = jest.spyOn(
+    const setBoidMultipliers = jest.spyOn(
       Engine.prototype,
-      "setGlobalMultipliers"
+      "setBoidMultipliers"
     )
     document.body.innerHTML = '<canvas id="canvas"></canvas>'
     const app = new App()
@@ -85,27 +85,27 @@ describe("App global controls", () => {
     const input = row?.querySelector("input")
     if (!input) throw new Error("No cohesion multiplier input")
     expect(input.value).toBe(
-      String(guiQuery.globalMultipliers.cohesionMultiplier)
+      String(guiQuery.boidMultipliers.cohesionMultiplier)
     )
 
     input.value = "9.237"
     input.dispatchEvent(new Event("change", { bubbles: true }))
 
-    expect(guiQuery.globalMultipliers.cohesionMultiplier).toBe(9.24)
-    expect(setGlobalMultipliers).toHaveBeenLastCalledWith(
-      guiQuery.globalMultipliers
+    expect(guiQuery.boidMultipliers.cohesionMultiplier).toBe(9.24)
+    expect(setBoidMultipliers).toHaveBeenLastCalledWith(
+      guiQuery.boidMultipliers
     )
     const boid = boidsQuery.all[0]
     expect(boid.traits.cohesionAreaSize).toBe(boid.traits.size * 9.24)
 
     frictionInput.value = "0"
     frictionInput.dispatchEvent(new Event("change", { bubbles: true }))
-    expect(guiQuery.globalMultipliers.frictionMultiplier).toBe(0)
+    expect(guiQuery.boidMultipliers.frictionMultiplier).toBe(0)
     expect(boidsQuery.all[0].traits.frictionFactor).toBe(0)
 
     frictionInput.value = "0.33"
     frictionInput.dispatchEvent(new Event("change", { bubbles: true }))
-    expect(guiQuery.globalMultipliers.frictionMultiplier).toBe(0.33)
+    expect(guiQuery.boidMultipliers.frictionMultiplier).toBe(0.33)
     expect(boidsQuery.all[0].traits.frictionFactor).toBe(
       boid.traits.frictionFactor
     )
@@ -123,14 +123,14 @@ describe("App global controls", () => {
     fleeingInput.value = "-1"
     fleeingInput.dispatchEvent(new Event("change", { bubbles: true }))
     fleeingInput.dispatchEvent(new Event("blur"))
-    expect(guiQuery.globalMultipliers.fleeingMultiplier).toBe(7.5)
+    expect(guiQuery.boidMultipliers.fleeingMultiplier).toBe(7.5)
     expect(fleeingInput.value).toBe("7.5")
 
     input.value = "-1"
     input.dispatchEvent(new Event("change", { bubbles: true }))
     input.dispatchEvent(new Event("blur"))
 
-    expect(guiQuery.globalMultipliers.cohesionMultiplier).toBe(9.24)
+    expect(guiQuery.boidMultipliers.cohesionMultiplier).toBe(9.24)
     expect(input.value).toBe("9.24")
   })
 })

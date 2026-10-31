@@ -1,7 +1,26 @@
 // Constants
+import { behaviours } from "@behaviours/types"
 import { BOID_COLORS } from "@constants/colors"
 
 export const config = {
+  engine: {
+    maxFps: 144,
+    logFps: true,
+  },
+  pointer: {
+    mode: behaviours.flee,
+  },
+  vector: {
+    showTargetVector: false,
+    showNormalizedTargetVector: false,
+    showVelocityVector: true,
+    showAlignmentArea: false,
+    showCohesionArea: false,
+    showSeekingArea: false,
+    showFleeingArea: false,
+    showSeparationArea: false,
+    showStoppingArea: false,
+  },
   boids: {
     total: 50,
     minSize: 15,

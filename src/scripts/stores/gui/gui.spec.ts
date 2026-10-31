@@ -19,11 +19,11 @@ describe("global boid multipliers", () => {
     const query = new GuiQuery(store)
     const service = new GuiService(store)
     const received: number[] = []
-    const subscription = query.globalMultipliers$.subscribe((multipliers) => {
+    const subscription = query.boidMultipliers$.subscribe((multipliers) => {
       received.push(multipliers.cohesionMultiplier)
     })
 
-    expect(query.globalMultipliers).toEqual({
+    expect(query.boidMultipliers).toEqual({
       maxSpeedMultiplier: config.boids.maxSpeedMultiplier,
       brakingMultiplier: config.boids.brakingMultiplier,
       alignmentMultiplier: config.boids.alignmentMultiplier,
@@ -35,7 +35,7 @@ describe("global boid multipliers", () => {
     })
 
     expect(service.updateCohesionMultiplier(0)).toBe(true)
-    expect(query.globalMultipliers.cohesionMultiplier).toBe(0)
+    expect(query.boidMultipliers.cohesionMultiplier).toBe(0)
     expect(received).toEqual([config.boids.cohesionMultiplier, 0])
     subscription.unsubscribe()
   })
@@ -54,7 +54,7 @@ describe("global boid multipliers", () => {
     expect(service.updateSeparationMultiplier(6)).toBe(true)
     expect(service.updateFrictionMultiplier(7)).toBe(true)
 
-    expect(query.globalMultipliers).toEqual({
+    expect(query.boidMultipliers).toEqual({
       maxSpeedMultiplier: 1,
       brakingMultiplier: 2,
       alignmentMultiplier: 3,
@@ -76,10 +76,10 @@ describe("global boid multipliers", () => {
     expect(service.updateFrictionMultiplier(Infinity)).toBe(false)
     expect(service.updateFleeingMultiplier(-1)).toBe(false)
     expect(service.updateFleeingMultiplier(NaN)).toBe(false)
-    expect(query.globalMultipliers.frictionMultiplier).toBe(
+    expect(query.boidMultipliers.frictionMultiplier).toBe(
       config.boids.frictionMultiplier
     )
-    expect(query.globalMultipliers.fleeingMultiplier).toBe(
+    expect(query.boidMultipliers.fleeingMultiplier).toBe(
       config.boids.fleeingMultiplier
     )
   })

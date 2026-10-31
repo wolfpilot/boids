@@ -119,11 +119,11 @@ describe("Engine", () => {
       },
     ]
     const engine = new Engine({ canvas, boids, maxFps: 60 })
-    const initial = guiQuery.globalMultipliers
+    const initial = guiQuery.boidMultipliers
 
     engine.init()
     const initialStates = boidsQuery.all.map((boid) => boid.state)
-    engine.setGlobalMultipliers({
+    engine.setBoidMultipliers({
       ...initial,
       maxSpeedMultiplier: initial.maxSpeedMultiplier * 2,
       cohesionMultiplier: initial.cohesionMultiplier * 3,
@@ -142,10 +142,10 @@ describe("Engine", () => {
     })
     expect(boids[0].traits.maxSpeed).toBe(2)
 
-    engine.setGlobalMultipliers({ ...initial, maxSpeedMultiplier: 0 })
+    engine.setBoidMultipliers({ ...initial, maxSpeedMultiplier: 0 })
     expect(boidsQuery.all.map((boid) => boid.traits.maxSpeed)).toEqual([0, 0])
 
-    engine.setGlobalMultipliers(initial)
+    engine.setBoidMultipliers(initial)
     expect(boidsQuery.all.map((boid) => boid.traits.maxSpeed)).toEqual([2, 4])
     boidsQuery.all.forEach((boid, index) => {
       expect(boid.state).toBe(initialStates[index])

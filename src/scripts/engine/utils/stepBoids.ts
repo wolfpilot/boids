@@ -103,11 +103,7 @@ const getTargetInfluence = (
   if (!target) return 0
 
   return target.behaviour === "flee"
-    ? getFleeingInfluence(
-        source,
-        target.position,
-        source.traits.fleeingAreaSize
-      )
+    ? getFleeingInfluence(source, target.position)
     : getSeekingInfluence(source, target.position)
 }
 

@@ -5,9 +5,9 @@ import { mag, subtract } from "@utils/vectorHelper"
 
 export const getFleeingInfluence = (
   source: BoidEntity,
-  target: Vector,
-  radius: number
+  target: Vector
 ): number => {
+  const radius = source.traits.fleeingAreaSize
   if (radius <= 0) return 0
 
   const distance = mag(subtract(source.state.location, target))

@@ -1,106 +1,50 @@
 # Boids
 
-Just a fun little project exploring Boid simulations in JS Canvas.
+A JS Canvas experiment with boids and simulated lifelike behaviours.
 
 ## Table of contents
 
-- [Intro](#intro)
 - [How it works](#how-it-works)
 - [Demo](#demo)
 - [Getting started](#getting-started)
 - [Resources](#resources)
 - [License](#license)
 
-## Intro
-
-This Canvas experiment combines wandering, alignment, cohesion, and separation. When the pointer is in range, a boid seeks or flees from it according to the GUI's pointer mode.
-
 ## How it works
 
-[`App`](src/scripts/App.ts) creates the canvas and boids, initializes the managers and UI, and connects GUI and page visibility changes to [`Engine`](src/scripts/engine/Engine.ts). The engine coordinates two phases: update boid state, then draw the latest state.
+The core components are initialised by [`App`](src/scripts/App.ts):
 
-[`Loop`](src/scripts/engine/Loop.ts) uses `requestAnimationFrame` to decide how many physics updates are due and whether a draw is due. The loop handles timing; it does not calculate steering or touch the canvas.
+- [`Engine`](src/scripts/engine/Engine.ts) runs physics updates from a shared boid snapshot, publishes the results, then draws the latest state.
+- [`Canvas`](src/scripts/actors/Canvas/Canvas.ts) paints the background and keeps the canvas size and logical bounds in sync with the window.
+- [`GUI`](src/scripts/interface/GUI.ts) provides live controls for rendering, pointer behaviour, themes, overlays and boid traits.
 
-### Update
+Two managers handle browser input:
 
-For each due physics update, `Engine` reads the current boid entities from the store as a snapshot. [`stepBoids()`](src/scripts/engine/utils/stepBoids.ts) calculates each boid's next velocity and position from that **same input snapshot**, using the pointer target, nearby boids, steering forces, and friction.
+- [`VisibilityManager`](src/scripts/managers/VisibilityManager.ts) reports when the page is hidden or visible so `App` can stop or restart the engine.
+- [`PointerManager`](src/scripts/managers/PointerManager.ts) tracks mouse position and presence across the page, clearing it when the pointer leaves or the window loses focus.
 
-It then returns a new collection which `Engine` publishes to the store in one operation.
+### Behaviours
 
-A boid therefore cannot react to another boid's new position until the next physics update. If several updates are due in one browser frame, each update starts from the collection published by the previous one.
+The following are based on Craig Reynolds concept of [boids](https://en.wikipedia.org/wiki/Boids), a combination of various algorithms meant to mimic artificial life as flocks of creatures. This idea can be continuously iterated upon to give the individuals various characteristics: big or small, fast or slow, curious, scared or simply meandering.
 
-### Steering and flocking
+Currently the following behaviours have been implemented:
 
-The flocking behaviours follow [Craig Reynolds' steering model](https://www.red3d.com/cwr/steer/gdc99/). Each boid reacts to neighbours within its own behaviour radii:
+- **Align:** Match the velocity of nearby boids.
+- **Cohere:** Steer toward the centre of nearby boids.
+- **Separate:** Move away from close boids, with a stronger push at shorter distances.
+- **Wander:** Follow a gently changing direction when no target is nearby.
+- **Seek:** Steer toward a target and slow down on arrival.
+- **Flee:** Steer away from a nearby target.
 
-- **Alignment** averages neighbour velocity differences to match both heading and speed.
-- **Cohesion** averages offsets toward neighbour positions. The pull naturally becomes smaller near the group centre.
-- **Separation** sums directions away from neighbours, weighted more strongly at short distances. A softened denominator keeps the force finite at very close range.
+The GUI's pointer mode switches between seek or flee when the pointer enters a boid's range.
 
-Each neighbour's influence eases from full strength to zero over the outer 10% of its behaviour radius. Alignment and cohesion also ease over the last 20° on either side of the `300`° field of view. As a boid starts moving, its view changes gradually from all directions to the velocity direction over the first 10% of its maximum speed. Separation still checks every direction, including behind the boid. These transitions prevent a neighbour from suddenly adding or removing a full steering force at a boundary.
-
-The behaviours return unweighted vectors. [`combineSteering()`](src/scripts/engine/utils/combineSteering.ts) applies the weights from [`Boid/config.ts`](src/scripts/actors/Boid/config.ts), adds any existing acceleration, and limits the result to `maxSteeringForce` before movement is calculated.
-
-| Behaviour  | Weight |
-| ---------- | -----: |
-| Alignment  |    0.5 |
-| Cohesion   |  0.005 |
-| Separation |     32 |
-| Wander     |    0.1 |
-| Seek       |      1 |
-| Flee       |      1 |
-
-These are the starting weights for this project. Each weight scales a vector with a different natural magnitude: cohesion starts with a position offset, for example, while separation uses inverse distance. The final combined force is capped at each boid's own maximum steering force before drag is added.
-
-Speed-based drag is added after steering. Each boid's friction factor starts at `size³ × 0.33 × 10⁻⁵`. The resulting acceleration changes velocity, velocity is limited to the boid's maximum speed, and velocity then changes position. Acceleration is cleared for the next update.
-
-Alignment, cohesion, separation, and wander run together by default. When the mouse is present, the selected pointer behaviour eases in while wander eases out over the outer 10% of its radius. Inside that band, seek or flee fully replaces wander and the wander angle is retained. The angle continues to advance while wander contributes. A boid can stop near the pointer only under full seeking influence, when it is already moving slowly and its combined neighbour steering is zero.
-
-Flee steers toward maximum speed away from a target position. Its calculation does not depend on the pointer; the engine currently supplies the pointer position, and another caller could supply another boid's position. Flee does not predict a moving target's future location.
-
-Groups form, merge, and split through these local interactions. Stronger separation maintains space within a flock, while limited perception and persistent wander allow members to take different paths. Soft steering can still permit brief overlaps during crossings. Boids wrap after their whole body leaves the canvas, using logical canvas bounds updated on resize. Neighbour distances are measured directly between their current positions.
+Outside said range, wandering takes over. Wander and target steering blend near the range edge, while align, cohere and separate are permanently activated.
 
 ### Individual and shared variation
 
-When created, each boid gets an individual speed factor between 75% and 350% of the speed derived from its size, and a permanent maximum steering force between `0.35` and `0.7`. It starts in a random direction at 30% of its own maximum speed. The individual speed factor stays with that boid when the global speed multiplier changes.
+Each boid starts with a random size, maximum speed, steering limit, heading, and wander angle. These differences give boids their own motion; live GUI multipliers can adjust their size-based traits later. The flocking rules also change together over time. Smooth cycles vary the alignment, cohesion, and separation ranges and strengths for every boid on each physics update.
 
-Once per fixed physics update, the engine calculates one set of flocking settings for the whole group. Each radius and weight follows a smooth sine cycle around its starting value:
-
-| Behaviour | Radius change and period | Weight change and period |
-| --------- | ------------------------ | ------------------------ |
-| Alignment | ±20% every 12 seconds    | ±25% every 20 seconds    |
-| Cohesion  | ±25% every 24 seconds    | ±25% every 48 seconds    |
-| Separation | ±15% every 10 seconds   | ±20% every 16 seconds    |
-
-The cycles begin at the starting values and advance with physics updates, so pausing the simulation pauses the cycles. Boids keep their own radii and traits; the shared settings scale their effective neighbour radii and the three flocking weights for that update. Wander and seek keep their starting weights. The radius overlays show the effective radii as they change.
-
-Justin Windle's [Organis.ms flock demo](https://github.com/soulwire/organis.ms/blob/gh-pages/demos/flock.js) inspired the use of individual variation and changing flock rules. This implementation uses fixed individual variation and smooth, shared cycles while retaining persistent wander and pointer seeking.
-
-### Wander
-
-[`wander()`](src/scripts/behaviours/wander/wander.ts) implements the two-dimensional circle construction from [Reynolds' wander description](https://www.red3d.com/cwr/steer/Wander.html).
-
-Each boid stores a `wanderAngle`, representing a point on a unit circle. Each wandering update samples an offset uniformly within a unit disk, scales it by `wander.rate`, adds it to the previous point, and projects the point back onto the circle. The updated angle becomes the next update's starting point. This memory makes successive steering directions related.
-
-The circle centre lies `√2` units along the boid's velocity direction. The circle point, scaled by `wander.strength`, is added to that centre to produce the steering vector. These are steering-vector units. With the default strength of `1`, the circle stays ahead of a moving boid. At rest, the remembered circle point supplies the initial direction.
-
-`wander.rate` defaults to `0.15` and controls how quickly the point changes. `wander.strength` controls how far it sits from the circle centre, while the wander weight controls its contribution alongside the flocking forces. Wander keeps contributing while neighbours are present. Random offsets come from `Math.random()`, so paths vary between runs.
-
-### Drawing
-
-When a draw is due, `Engine` clears the canvas and asks each `Boid` actor to draw.
-
-The actors look up their latest entities in the store, so drawing uses the completed physics state. Drawing does not advance physics. There is no interpolation between physics states; a draw shows the latest published state.
-
-### Timing
-
-It's important to understand that the update loop and drawing loop are completely separate.
-
-Physics runs in fixed 1/60-second updates. Browser animation callbacks can arrive at uneven intervals, so the loop saves leftover time until another full update is due. The GUI's `maxFps` setting caps **drawing only**; changing it does not change the physics update rate. At a steady 30 FPS draw rate, there are typically two physics updates between draws.
-
-After a slow or suspended browser frame, the loop allows at most five physics updates at once and drops excess elapsed time rather than trying to replay a long pause. When the page is hidden, it stops requesting frames. When the page becomes visible, it restarts with a fresh clock. Boid velocities are applied once per fixed update, rather than scaled by each browser frame's elapsed time.
-
-Neighbour searches currently scan the flock for each boid, so their cost grows roughly with the square of the boid count. A spatial grid would be a useful later change for much larger flocks.
+When the page is hidden/unfocused, the physics pause and continue from there when it becomes visible/focused again.
 
 ## Demo
 
@@ -128,9 +72,9 @@ $ pnpm install
 $ pnpm start
 ```
 
-Population, size, and the starting trait multipliers are configured in [`src/scripts/config.ts`](src/scripts/config.ts). The GUI's `global` folder lets you change all eight multipliers for existing boids while the simulation runs, including an independent flee radius. The `pointer` folder switches between seek and flee, with seek selected initially. The numeric fields accept nonnegative values, including zero, and have no preset upper limit. Changing population or size in the config still requires a reload.
+Set the starting population, size range, boid multipliers, pointer mode, theme, and display defaults in [`src/scripts/config.ts`](src/scripts/config.ts). The GUI lets you change the FPS cap, pointer mode, theme, vector overlays and all boid multipliers while the simulation runs.
 
-Development output and cache use `.parcel-dev` and `.parcel-cache-dev`. Production builds write to `dist` and use `.parcel-cache`.
+Changing the population or size range still requires a reload.
 
 ### How to deploy
 

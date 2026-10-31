@@ -3,9 +3,11 @@ import {
   align,
   cohere,
   seek,
+  flee,
   separate,
   wander,
   getSeekingInfluence,
+  getFleeingInfluence,
 } from "@behaviours/index"
 import VectorImpl from "@geometry/Vector"
 import type { BoidEntity } from "@ts/entities"
@@ -20,14 +22,18 @@ import {
 } from "@utils/vectorHelper"
 import { wrapLocation } from "@engine/utils/wrapLocation"
 import { combineSteering } from "@engine/utils/combineSteering"
-import { FlockDynamics, SteeringForces } from "@behaviours/types"
+import {
+  FlockDynamics,
+  SteeringForces,
+  SteeringTarget,
+} from "@behaviours/types"
 import { createWanderOffset } from "@engine/utils/createWanderOffset"
 import { getFlockDynamics } from "@engine/utils/getFlockDynamics"
 
 interface StepBoidsOptions {
   snapshot: readonly BoidEntity[]
   bounds: Bounds
-  target?: Vector
+  target?: SteeringTarget
   flockDynamics?: FlockDynamics
 }
 
@@ -90,11 +96,26 @@ const advanceBoid = (
   }
 }
 
+const getTargetInfluence = (
+  source: BoidEntity,
+  target?: SteeringTarget
+): number => {
+  if (!target) return 0
+
+  return target.behaviour === "flee"
+    ? getFleeingInfluence(
+        source,
+        target.position,
+        source.traits.fleeingAreaSize
+      )
+    : getSeekingInfluence(source, target.position)
+}
+
 const stepBoid = (
   source: BoidEntity,
   snapshot: readonly BoidEntity[],
   flockDynamics: FlockDynamics,
-  target?: Vector
+  target?: SteeringTarget
 ): BoidEntity => {
   const neighbours = snapshot.filter((boid) => boid.id !== source.id)
   const flockingSource = {
@@ -117,25 +138,29 @@ const stepBoid = (
     separation: separate({ boids: neighbours, source: flockingSource }),
   }
 
-  const seekingInfluence = target ? getSeekingInfluence(source, target) : 0
+  const targetInfluence = getTargetInfluence(source, target)
   const targetVector =
-    target && seekingInfluence > 0
-      ? subtract(target, source.state.location)
+    target && targetInfluence > 0
+      ? subtract(target.position, source.state.location)
       : new VectorImpl(0, 0)
   const forces: SteeringForces = { ...neighbourForces }
   let wanderAngle = source.state.wanderAngle
 
-  if (seekingInfluence < 1) {
+  if (targetInfluence < 1) {
     const { force, nextAngle } = wander({
       source,
       randomOffset: createWanderOffset(),
     })
-    forces.wander = multiply(force, 1 - seekingInfluence)
+    forces.wander = multiply(force, 1 - targetInfluence)
     wanderAngle = nextAngle
   }
 
-  if (target && seekingInfluence > 0) {
-    forces.seek = multiply(seek({ target, source }), seekingInfluence)
+  if (target && targetInfluence > 0) {
+    const steering =
+      target.behaviour === "flee"
+        ? flee({ target: target.position, source })
+        : seek({ target: target.position, source })
+    forces[target.behaviour] = multiply(steering, targetInfluence)
   }
 
   const boid = {
@@ -148,7 +173,8 @@ const stepBoid = (
     },
   }
 
-  return seekingInfluence === 1 &&
+  return target?.behaviour === "seek" &&
+    targetInfluence === 1 &&
     shouldStop(source, targetVector, neighbourForces, flockDynamics)
     ? stopBoid(boid)
     : advanceBoid(boid, forces, flockDynamics)

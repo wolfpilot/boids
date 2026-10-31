@@ -45,6 +45,7 @@ export const config: BoidConfig = {
     separation: 32,
     wander: 0.1,
     seek: 1,
+    flee: 1,
   },
   wander: {
     strength: 1,

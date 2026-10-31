@@ -103,7 +103,9 @@ export default class Engine {
 
     const updatedBoids = stepBoids({
       snapshot: boidsQuery.all,
-      target: isPointerPresent ? pointerVector : undefined,
+      target: isPointerPresent
+        ? { position: pointerVector, behaviour: "seek" }
+        : undefined,
       bounds: this.canvas.getBounds(),
       flockDynamics,
     })

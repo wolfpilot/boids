@@ -10,10 +10,16 @@ export const behaviours = {
 } as const
 export type BehaviourTypes = (typeof behaviours)[keyof typeof behaviours]
 
+export interface SteeringTarget {
+  position: Vector
+  behaviour: "seek" | "flee"
+}
+
 export interface SteeringForces {
   alignment?: Vector
   cohesion?: Vector
   seek?: Vector
+  flee?: Vector
   separation?: Vector
   wander?: Vector
 }
@@ -25,6 +31,7 @@ export interface SteeringWeights {
   separation: number
   wander: number
   seek: number
+  flee: number
 }
 export type SteeringWeightsTypes = keyof SteeringWeights
 

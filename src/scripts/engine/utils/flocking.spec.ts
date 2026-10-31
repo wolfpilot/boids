@@ -138,7 +138,7 @@ describe("flocking over time", () => {
     for (let update = 0; update < 120; update++) {
       snapshot = stepBoids({
         snapshot,
-        target,
+        target: { position: target, behaviour: "seek" },
         bounds: { width: 20000, height: 20000 },
       })
     }

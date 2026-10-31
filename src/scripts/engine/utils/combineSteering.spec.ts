@@ -27,6 +27,11 @@ describe("combineSteering", () => {
       x: 0.3,
       y: 0.4,
     })
+
+    expect(combineSteering({ flee: { x: -3, y: 4 } })).toEqual({
+      x: -0.3,
+      y: 0.4,
+    })
   })
 
   it("includes existing acceleration in the force budget", () => {
@@ -70,6 +75,7 @@ describe("combineSteering", () => {
       separation: 0,
       wander: 0,
       seek: 0.2,
+      flee: 0,
     }
     expect(combineSteering({ seek: { x: 1, y: 0 } }, { weights })).toEqual({
       x: 0.2,

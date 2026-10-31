@@ -96,6 +96,8 @@ class BoidImpl implements Boid {
 
     if (!boidEntity?.state) return
 
+    const color = boidEntity.traits.color
+
     const isOffscreen = isEntityOffscreen({
       v: boidEntity.state.location,
       radius: boidEntity.traits.size,
@@ -105,7 +107,8 @@ class BoidImpl implements Boid {
       this.drawAlignmentArea(
         boidEntity.state,
         boidEntity.traits.alignmentAreaSize *
-          (flockDynamics?.alignmentRadiusMultiplier ?? 1)
+          (flockDynamics?.alignmentRadiusMultiplier ?? 1),
+        color
       )
     }
 
@@ -129,7 +132,8 @@ class BoidImpl implements Boid {
       this.drawSeparationArea(
         boidEntity.state,
         boidEntity.traits.separationAreaSize *
-          (flockDynamics?.separationRadiusMultiplier ?? 1)
+          (flockDynamics?.separationRadiusMultiplier ?? 1),
+        color
       )
     }
 
@@ -140,14 +144,14 @@ class BoidImpl implements Boid {
     // Skip drawing if offscreen
     if (isOffscreen) return
 
-    this.drawShape(boidEntity.state)
+    this.drawShape(boidEntity.state, color)
 
     if (guiQuery.allValues.showTargetVector) {
       this.drawTargetVector(boidEntity.state)
     }
 
     if (guiQuery.allValues.showVelocityVector) {
-      this.drawVelocityVector(boidEntity.state)
+      this.drawVelocityVector(boidEntity.state, color)
     }
 
     if (guiQuery.allValues.showNormalizedTargetVector) {
@@ -156,11 +160,11 @@ class BoidImpl implements Boid {
   }
 
   // Draw area in which the boid can be affected by external forces
-  private drawAlignmentArea(state: BoidState, radius: number) {
+  private drawAlignmentArea(state: BoidState, radius: number, color: string) {
     this.ctx.beginPath()
     this.ctx.arc(state.location.x, state.location.y, radius, 0, 2 * Math.PI)
     this.ctx.lineWidth = 1
-    this.ctx.strokeStyle = this.traits.color
+    this.ctx.strokeStyle = color
     this.ctx.stroke()
   }
 
@@ -189,7 +193,7 @@ class BoidImpl implements Boid {
   }
 
   // Draw area in which the boid wants to push itself away from others
-  private drawSeparationArea(state: BoidState, radius: number) {
+  private drawSeparationArea(state: BoidState, radius: number, color: string) {
     this.ctx.save()
     this.ctx.globalAlpha = 0.35
 
@@ -199,7 +203,7 @@ class BoidImpl implements Boid {
       state.location.y - this.traits.size / 2
     )
     this.ctx.arc(state.location.x, state.location.y, radius, 0, 2 * Math.PI)
-    this.ctx.fillStyle = this.traits.color
+    this.ctx.fillStyle = color
     this.ctx.fill()
 
     this.ctx.restore()
@@ -223,7 +227,7 @@ class BoidImpl implements Boid {
   }
 
   // Draw the shape
-  private drawShape(state: BoidState) {
+  private drawShape(state: BoidState, color: string) {
     this.ctx.beginPath()
     this.ctx.moveTo(
       state.location.x - this.traits.size / 2,
@@ -236,7 +240,7 @@ class BoidImpl implements Boid {
       0,
       2 * Math.PI
     )
-    this.ctx.fillStyle = this.traits.color
+    this.ctx.fillStyle = color
     this.ctx.fill()
   }
 
@@ -271,14 +275,14 @@ class BoidImpl implements Boid {
     this.ctx.stroke()
   }
 
-  private drawVelocityVector(state: BoidState) {
+  private drawVelocityVector(state: BoidState, color: string) {
     const upscaledVelocityVector = multiply(state.velocity, 7.5)
 
     drawArrow({
       ctx: this.ctx,
       origin: state.location,
       displacement: upscaledVelocityVector,
-      color: darkenHexColor(this.traits.color, 0.025),
+      color: darkenHexColor(color, 0.025),
       lineWidth: 3,
       headSize: 8,
     })

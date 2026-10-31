@@ -69,6 +69,10 @@ describe("getFlockDynamics", () => {
     expect(getFlockDynamics(quarterCycle(20)).steeringWeights.seek).toBe(
       config.steeringWeights.seek
     )
+    expect(getFlockDynamics(quarterCycle(20)).steeringWeights.flee).toBe(
+      config.steeringWeights.flee
+    )
     expect(config.steeringWeights.alignment).toBe(0.5)
+    expect(config.steeringWeights.flee).toBe(1)
   })
 })

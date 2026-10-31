@@ -7,7 +7,8 @@ import type { BoidTraits } from "@actors/Boid/types"
 import { appService } from "@stores/app"
 import { boidsStore, boidsQuery } from "@stores/boids"
 import { uiQuery } from "@stores/ui"
-import type { GlobalBoidMultipliers } from "@stores/gui/gui.types"
+import type { BoidMultipliers } from "@stores/gui/gui.types"
+import { guiQuery } from "@stores/gui"
 
 // Engine
 import Loop, { FramePlan } from "@engine/Loop"
@@ -65,7 +66,7 @@ export default class Engine {
     this.loop.setMaxFps(maxFps)
   }
 
-  public setGlobalMultipliers(multipliers: GlobalBoidMultipliers) {
+  public setBoidMultipliers(multipliers: BoidMultipliers) {
     boidsStore.set(
       boidsQuery.all.map((boid) => {
         const original = this.originalTraits.get(boid.id)
@@ -103,7 +104,9 @@ export default class Engine {
 
     const updatedBoids = stepBoids({
       snapshot: boidsQuery.all,
-      target: isPointerPresent ? pointerVector : undefined,
+      target: isPointerPresent
+        ? { position: pointerVector, behaviour: guiQuery.pointerMode }
+        : undefined,
       bounds: this.canvas.getBounds(),
       flockDynamics,
     })

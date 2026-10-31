@@ -1,5 +1,5 @@
 import { GuiStore } from "@stores/gui/gui.store"
-import { GlobalBoidMultipliers } from "@stores/gui/gui.types"
+import { BoidMultipliers, PointerMode } from "@stores/gui/gui.types"
 
 export class GuiService {
   constructor(private guiStore: GuiStore) {}
@@ -11,6 +11,11 @@ export class GuiService {
 
   updateLogFps(val: boolean) {
     this.guiStore.update({ logFps: val })
+  }
+
+  // pointer
+  updatePointerMode(mode: PointerMode) {
+    this.guiStore.update({ pointerMode: mode })
   }
 
   // vector
@@ -38,6 +43,10 @@ export class GuiService {
     this.guiStore.update({ showSeekingArea: val })
   }
 
+  updateShowFleeingArea(val: boolean) {
+    this.guiStore.update({ showFleeingArea: val })
+  }
+
   updateShowSeparationArea(val: boolean) {
     this.guiStore.update({ showSeparationArea: val })
   }
@@ -46,47 +55,49 @@ export class GuiService {
     this.guiStore.update({ showStoppingArea: val })
   }
 
-  // global
+  // boids
   updateMaxSpeedMultiplier(value: number): boolean {
-    return this.updateMultiplier("maxSpeedMultiplier", value)
+    return this.updateBoidsMultiplier("maxSpeedMultiplier", value)
   }
 
   updateBrakingMultiplier(value: number): boolean {
-    return this.updateMultiplier("brakingMultiplier", value)
+    return this.updateBoidsMultiplier("brakingMultiplier", value)
   }
 
   updateAlignmentMultiplier(value: number): boolean {
-    return this.updateMultiplier("alignmentMultiplier", value)
+    return this.updateBoidsMultiplier("alignmentMultiplier", value)
   }
 
   updateCohesionMultiplier(value: number): boolean {
-    return this.updateMultiplier("cohesionMultiplier", value)
+    return this.updateBoidsMultiplier("cohesionMultiplier", value)
   }
 
   updateSeekingMultiplier(value: number): boolean {
-    return this.updateMultiplier("seekingMultiplier", value)
+    return this.updateBoidsMultiplier("seekingMultiplier", value)
+  }
+
+  updateFleeingMultiplier(value: number): boolean {
+    return this.updateBoidsMultiplier("fleeingMultiplier", value)
   }
 
   updateSeparationMultiplier(value: number): boolean {
-    return this.updateMultiplier("separationMultiplier", value)
+    return this.updateBoidsMultiplier("separationMultiplier", value)
   }
 
   updateFrictionMultiplier(value: number): boolean {
-    return this.updateMultiplier("frictionMultiplier", value)
+    return this.updateBoidsMultiplier("frictionMultiplier", value)
   }
 
-  private updateMultiplier(
-    key: keyof GlobalBoidMultipliers,
+  private updateBoidsMultiplier(
+    key: keyof BoidMultipliers,
     value: number
   ): boolean {
     if (!Number.isFinite(value) || value < 0) return false
 
     this.guiStore.update({
-      globalMultipliers: {
-        ...this.guiStore.getValue().globalMultipliers,
-        [key]: value,
-      },
+      [key]: value,
     })
+
     return true
   }
 }

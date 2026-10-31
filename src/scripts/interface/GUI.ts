@@ -2,6 +2,7 @@ import * as dat from "dat.gui"
 
 // Store
 import { guiService, guiQuery } from "@stores/gui"
+import type { PointerMode } from "@stores/gui/gui.types"
 
 // Create mutable config object from the store's initial state
 const defaults = { ...guiQuery.allValues }
@@ -14,62 +15,74 @@ class GUI {
   private setupGUI() {
     const gui = new dat.GUI({ width: 300 })
 
-    const fpsFolder = gui.addFolder("fps")
-    const boidFolder = gui.addFolder("vector")
-    const globalFolder = gui.addFolder("global")
+    const engineFolder = gui.addFolder("engine")
+    const pointerFolder = gui.addFolder("pointer")
+    const vectorFolder = gui.addFolder("vector")
+    const boidsFolder = gui.addFolder("boids")
 
-    // fps
-    const maxFpsCtrl = fpsFolder.add(defaults, "maxFps")
-    const logFpsCtrl = fpsFolder.add(defaults, "logFps")
+    // engine
+    const maxFpsCtrl = engineFolder.add(defaults, "maxFps")
+    const logFpsCtrl = engineFolder.add(defaults, "logFps")
+
+    // pointer
+    const pointerModeCtrl = pointerFolder.add(defaults, "pointerMode", [
+      "seek",
+      "flee",
+    ])
 
     // vector
-    const targetVectorCtrl = boidFolder.add(defaults, "showTargetVector")
-    const normalizedVectorCtrl = boidFolder.add(
+    const targetVectorCtrl = vectorFolder.add(defaults, "showTargetVector")
+    const normalizedVectorCtrl = vectorFolder.add(
       defaults,
       "showNormalizedTargetVector"
     )
-    const velocityVectorCtrl = boidFolder.add(defaults, "showVelocityVector")
+    const velocityVectorCtrl = vectorFolder.add(defaults, "showVelocityVector")
 
-    const alignmentAreaCtrl = boidFolder.add(defaults, "showAlignmentArea")
-    const cohesionAreaCtrl = boidFolder.add(defaults, "showCohesionArea")
-    const seekingAreaCtrl = boidFolder.add(defaults, "showSeekingArea")
-    const separationAreaCtrl = boidFolder.add(defaults, "showSeparationArea")
-    const stoppingAreaCtrl = boidFolder.add(defaults, "showStoppingArea")
+    const alignmentAreaCtrl = vectorFolder.add(defaults, "showAlignmentArea")
+    const cohesionAreaCtrl = vectorFolder.add(defaults, "showCohesionArea")
+    const seekingAreaCtrl = vectorFolder.add(defaults, "showSeekingArea")
+    const fleeingAreaCtrl = vectorFolder.add(defaults, "showFleeingArea")
+    const separationAreaCtrl = vectorFolder.add(defaults, "showSeparationArea")
+    const stoppingAreaCtrl = vectorFolder.add(defaults, "showStoppingArea")
 
-    // global
-    const globalInputs = { ...guiQuery.globalMultipliers }
-    const maxSpeedCtrl = globalFolder
-      .add(globalInputs, "maxSpeedMultiplier")
+    // boids
+    const maxSpeedCtrl = boidsFolder
+      .add(defaults, "maxSpeedMultiplier")
       .step(0.01)
     maxSpeedCtrl.updateDisplay()
-    const brakingCtrl = globalFolder
-      .add(globalInputs, "brakingMultiplier")
+    const brakingCtrl = boidsFolder
+      .add(defaults, "brakingMultiplier")
       .step(0.01)
     brakingCtrl.updateDisplay()
-    const alignmentCtrl = globalFolder
-      .add(globalInputs, "alignmentMultiplier")
+    const alignmentCtrl = boidsFolder
+      .add(defaults, "alignmentMultiplier")
       .step(0.01)
     alignmentCtrl.updateDisplay()
-    const cohesionCtrl = globalFolder
-      .add(globalInputs, "cohesionMultiplier")
+    const cohesionCtrl = boidsFolder
+      .add(defaults, "cohesionMultiplier")
       .step(0.01)
     cohesionCtrl.updateDisplay()
-    const seekingCtrl = globalFolder
-      .add(globalInputs, "seekingMultiplier")
+    const seekingCtrl = boidsFolder
+      .add(defaults, "seekingMultiplier")
       .step(0.01)
     seekingCtrl.updateDisplay()
-    const separationCtrl = globalFolder
-      .add(globalInputs, "separationMultiplier")
+    const fleeingCtrl = boidsFolder
+      .add(defaults, "fleeingMultiplier")
+      .step(0.01)
+    fleeingCtrl.updateDisplay()
+    const separationCtrl = boidsFolder
+      .add(defaults, "separationMultiplier")
       .step(0.01)
     separationCtrl.updateDisplay()
-    const frictionCtrl = globalFolder
-      .add(globalInputs, "frictionMultiplier")
+    const frictionCtrl = boidsFolder
+      .add(defaults, "frictionMultiplier")
       .step(0.01)
     frictionCtrl.updateDisplay()
 
-    fpsFolder.open()
-    boidFolder.open()
-    globalFolder.open()
+    engineFolder.open()
+    pointerFolder.open()
+    vectorFolder.open()
+    boidsFolder.open()
 
     // fps
     maxFpsCtrl.onChange((value: number) => {
@@ -105,6 +118,10 @@ class GUI {
       guiService.updateShowSeekingArea(value)
     })
 
+    fleeingAreaCtrl.onChange((value: boolean) => {
+      guiService.updateShowFleeingArea(value)
+    })
+
     separationAreaCtrl.onChange((value: boolean) => {
       guiService.updateShowSeparationArea(value)
     })
@@ -113,13 +130,17 @@ class GUI {
       guiService.updateShowStoppingArea(value)
     })
 
+    // pointer
+    pointerModeCtrl.onChange((mode: PointerMode) => {
+      guiService.updatePointerMode(mode)
+    })
+
     // global
     maxSpeedCtrl.onChange((value: number) => {
       guiService.updateMaxSpeedMultiplier(value)
     })
     maxSpeedCtrl.onFinishChange(() => {
-      globalInputs.maxSpeedMultiplier =
-        guiQuery.globalMultipliers.maxSpeedMultiplier
+      guiService.updateMaxSpeedMultiplier(guiQuery.maxSpeedMultiplier)
       maxSpeedCtrl.updateDisplay()
     })
 
@@ -127,8 +148,7 @@ class GUI {
       guiService.updateBrakingMultiplier(value)
     })
     brakingCtrl.onFinishChange(() => {
-      globalInputs.brakingMultiplier =
-        guiQuery.globalMultipliers.brakingMultiplier
+      guiService.updateBrakingMultiplier(guiQuery.brakingMultiplier)
       brakingCtrl.updateDisplay()
     })
 
@@ -136,8 +156,7 @@ class GUI {
       guiService.updateAlignmentMultiplier(value)
     })
     alignmentCtrl.onFinishChange(() => {
-      globalInputs.alignmentMultiplier =
-        guiQuery.globalMultipliers.alignmentMultiplier
+      guiService.updateAlignmentMultiplier(guiQuery.alignmentMultiplier)
       alignmentCtrl.updateDisplay()
     })
 
@@ -145,8 +164,7 @@ class GUI {
       guiService.updateCohesionMultiplier(value)
     })
     cohesionCtrl.onFinishChange(() => {
-      globalInputs.cohesionMultiplier =
-        guiQuery.globalMultipliers.cohesionMultiplier
+      guiService.updateCohesionMultiplier(guiQuery.cohesionMultiplier)
       cohesionCtrl.updateDisplay()
     })
 
@@ -154,17 +172,23 @@ class GUI {
       guiService.updateSeekingMultiplier(value)
     })
     seekingCtrl.onFinishChange(() => {
-      globalInputs.seekingMultiplier =
-        guiQuery.globalMultipliers.seekingMultiplier
+      guiService.updateSeekingMultiplier(guiQuery.seekingMultiplier)
       seekingCtrl.updateDisplay()
+    })
+
+    fleeingCtrl.onChange((value: number) => {
+      guiService.updateFleeingMultiplier(value)
+    })
+    fleeingCtrl.onFinishChange(() => {
+      guiService.updateFleeingMultiplier(guiQuery.fleeingMultiplier)
+      fleeingCtrl.updateDisplay()
     })
 
     separationCtrl.onChange((value: number) => {
       guiService.updateSeparationMultiplier(value)
     })
     separationCtrl.onFinishChange(() => {
-      globalInputs.separationMultiplier =
-        guiQuery.globalMultipliers.separationMultiplier
+      guiService.updateSeparationMultiplier(guiQuery.separationMultiplier)
       separationCtrl.updateDisplay()
     })
 
@@ -172,8 +196,7 @@ class GUI {
       guiService.updateFrictionMultiplier(value)
     })
     frictionCtrl.onFinishChange(() => {
-      globalInputs.frictionMultiplier =
-        guiQuery.globalMultipliers.frictionMultiplier
+      guiService.updateFrictionMultiplier(guiQuery.frictionMultiplier)
       frictionCtrl.updateDisplay()
     })
   }

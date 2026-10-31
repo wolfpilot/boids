@@ -25,6 +25,9 @@ export interface BoidConfig {
   seekingArea: {
     color: string
   }
+  fleeingArea: {
+    color: string
+  }
   cohesionArea: {
     color: string
   }
@@ -42,6 +45,7 @@ export const config: BoidConfig = {
     separation: 32,
     wander: 0.1,
     seek: 1,
+    flee: 1,
   },
   wander: {
     strength: 1,
@@ -60,6 +64,9 @@ export const config: BoidConfig = {
   },
   seekingArea: {
     color: "#2ea8ff",
+  },
+  fleeingArea: {
+    color: "#ff8a3d",
   },
   cohesionArea: {
     color: "#8b5cf6",

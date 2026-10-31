@@ -1,13 +1,13 @@
 import type { BoidTraits } from "@actors/Boid/types"
 import { config } from "../../config"
-import type { GlobalBoidMultipliers } from "@stores/gui/gui.types"
+import type { BoidMultipliers } from "@stores/gui/gui.types"
 
 const scale = (original: number, initial: number, current: number): number =>
   original * (current / initial)
 
 export const getScaledBoidTraits = (
   original: BoidTraits,
-  multipliers: GlobalBoidMultipliers
+  multipliers: BoidMultipliers
 ): BoidTraits => ({
   ...original,
   maxSpeed: scale(
@@ -34,6 +34,11 @@ export const getScaledBoidTraits = (
     original.seekingAreaSize,
     config.boids.seekingMultiplier,
     multipliers.seekingMultiplier
+  ),
+  fleeingAreaSize: scale(
+    original.fleeingAreaSize,
+    config.boids.fleeingMultiplier,
+    multipliers.fleeingMultiplier
   ),
   separationAreaSize: scale(
     original.separationAreaSize,

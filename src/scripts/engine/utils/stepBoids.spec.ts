@@ -2,8 +2,18 @@ import { stepBoids } from "@engine/utils/stepBoids"
 import { getFlockDynamics } from "@engine/utils/getFlockDynamics"
 import { createBoidEntity } from "@utils/testHelpers"
 import { mag } from "@utils/vectorHelper"
+import type { SteeringTarget } from "@behaviours/types"
+import type { Vector } from "@ts/geometry"
 
 const bounds = { width: 1000, height: 1000 }
+const seekTarget = (position: Vector): SteeringTarget => ({
+  position,
+  behaviour: "seek",
+})
+const fleeTarget = (position: Vector): SteeringTarget => ({
+  position,
+  behaviour: "flee",
+})
 
 describe("stepBoids", () => {
   it("uses one snapshot regardless of boid update order", () => {
@@ -15,7 +25,7 @@ describe("stepBoids", () => {
       id: 2,
       state: { location: { x: 5, y: 0 }, velocity: { x: -0.1, y: 0 } },
     })
-    const target = { x: 20, y: 0 }
+    const target = seekTarget({ x: 20, y: 0 })
     const flockDynamics = getFlockDynamics(135)
 
     const forward = stepBoids({
@@ -134,7 +144,7 @@ describe("stepBoids", () => {
       state: { location: { x: 5, y: 0 } },
     })
 
-    const target = { x: 0, y: 0 }
+    const target = seekTarget({ x: 0, y: 0 })
     const [updated] = stepBoids({
       snapshot: [source, neighbour],
       target,
@@ -156,7 +166,7 @@ describe("stepBoids", () => {
 
     const [updated] = stepBoids({
       snapshot: [source],
-      target: { x: 11, y: 20 },
+      target: seekTarget({ x: 11, y: 20 }),
       bounds,
     })
 
@@ -180,7 +190,7 @@ describe("stepBoids", () => {
 
     const [updated] = stepBoids({
       snapshot: [source],
-      target: { x: 110, y: 20 },
+      target: seekTarget({ x: 110, y: 20 }),
       bounds,
     })
 
@@ -199,7 +209,7 @@ describe("stepBoids", () => {
     const quickTurn = createBoidEntity({
       traits: { maxSpeed: 10, maxSteeringForce: 0.6, seekingAreaSize: 200 },
     })
-    const target = { x: 100, y: 0 }
+    const target = seekTarget({ x: 100, y: 0 })
 
     const [slowNext] = stepBoids({ snapshot: [slowTurn], target, bounds })
     const [quickNext] = stepBoids({ snapshot: [quickTurn], target, bounds })
@@ -218,12 +228,12 @@ describe("stepBoids", () => {
     try {
       const [seeking] = stepBoids({
         snapshot: [source],
-        target: { x: 20, y: 0 },
+        target: seekTarget({ x: 20, y: 0 }),
         bounds,
       })
       const [wandering] = stepBoids({
         snapshot: [source],
-        target: { x: 30, y: 0 },
+        target: seekTarget({ x: 30, y: 0 }),
         bounds,
       })
       const [absent] = stepBoids({
@@ -247,6 +257,117 @@ describe("stepBoids", () => {
     }
   })
 
+  it("flees inside its range and wanders outside it", () => {
+    const source = createBoidEntity({
+      traits: { fleeingAreaSize: 30 },
+      state: {
+        location: { x: 100, y: 100 },
+        wanderAngle: Math.PI / 2,
+      },
+    })
+    const random = jest.spyOn(Math, "random").mockReturnValue(0)
+
+    try {
+      const [fleeing] = stepBoids({
+        snapshot: [source],
+        target: fleeTarget({ x: 120, y: 100 }),
+        bounds,
+      })
+      expect(fleeing.state.velocity.x).toBeLessThan(0)
+      expect(fleeing.state.velocity.y).toBe(0)
+      expect(fleeing.state.targetVector).toEqual({ x: 20, y: 0 })
+      expect(fleeing.state.normTargetVector).toEqual({ x: 1, y: 0 })
+      expect(fleeing.state.wanderAngle).toBe(source.state.wanderAngle)
+      expect(random).not.toHaveBeenCalled()
+
+      const [wandering] = stepBoids({
+        snapshot: [source],
+        target: fleeTarget({ x: 130, y: 100 }),
+        bounds,
+      })
+      expect(wandering.state.velocity.y).toBeGreaterThan(0)
+      expect(wandering.state.targetVector).toEqual({ x: 0, y: 0 })
+      expect(random).toHaveBeenCalled()
+    } finally {
+      random.mockRestore()
+    }
+  })
+
+  it("blends flee with wander and limits the combined force", () => {
+    const source = createBoidEntity({
+      traits: { fleeingAreaSize: 30, maxSteeringForce: 0.4 },
+      state: {
+        location: { x: 100, y: 100 },
+        wanderAngle: Math.PI / 2,
+      },
+    })
+    const random = jest.spyOn(Math, "random").mockReturnValue(0)
+
+    try {
+      const [blended] = stepBoids({
+        snapshot: [source],
+        target: fleeTarget({ x: 128.5, y: 100 }),
+        bounds,
+      })
+      expect(blended.state.velocity.x).toBeLessThan(0)
+      expect(blended.state.velocity.y).toBeGreaterThan(0)
+      expect(mag(blended.state.velocity)).toBeCloseTo(0.4)
+      expect(blended.state.targetVector).toEqual({ x: 28.5, y: 0 })
+
+      const [boundary] = stepBoids({
+        snapshot: [source],
+        target: fleeTarget({ x: 130, y: 100 }),
+        bounds,
+      })
+      expect(boundary.state.targetVector).toEqual({ x: 0, y: 0 })
+      expect(source.state.location).toEqual({ x: 100, y: 100 })
+    } finally {
+      random.mockRestore()
+    }
+  })
+
+  it("never applies the seek stop rule while fleeing", () => {
+    const source = createBoidEntity({
+      state: {
+        location: { x: 100, y: 100 },
+        velocity: { x: 0.05, y: 0 },
+      },
+    })
+    const target = { x: 101, y: 100 }
+    const [seeking] = stepBoids({
+      snapshot: [source],
+      target: seekTarget(target),
+      bounds,
+    })
+    const [fleeing] = stepBoids({
+      snapshot: [source],
+      target: fleeTarget(target),
+      bounds,
+    })
+
+    expect(seeking.state.velocity).toEqual({ x: 0, y: 0 })
+    expect(fleeing.state.velocity.x).toBeLessThan(0)
+  })
+
+  it("uses the same snapshot for fleeing regardless of update order", () => {
+    const first = createBoidEntity({
+      id: 1,
+      state: { location: { x: 100, y: 100 } },
+    })
+    const second = createBoidEntity({
+      id: 2,
+      state: { location: { x: 110, y: 100 } },
+    })
+    const target = fleeTarget({ x: 105, y: 100 })
+    const before = JSON.stringify([first, second, target])
+
+    const forward = stepBoids({ snapshot: [first, second], target, bounds })
+    const reverse = stepBoids({ snapshot: [second, first], target, bounds })
+
+    expect(forward).toEqual(reverse.reverse())
+    expect(JSON.stringify([first, second, target])).toBe(before)
+  })
+
   it("blends seek and wander at the range edge and advances wander state", () => {
     const source = createBoidEntity({
       traits: { seekingAreaSize: 30 },
@@ -261,7 +382,7 @@ describe("stepBoids", () => {
     try {
       const [blended] = stepBoids({
         snapshot: [source],
-        target: { x: 28.5, y: 0 },
+        target: seekTarget({ x: 28.5, y: 0 }),
         bounds,
       })
 
@@ -273,7 +394,7 @@ describe("stepBoids", () => {
       random.mockClear()
       const [seeking] = stepBoids({
         snapshot: [source],
-        target: { x: 20, y: 0 },
+        target: seekTarget({ x: 20, y: 0 }),
         bounds,
       })
       expect(seeking.state.wanderAngle).toBe(0)
@@ -294,12 +415,12 @@ describe("stepBoids", () => {
     try {
       const [inside] = stepBoids({
         snapshot: [source],
-        target: { x: 29.99, y: 0 },
+        target: seekTarget({ x: 29.99, y: 0 }),
         bounds,
       })
       const [boundary] = stepBoids({
         snapshot: [source],
-        target: { x: 30, y: 0 },
+        target: seekTarget({ x: 30, y: 0 }),
         bounds,
       })
 
@@ -325,7 +446,7 @@ describe("stepBoids", () => {
     try {
       const [blended] = stepBoids({
         snapshot: [source],
-        target: { x: 2.4, y: 0 },
+        target: seekTarget({ x: 2.4, y: 0 }),
         bounds,
       })
 
@@ -345,7 +466,7 @@ describe("stepBoids", () => {
     try {
       const [seeking] = stepBoids({
         snapshot: [source],
-        target: { x: 0, y: 0 },
+        target: seekTarget({ x: 0, y: 0 }),
         bounds,
       })
       const [wandering] = stepBoids({
@@ -407,7 +528,7 @@ describe("stepBoids", () => {
       const [wandering] = stepBoids({ snapshot: [source, neighbour], bounds })
       const [seeking] = stepBoids({
         snapshot: [source, neighbour],
-        target: { x: 100, y: 140 },
+        target: seekTarget({ x: 100, y: 140 }),
         bounds,
       })
 
@@ -433,7 +554,7 @@ describe("stepBoids", () => {
       traits: { alignmentAreaSize: 0, separationAreaSize: 0 },
       state: { location: { x: 140, y: 100 } },
     })
-    const target = { x: 100, y: 140 }
+    const target = seekTarget({ x: 100, y: 140 })
 
     const forward = stepBoids({ snapshot: [first, second], target, bounds })
     const reverse = stepBoids({ snapshot: [second, first], target, bounds })
@@ -555,7 +676,7 @@ describe("stepBoids", () => {
       random.mockClear()
       const seeking = stepBoids({
         snapshot: updated,
-        target: { x: 100, y: 140 },
+        target: seekTarget({ x: 100, y: 140 }),
         bounds,
       })
       expect(seeking[0].state.wanderAngle).toBe(updated[0].state.wanderAngle)
@@ -631,7 +752,7 @@ describe("stepBoids", () => {
     })
     const [updated] = stepBoids({
       snapshot: [source],
-      target: { x: 75, y: 20 },
+      target: seekTarget({ x: 75, y: 20 }),
       bounds: { width: 60, height: 40 },
     })
 

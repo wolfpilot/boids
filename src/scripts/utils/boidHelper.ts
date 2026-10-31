@@ -16,6 +16,7 @@ interface GenerateRandomizedBoidsOptions {
   alignmentMultiplier: number
   cohesionMultiplier: number
   seekingMultiplier: number
+  fleeingMultiplier: number
   separationMultiplier: number
   frictionMultiplier: number
   colors: string[]
@@ -34,6 +35,7 @@ export const generateRandomizedBoids = ({
   alignmentMultiplier,
   cohesionMultiplier,
   seekingMultiplier,
+  fleeingMultiplier,
   separationMultiplier,
   colors,
 }: GenerateRandomizedBoidsOptions): BoidImpl[] => {
@@ -58,6 +60,7 @@ export const generateRandomizedBoids = ({
       alignmentMultiplier,
       cohesionMultiplier,
       seekingMultiplier,
+      fleeingMultiplier,
       separationMultiplier,
       color: colors[getRandomNumber(0, colors.length - 1)],
     }

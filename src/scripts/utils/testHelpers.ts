@@ -23,6 +23,7 @@ export const createBoidEntity = ({
     alignmentAreaSize: 100,
     cohesionAreaSize: 60,
     seekingAreaSize: 80,
+    fleeingAreaSize: 60,
     separationAreaSize: 10,
     color: "#000000",
     ...traits,

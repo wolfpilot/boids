@@ -10,6 +10,7 @@ export interface BoidTraits {
   alignmentAreaSize: number
   cohesionAreaSize: number
   seekingAreaSize: number
+  fleeingAreaSize: number
   separationAreaSize: number
   color: string
 }
@@ -43,6 +44,7 @@ export interface Options {
   alignmentMultiplier: number
   cohesionMultiplier: number
   seekingMultiplier: number
+  fleeingMultiplier: number
   separationMultiplier: number
   color: string
 }

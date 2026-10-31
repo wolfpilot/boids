@@ -4,6 +4,8 @@ import { align } from "@behaviours/align/align"
 import { cohere } from "@behaviours/cohere/cohere"
 import { separate } from "@behaviours/separate/separate"
 import { wander } from "@behaviours/wander/wander"
+import { flee } from "@behaviours/flee/flee"
+import { getFleeingInfluence } from "@behaviours/flee/helpers"
 
 export {
   seek,
@@ -13,4 +15,6 @@ export {
   cohere,
   separate,
   wander,
+  flee,
+  getFleeingInfluence,
 }

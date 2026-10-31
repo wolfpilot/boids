@@ -50,7 +50,27 @@ When the page is hidden/unfocused, the physics pause and continue from there whe
 
 ## Demo
 
-- [https://wolfpilot.github.io/boids/](https://wolfpilot.github.io/boids/)
+See it in action here - [https://wolfpilot.github.io/boids/](https://wolfpilot.github.io/boids/)
+
+> FPS Controls
+
+https://github.com/user-attachments/assets/c4f451cb-2a94-4774-982a-8528d9452746
+
+> Pointer (flee or seek)
+
+https://github.com/user-attachments/assets/397b1a19-7aac-4ebd-9ad6-93b6925255ac
+
+> Theming
+
+https://github.com/user-attachments/assets/648ac30c-0247-4293-a532-2dd784781a93
+
+> Alignment
+
+https://github.com/user-attachments/assets/1eb3585f-3c16-401a-916b-add2fedff712
+
+> Vectors Debug
+
+https://github.com/user-attachments/assets/bc017ab1-9c18-472c-aa51-d21b7fdc9405
 
 ## Getting started
 

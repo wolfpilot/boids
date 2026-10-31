@@ -2,6 +2,8 @@
 
 A JS Canvas experiment with boids and simulated lifelike behaviours.
 
+![Demo](docs/boids-demo.webp)
+
 ## Table of contents
 
 - [How it works](#how-it-works)

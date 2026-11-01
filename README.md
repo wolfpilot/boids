@@ -48,29 +48,50 @@ Each boid starts with a random size, maximum speed, steering limit, heading, and
 
 When the page is hidden/unfocused, the physics pause and continue from there when it becomes visible/focused again.
 
-## Demo
+## [Demo](https://wolfpilot.github.io/boids/)
 
 See it in action here - [https://wolfpilot.github.io/boids/](https://wolfpilot.github.io/boids/)
 
-> FPS Controls
+> FPS
+>
+> Controlling FPS only affects the rendering, physics updates happen at 60/s regardless! Keeping the draw and updates separate ensures the game logic does not slow down if the GPU cannot keep up for some reason.
 
-https://github.com/user-attachments/assets/c4f451cb-2a94-4774-982a-8528d9452746
+![Demo](docs/controls-fps.webp)
 
-> Pointer (flee or seek)
+> Pointer
+>
+> The pointer can switch between the traditional "predator" mode, triggering the flee mechanism in boids or attractor which becomes a seeking target.
 
-https://github.com/user-attachments/assets/397b1a19-7aac-4ebd-9ad6-93b6925255ac
+![Demo](docs/controls-pointer.webp)
 
 > Theming
+>
+> Most themes are inspired from COLOURLovers. Credits below:
+>
+> - Default (I call this one, Pastel Dreams)
+> - [Fruit Stripe Gum](https://www.colourlovers.com/palette/1354462/Fruit-Stripe-Gum)
+> - [Peach Blossoms](https://www.colourlovers.com/palette/1514529/Peach-Blossoms)
+> - [Sea Salt](https://www.colourlovers.com/palette/871295/sea-salt)
+> - [Pavo Real 4](https://www.colourlovers.com/palette/2320215/Pavo-Real-4)
+> - [A Year Without You](https://www.colourlovers.com/palette/4987644/A-year-without-you)
+> - [Nyx](https://www.colourlovers.com/palette/2478501/Nyx-)
+> - [Ray of Light](https://www.colourlovers.com/palette/1609635/R-a-y-O-f-L-i-g-h-t)
+> - [The Firebird](https://www.colourlovers.com/palette/651122/The-Firebird)
+> - [Electro Recall](https://www.colourlovers.com/palette/663451/electro-recall)
 
-https://github.com/user-attachments/assets/648ac30c-0247-4293-a532-2dd784781a93
+![Demo](docs/controls-themes.webp)
 
 > Alignment
+>
+> A high alignment increases the area in which boids seek each other for grouping. Conversely, low alignment creates individuals... and **CHAOS**!!!
 
-https://github.com/user-attachments/assets/1eb3585f-3c16-401a-916b-add2fedff712
+![Demo](docs/controls-alignment.webp)
 
-> Vectors Debug
+> Vectors
+>
+> Most of the vectors can be enabled for visual debugging.
 
-https://github.com/user-attachments/assets/bc017ab1-9c18-472c-aa51-d21b7fdc9405
+![Demo](docs/controls-vector.webp)
 
 ## Getting started
 
